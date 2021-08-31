@@ -1,4 +1,0 @@
-HOST="[change_to_host]"
-PORT=[change_to_port_number]
-DEBUG=[change_to_True_or_False]
-ORION_URL="[change_to_orion_context_bloker_url]"
