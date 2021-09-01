@@ -5,8 +5,11 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
+import StorageIcon from '@material-ui/icons/Storage';
+import LaunchIcon from '@material-ui/icons/Launch';
+import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 
-const drawerWidth = 240;
+const drawerWidth = 300;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -46,7 +49,7 @@ const TemporaryDrawer: React.VFC<Props> = ({
   const classes = useStyles();
 
   const handleResetClick = () => {
-    if (data.length > 0) {
+    if (data.length !== 0) {
       setData([]);
       setCheck([]);
     }
@@ -62,17 +65,20 @@ const TemporaryDrawer: React.VFC<Props> = ({
         paper: classes.drawerPaper,
       }}
     >
-      <div className={classes.toolBar}></div>
-      <List>
-        {['オープンデータ'].map((text) => (
-          <ListItem button key={text} onClick={() => setModalOpen(!modalOpen)}>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
+      <div className={classes.toolBar} />
+      <List component="nav" disablePadding>
+        <ListItem
+          button
+          key={'オープンデータ'}
+          onClick={() => setModalOpen(!modalOpen)}
+        >
+          <StorageIcon />
+          <ListItemText primary={'オープンデータ'} />
+          <LaunchIcon />
+        </ListItem>
+        <Divider />
         <ListItem button key={'リセット'}>
+          <RotateLeftIcon />
           <ListItemText
             primary={'リセット'}
             onClick={() => handleResetClick()}

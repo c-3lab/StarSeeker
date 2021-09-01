@@ -9,14 +9,20 @@ import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     appBar: {
-      position: 'relative',
+      position: 'fixed',
       zIndex: theme.zIndex.drawer + 1,
+      backgroundColor: '#000080',
+      boxShadow: 'none',
     },
     title: {
       flexGrow: 1,
+      fontWeight: theme.typography.fontWeightBold,
     },
     menuButton: {
       marginRight: theme.spacing(2),
+    },
+    menuIcon: {
+      fontSize: 40,
     },
   })
 );
@@ -33,7 +39,7 @@ const Header: React.VFC<Props> = ({ drawerOpen, setDrawerOpen }) => {
     <AppBar className={classes.appBar}>
       <Toolbar>
         <Typography variant="h6" className={classes.title}>
-          ダッシュボード
+          〇〇市ダッシュボード
         </Typography>
         <IconButton
           edge="start"
@@ -42,7 +48,7 @@ const Header: React.VFC<Props> = ({ drawerOpen, setDrawerOpen }) => {
           aria-label="menu"
           onClick={() => setDrawerOpen(!drawerOpen)}
         >
-          <MenuIcon />
+          <MenuIcon className={classes.menuIcon} />
         </IconButton>
       </Toolbar>
     </AppBar>

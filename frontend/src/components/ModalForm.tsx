@@ -1,6 +1,5 @@
 import React from 'react';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import Modal from '@material-ui/core/Modal';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import FormLabel from '@material-ui/core/FormLabel';
@@ -8,32 +7,27 @@ import FormControl from '@material-ui/core/FormControl';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import CheckBox from '@material-ui/core/Checkbox';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    paper: {
-      top: '20%',
-      left: '25%',
-      position: 'absolute',
-      width: '55%',
-      height: '60%',
-      backgroundColor: theme.palette.background.paper,
-      border: '1px #000',
-      padding: theme.spacing(0, 3, 3),
-    },
-    root: {
-      flexGrow: 1,
-    },
-    formControl: {
-      margin: theme.spacing(3),
-    },
-    grid: {
-      margin: 0.1,
-    },
     box: {
-      margin: 'auto',
       border: '1px solid #DDD',
-      width: '300px',
+      padding: theme.spacing(2),
+    },
+    closeButton: {
+      position: 'absolute',
+      right: theme.spacing(1),
+      top: theme.spacing(1),
+      color: theme.palette.grey[500],
+    },
+    formLabel: {
+      color: '#000000',
+      fontWeight: 'bold',
     },
   })
 );
@@ -77,17 +71,30 @@ const ModalForm: React.VFC<Props> = ({
     }
   };
 
+  const handleClose = () => {
+    setModalOpen(!modalOpen);
+  };
+
   const body = (
-    <div className={classes.paper}>
-      <div>
-        <h4>オープンデータを選択</h4>
-      </div>
-      <div className={classes.root}>
-        <Grid container spacing={2}>
-          <Grid item className={classes.grid}>
+    <>
+      <DialogTitle>
+        オープンデータを選択
+        <IconButton
+          aria-label="close"
+          className={classes.closeButton}
+          onClick={() => handleClose()}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent dividers>
+        <Grid container spacing={1}>
+          <Grid item xs={3}>
             <Box className={classes.box}>
-              <FormControl component="fieldset" className={classes.formControl}>
-                <FormLabel component="legend">医療機関</FormLabel>
+              <FormControl component="fieldset">
+                <FormLabel component="label" className={classes.formLabel}>
+                  医療機関
+                </FormLabel>
                 <FormGroup>
                   <FormControlLabel
                     control={
@@ -119,10 +126,12 @@ const ModalForm: React.VFC<Props> = ({
               </FormControl>
             </Box>
           </Grid>
-          <Grid item className={classes.grid}>
+          <Grid item xs={3}>
             <Box className={classes.box}>
-              <FormControl component="fieldset" className={classes.formControl}>
-                <FormLabel component="legend">公共施設</FormLabel>
+              <FormControl component="fieldset">
+                <FormLabel component="legend" className={classes.formLabel}>
+                  公共施設
+                </FormLabel>
                 <FormGroup>
                   <FormControlLabel
                     control={
@@ -154,10 +163,12 @@ const ModalForm: React.VFC<Props> = ({
               </FormControl>
             </Box>
           </Grid>
-          <Grid item className={classes.grid}>
+          <Grid item xs={3}>
             <Box className={classes.box}>
-              <FormControl component="fieldset" className={classes.formControl}>
-                <FormLabel component="legend">公園</FormLabel>
+              <FormControl component="fieldset">
+                <FormLabel component="legend" className={classes.formLabel}>
+                  公園
+                </FormLabel>
                 <FormGroup>
                   <FormControlLabel
                     control={
@@ -177,14 +188,19 @@ const ModalForm: React.VFC<Props> = ({
             </Box>
           </Grid>
         </Grid>
-      </div>
-    </div>
+      </DialogContent>
+    </>
   );
 
   return (
-    <Modal open={modalOpen} onClose={() => setModalOpen(!modalOpen)}>
+    <Dialog
+      fullWidth={true}
+      maxWidth={'lg'}
+      open={modalOpen}
+      onClose={() => setModalOpen(!modalOpen)}
+    >
       {body}
-    </Modal>
+    </Dialog>
   );
 };
 
