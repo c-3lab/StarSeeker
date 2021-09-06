@@ -1,0 +1,11 @@
+[
+  {
+      "type": "Hospital"
+  },
+  {
+      "type": "Park"
+  },
+  {
+      "type": "NuisanceWildlife"
+  }
+]

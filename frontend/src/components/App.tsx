@@ -1,83 +1,72 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Header from './Header';
 import Map from './Map';
 import TemporaryDrawer from './TemporaryDrawer';
 import ModalForm from './ModalForm';
-import Socket from 'socket.io-client';
-
-type Data = {
-  category: string;
-  type: string;
-  name: string;
-  position: number[];
-};
-
-type Args = {
-  category: string;
-  type: string;
-};
-
-let mapData: Data[];
+import { GeoJsonObject } from 'geojson';
+import axios from 'axios';
+import Head from 'next/head';
 
 const App: React.VFC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [data, setData] = useState([]);
   const [check, setCheck] = useState(['']);
+  const [entityData, setEntityData] = useState<GeoJsonObject[]>([]);
 
-  if (data.length === 0) {
-    mapData = [];
-  } else {
-    mapData = data;
-  }
-
-  let socket = Socket();
-  useEffect(() => {
-    socket.on('connect', () => {
-      console.log('connect');
+  const removeData = (arg: string) => {
+    // TODO
+    const filterData = entityData.filter((d) => {
+      let flg = true;
+      Object.values(d['features']).forEach((value) => {
+        Object.keys(value['properties']).forEach((key) => {
+          if (key == 'type') {
+            if (value['properties'][key] === arg) {
+              flg = false;
+              return;
+            }
+          }
+        });
+      });
+      if (flg) {
+        return true;
+      }
+      return false;
     });
-    socket.on('update-data', (updateData: Data[]) => {
-      console.log('update-data');
-      mapData = mapData.concat(updateData);
-      setData(mapData);
-    });
-    return () => {
-      console.log('disconnect');
-      socket.close();
-    };
-  }, []);
-
-  const sendData = (args: Args) => {
-    console.log('send-data');
-    socket.emit('send-data', args);
+    setEntityData(filterData);
   };
 
-  const removeData = (args: Args) => {
-    const filterData = mapData.filter(
-      (d) => !(d.category === args.category && d.type === args.type)
-    );
-    setData(filterData);
+  const getEntityData = (arg: string) => {
+    async function getData() {
+      const ret = await axios.get(`/api/points/entities?type=${arg}`);
+      const data = entityData.slice();
+      data.push(ret.data);
+      setEntityData(data);
+    }
+    getData();
   };
 
   return (
     <div className={'main'}>
+      <Head>
+        <title>〇〇市ダッシュボード</title>
+      </Head>
       <Header drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} />
-      <Map data={data} />
+      <Map data={entityData} />
       <TemporaryDrawer
         drawerOpen={drawerOpen}
         modalOpen={modalOpen}
         setModalOpen={setModalOpen}
-        data={data}
-        setData={setData}
+        entityData={entityData}
+        setEntityData={setEntityData}
         setCheck={setCheck}
       />
       <ModalForm
         modalOpen={modalOpen}
         setModalOpen={setModalOpen}
-        sendData={sendData}
         removeData={removeData}
         check={check}
         setCheck={setCheck}
+        getEntityData={getEntityData}
       />
     </div>
   );

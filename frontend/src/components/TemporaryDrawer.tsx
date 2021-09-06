@@ -8,6 +8,7 @@ import Divider from '@material-ui/core/Divider';
 import StorageIcon from '@material-ui/icons/Storage';
 import LaunchIcon from '@material-ui/icons/Launch';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
+import { GeoJsonObject } from 'geojson';
 
 const drawerWidth = 300;
 
@@ -24,17 +25,12 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-type Data = {
-  name: string;
-  position: number[];
-};
-
 type Props = {
   drawerOpen: boolean;
   modalOpen: boolean;
   setModalOpen: Function;
-  data: Data[];
-  setData: Function;
+  entityData: GeoJsonObject[];
+  setEntityData: Function;
   setCheck: Function;
 };
 
@@ -42,15 +38,15 @@ const TemporaryDrawer: React.VFC<Props> = ({
   drawerOpen,
   modalOpen,
   setModalOpen,
-  data,
-  setData,
+  entityData,
+  setEntityData,
   setCheck,
 }) => {
   const classes = useStyles();
 
   const handleResetClick = () => {
-    if (data.length !== 0) {
-      setData([]);
+    if (entityData.length !== 0) {
+      setEntityData([]);
       setCheck([]);
     }
   };
