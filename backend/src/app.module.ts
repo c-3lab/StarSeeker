@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PointsModule } from './points/points.module';
+import { DatasetsModule } from './datasets/datasets.module';
 
 @Module({
   imports: [
@@ -10,6 +11,7 @@ import { PointsModule } from './points/points.module';
       envFilePath: '.env.development.local',
     }),
     PointsModule,
+    DatasetsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
