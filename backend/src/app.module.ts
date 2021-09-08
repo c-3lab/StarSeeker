@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PointsModule } from './points/points.module';
 import { DatasetsModule } from './datasets/datasets.module';
+import { EntitiesModule } from './entities/entities.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { DatasetsModule } from './datasets/datasets.module';
     }),
     PointsModule,
     DatasetsModule,
+    EntitiesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
