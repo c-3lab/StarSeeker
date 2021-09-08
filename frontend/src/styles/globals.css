@@ -32,3 +32,22 @@ a {
   width: 100%;
   height: 100%;
 }
+
+th {
+    background-color: #00008B;
+    color: #FFFFFF;
+    border: solid 1px;
+    border-color: #A9A9A9;
+    padding: 10px;
+}
+
+td {
+    border: solid 1px;
+    border-color: #A9A9A9;
+    padding: 10px;
+}
+
+table {
+    border-collapse:  collapse;
+    table-layout: auto;
+}

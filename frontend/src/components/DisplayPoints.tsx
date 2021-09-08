@@ -17,9 +17,11 @@ const DisplayPoints = (props: { data: GeoJsonObject[] }) => {
       layer.addEventListener('click', () => {
         // TODO 詳細情報取得ＡＰＩ
         const popupContent = `
-        <p>${feature.properties['id']}</p>
-        <p>${feature.properties['name']}</p>
-        <p>${feature.properties['address']}</p>
+	<table>
+        <tr><th>ID：</th><td>${feature.properties['id']}</td></tr>
+        <tr><th>場所名：</th><td>${feature.properties['name']}</td></tr>
+        <tr><th>住所：</th><td>${feature.properties['address']}</td></tr>
+	</table>
       `;
         layer.setPopupContent(popupContent);
       });
@@ -31,8 +33,9 @@ const DisplayPoints = (props: { data: GeoJsonObject[] }) => {
     return null;
   }
   return (
+    <div id='test'>
     <>
-      {props.data.length !== 0 &&
+      {props.data.length > 0 &&
         props.data.map((d) => {
           return (
             <GeoJSON
@@ -43,6 +46,7 @@ const DisplayPoints = (props: { data: GeoJsonObject[] }) => {
           );
         })}
     </>
+    </div>
   );
 };
 

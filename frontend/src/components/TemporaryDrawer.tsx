@@ -45,10 +45,9 @@ const TemporaryDrawer: React.VFC<Props> = ({
   const classes = useStyles();
 
   const handleResetClick = () => {
-    if (entityData.length !== 0) {
+      setCheck([]);
       setEntityData([]);
       setCheck([]);
-    }
   };
 
   return (

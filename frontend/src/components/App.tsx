@@ -19,8 +19,8 @@ const App: React.VFC = () => {
       let flg = true;
       Object.values(d['features']).forEach((value) => {
         Object.keys(value['properties']).forEach((key) => {
-          if (key == 'type') {
-            if (value['properties'][key] === arg) {
+          if (key == 'name') {
+            if (value['properties'][key].replace(/[0-9]/g, '') === arg) {
               flg = false;
               return;
             }
