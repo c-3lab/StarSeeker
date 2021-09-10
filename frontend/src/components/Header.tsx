@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme: Theme) =>
     appBar: {
       position: 'fixed',
       zIndex: theme.zIndex.drawer + 1,
-      backgroundColor: '#000080',
+      backgroundColor: '#EE8133',
       boxShadow: 'none',
     },
     title: {

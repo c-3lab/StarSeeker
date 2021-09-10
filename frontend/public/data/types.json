@@ -1,8 +1,12 @@
 [
   {
-      "type": "Hospital"
+    "categoryId": 1,
+    "type": "Hospital",
+    "color": "#f54242"
   },
   {
-      "type": "Park"
+    "categoryId": 1,
+    "type": "Park",
+    "color": "#45f542"
   }
 ]

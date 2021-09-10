@@ -39,6 +39,11 @@ const App: React.VFC = () => {
     async function getData() {
       const ret = await axios.get(`/api/points/entities?type=${arg}`);
       const data = entityData.slice();
+      Object.values(ret.data).forEach((d) => {
+        Object.values(d).forEach((d) => {
+          d['properties']['datasetId'] = arg === 'Hospital' ? 1 : 2;
+        });
+      });
       data.push(ret.data);
       setEntityData(data);
     }

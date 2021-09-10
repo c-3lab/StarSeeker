@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { GeoJSON } from 'react-leaflet';
 import { Layer } from 'leaflet';
 import { GeoJsonObject, Feature, Geometry } from 'geojson';
+import axios from 'axios';
 
 function getUniqueId() {
   return (
@@ -10,19 +11,32 @@ function getUniqueId() {
   );
 }
 
+async function getDetails(
+  datasetId: string,
+  entityId: string
+): Promise<string> {
+  const ret = await axios.get(
+    `/api/entities/entities?datasetId=${datasetId}&entityId=${entityId}`
+  );
+  const popupContent = `
+    <table>
+    <tr><th>ID：</th><td>${ret.data[0]['id']}</td></tr>
+    <tr><th>場所名：</th><td>${ret.data[0]['locationName']['value']}</td></tr>
+    <tr><th>住所：</th><td>${ret.data[0]['address']['value']}</td></tr>
+    </table>
+  `;
+  return popupContent;
+}
+
 const DisplayPoints = (props: { data: GeoJsonObject[] }) => {
   const onEachFeature = useCallback(
     (feature: Feature<Geometry, any>, layer: Layer) => {
       layer.bindPopup('');
-      layer.addEventListener('click', () => {
-        // TODO 詳細情報取得ＡＰＩ
-        const popupContent = `
-	<table>
-        <tr><th>ID：</th><td>${feature.properties['id']}</td></tr>
-        <tr><th>場所名：</th><td>${feature.properties['name']}</td></tr>
-        <tr><th>住所：</th><td>${feature.properties['address']}</td></tr>
-	</table>
-      `;
+      layer.addEventListener('click', async () => {
+        const popupContent = await getDetails(
+          feature.properties['datasetId'],
+          feature.properties['id']
+        );
         layer.setPopupContent(popupContent);
       });
     },
@@ -33,7 +47,6 @@ const DisplayPoints = (props: { data: GeoJsonObject[] }) => {
     return null;
   }
   return (
-    <div id='test'>
     <>
       {props.data.length > 0 &&
         props.data.map((d) => {
@@ -46,7 +59,6 @@ const DisplayPoints = (props: { data: GeoJsonObject[] }) => {
           );
         })}
     </>
-    </div>
   );
 };
 

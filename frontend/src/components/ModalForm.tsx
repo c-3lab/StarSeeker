@@ -7,6 +7,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Category from './Category';
+import Box from '@material-ui/core/Box';
+import FormLabel from '@material-ui/core/FormLabel';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -15,6 +17,17 @@ const useStyles = makeStyles((theme: Theme) =>
       right: theme.spacing(1),
       top: theme.spacing(1),
       color: theme.palette.grey[500],
+    },
+    box: {
+      border: '1px solid #DDD',
+      padding: theme.spacing(2),
+      display: 'flex',
+    },
+    formLabel: {
+      margin: theme.spacing(1),
+      color: '#000000',
+      fontWeight: 'bold',
+      textAlign: 'left',
     },
   })
 );
@@ -37,12 +50,17 @@ const ModalForm: React.VFC<Props> = ({
   getEntityData,
 }) => {
   const classes = useStyles();
+  const [categories, setCategories] = useState<[]>();
   const [datasets, setDatasets] = useState<[]>();
   // TODO 管理用DBからデータセット一覧を取得
   useEffect(() => {
     async function getDatasets() {
-      const ret = await fetch('/api/datasets/types').then((res) => res.json());
-      setDatasets(ret);
+      const ret = await fetch('/api/datasets/categories').then((res) =>
+        res.json()
+      );
+      setCategories(ret);
+      const ret2 = await fetch('/api/datasets/types').then((res) => res.json());
+      setDatasets(ret2);
     }
     getDatasets();
   }, []);
@@ -67,7 +85,7 @@ const ModalForm: React.VFC<Props> = ({
   const body = (
     <>
       <DialogTitle>
-        オープンデータを選択
+        データセットを選択
         <IconButton
           aria-label="close"
           className={classes.closeButton}
@@ -78,15 +96,34 @@ const ModalForm: React.VFC<Props> = ({
       </DialogTitle>
       <DialogContent dividers>
         <Grid container spacing={1}>
-          {typeof datasets !== 'undefined' &&
-            datasets.map((data) => {
+          {typeof categories !== 'undefined' &&
+            categories.map((data) => {
               return (
-                <Category
-                  key={data['type']}
-                  name={data['type']}
-                  check={check}
-                  handleChange={handleChange}
-                />
+                <Grid key={data['name']} item xs={12}>
+                  <Grid item xs={12} style={{ background: '#D3DEF1' }}>
+                    <FormLabel component="label" className={classes.formLabel}>
+                      {data['name']}
+                    </FormLabel>
+                  </Grid>
+                  <Box className={classes.box}>
+                    <Grid container>
+                      {typeof datasets !== 'undefined' &&
+                        datasets
+                          .filter((d) => d['categoryId'] === data['categoryId'])
+                          .map((data) => {
+                            return (
+                              <Category
+                                key={data['type']}
+                                name={data['type']}
+                                check={check}
+                                iconColor={data['color']}
+                                handleChange={handleChange}
+                              />
+                            );
+                          })}
+                    </Grid>
+                  </Box>
+                </Grid>
               );
             })}
         </Grid>

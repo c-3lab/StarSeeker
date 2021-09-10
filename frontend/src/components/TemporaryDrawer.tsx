@@ -45,9 +45,9 @@ const TemporaryDrawer: React.VFC<Props> = ({
   const classes = useStyles();
 
   const handleResetClick = () => {
-      setCheck([]);
-      setEntityData([]);
-      setCheck([]);
+    setCheck([]);
+    setEntityData([]);
+    setCheck([]);
   };
 
   return (
@@ -64,11 +64,11 @@ const TemporaryDrawer: React.VFC<Props> = ({
       <List component="nav" disablePadding>
         <ListItem
           button
-          key={'オープンデータ'}
+          key={'データセット'}
           onClick={() => setModalOpen(!modalOpen)}
         >
           <StorageIcon />
-          <ListItemText primary={'オープンデータ'} />
+          <ListItemText primary={'データセット'} />
           <LaunchIcon />
         </ListItem>
         <Divider />
