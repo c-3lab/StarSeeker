@@ -35,6 +35,12 @@ e.g.
 ```ini:.env.development.local
 API_PORT=4000
 ORION_URI="http://localhost:1026"
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_USERNAME=postgres
+POSTGRES_PASSWORD=<password>
+POSTGRES_DATABASE=postgres
+TYPEORM_SYNCHRONIZE=false
 ```
 
 ## Installation
