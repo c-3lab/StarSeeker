@@ -1,17 +1,28 @@
-import { HttpModule, HttpService } from '@nestjs/axios';
-import { Test, TestingModule } from '@nestjs/testing';
+import { HttpService } from '@nestjs/axios';
+import { Repository } from 'typeorm';
+import { Observable } from 'rxjs';
+
 import { PointsController } from './points.controller';
 import { PointsService } from './points.service';
-import { FeatureCollection } from './entities/points.entity';
+import { PointDataset } from '../../db/entities/PointDataset';
+import { PointDetail } from '../../db/entities/PointDetail';
 
 describe('PointsController', () => {
   let httpService: HttpService;
+  let pointDatasetRepository: Repository<PointDataset>;
+  let pointDetailRepository: Repository<PointDetail>;
   let pointsController: PointsController;
   let pointsService: PointsService;
 
   beforeEach(async () => {
     httpService = new HttpService();
-    pointsService = new PointsService(httpService);
+    pointDatasetRepository = new Repository<PointDataset>();
+    pointDetailRepository = new Repository<PointDetail>();
+    pointsService = new PointsService(
+      httpService,
+      pointDatasetRepository,
+      pointDetailRepository,
+    );
     pointsController = new PointsController(pointsService);
   });
 
@@ -19,42 +30,44 @@ describe('PointsController', () => {
     expect(pointsController).toBeDefined();
   });
 
-  describe('points', () => {
-    it('should return FeatureCollection object', async () => {
-      const result: FeatureCollection = {
-        type: 'FeatureCollection',
-        features: [
+  describe('getEntities', () => {
+    it('should return array of orion entities', async () => {
+      const result = new Observable((subscriber) => {
+        subscriber.next([
           {
-            type: 'Feature',
-            properties: {
-              id: 'HospitalId099',
-              name: 'Hospital099',
-              address: 'HospitalAddress099',
+            id: 'ParkId001',
+            type: 'Park',
+            location: {
+              type: 'geo:point',
+              value: '35.9045568476736, 139.378167943858',
+              metadata: {},
             },
-            geometry: {
-              type: 'Point',
-              coordinates: [139.39975142112, 36.0031312038852],
+            time: {
+              type: 'DateTime',
+              value: '2021-08-23T15:00:00.000Z',
+              metadata: {},
             },
           },
           {
-            type: 'Feature',
-            properties: {
-              id: 'HospitalId100',
-              name: 'Hospital100',
-              address: 'HospitalAddress100',
+            id: 'ParkId002',
+            type: 'Park',
+            location: {
+              type: 'geo:point',
+              value: '35.8901393470751, 139.448973562127',
+              metadata: {},
             },
-            geometry: {
-              type: 'Point',
-              coordinates: [139.356216596693, 35.9585502411543],
+            time: {
+              type: 'DateTime',
+              value: '2021-08-23T15:00:00.000Z',
+              metadata: {},
             },
           },
-        ],
-      };
+        ]);
+      });
       jest
-        .spyOn(pointsService, 'getPoints')
+        .spyOn(pointsService, 'getEntities')
         .mockImplementation(async () => result);
-
-      expect(await pointsController.getPoints('test')).toBe(result);
+      expect(await pointsController.getEntities(0, 0)).toBe(result);
     });
   });
 });

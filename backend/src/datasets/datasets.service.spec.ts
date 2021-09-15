@@ -1,9 +1,10 @@
-import { HttpModule, HttpService } from '@nestjs/axios';
+import { HttpModule } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Category } from '../../db/entities/Category';
+
 import { DatasetsService } from './datasets.service';
+import { Category } from '../../db/entities/Category';
 
 describe('DatasetsService', () => {
   let service: DatasetsService;
