@@ -9,6 +9,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import Category from './Category';
 import Box from '@material-ui/core/Box';
 import FormLabel from '@material-ui/core/FormLabel';
+import axios from 'axios';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -36,7 +37,7 @@ type Props = {
   modalOpen: boolean;
   setModalOpen: Function;
   removeData: Function;
-  check: string[];
+  check: { [key: string]: number }[];
   setCheck: Function;
   getEntityData: Function;
 };
@@ -50,31 +51,47 @@ const ModalForm: React.VFC<Props> = ({
   getEntityData,
 }) => {
   const classes = useStyles();
-  const [categories, setCategories] = useState<[]>();
-  const [datasets, setDatasets] = useState<[]>();
-  // TODO 管理用DBからデータセット一覧を取得
+  const [datasets, setDatasets] = useState([]);
   useEffect(() => {
     async function getDatasets() {
-      const ret = await fetch('/api/datasets/categories').then((res) =>
-        res.json()
-      );
-      setCategories(ret);
-      const ret2 = await fetch('/api/datasets/types').then((res) => res.json());
-      setDatasets(ret2);
+      const ret = await axios.get('/api/datasets/datasets');
+      setDatasets(ret.data);
     }
     getDatasets();
   }, []);
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement>,
-    arg: string
+    datasetId: { [key: string]: number },
+    iconColor: string
   ) => {
-    if (check.includes(event.target.name)) {
-      setCheck(check.filter((d) => d !== event.target.name));
-      removeData(arg);
+    if (
+      check.some(
+        (data) =>
+          Object.keys(data)[0] === Object.keys(datasetId)[0] &&
+          Object.values(data)[0] === Object.values(datasetId)[0]
+      )
+    ) {
+      const hoge = check.filter(
+        (data) =>
+          !(
+            Object.keys(data)[0] === Object.keys(datasetId)[0] &&
+            Object.values(data)[0] === Object.values(datasetId)[0]
+          )
+      );
+      setCheck(
+        check.filter(
+          (data) =>
+            !(
+              Object.keys(data)[0] === Object.keys(datasetId)[0] &&
+              Object.values(data)[0] === Object.values(datasetId)[0]
+            )
+        )
+      );
+      removeData(datasetId);
     } else {
-      setCheck([...check, event.target.name]);
-      getEntityData(event.target.name);
+      setCheck([...check, datasetId]);
+      getEntityData(datasetId, iconColor);
     }
   };
 
@@ -96,36 +113,54 @@ const ModalForm: React.VFC<Props> = ({
       </DialogTitle>
       <DialogContent dividers>
         <Grid container spacing={1}>
-          {typeof categories !== 'undefined' &&
-            categories.map((data) => {
-              return (
-                <Grid key={data['name']} item xs={12}>
-                  <Grid item xs={12} style={{ background: '#D3DEF1' }}>
-                    <FormLabel component="label" className={classes.formLabel}>
-                      {data['name']}
-                    </FormLabel>
-                  </Grid>
-                  <Box className={classes.box}>
-                    <Grid container>
-                      {typeof datasets !== 'undefined' &&
-                        datasets
-                          .filter((d) => d['categoryId'] === data['categoryId'])
-                          .map((data) => {
-                            return (
-                              <Category
-                                key={data['type']}
-                                name={data['type']}
-                                check={check}
-                                iconColor={data['color']}
-                                handleChange={handleChange}
-                              />
-                            );
-                          })}
-                    </Grid>
-                  </Box>
+          {datasets.map((data) => {
+            return (
+              <Grid key={data.categoryName} item xs={12}>
+                <Grid item xs={12} style={{ background: data.categoryColor }}>
+                  <FormLabel component="label" className={classes.formLabel}>
+                    {data.categoryName}
+                  </FormLabel>
                 </Grid>
-              );
-            })}
+                <Box className={classes.box}>
+                  <Grid container>
+                    {data.pointDatasets.length !== 0 &&
+                      data.pointDatasets.map((dataset) => {
+                        const datasetId: { [key: string]: number } = {
+                          pointDatasetId: dataset.pointDatasetId,
+                        };
+                        console.log(datasetId)
+                        return (
+                          <Category
+                            key={dataset.pointDatasetName}
+                            datasetId={datasetId}
+                            name={dataset.pointDatasetName}
+                            check={check}
+                            iconColor={dataset.pointColorCode}
+                            handleChange={handleChange}
+                          />
+                        );
+                      })}
+                    {data.surfaceDatasets.length !== 0 &&
+                      data.surfaceDatasets.map((dataset) => {
+                        const datasetId: { [key: string]: number } = {
+                          surfaceDatasetId: dataset.surfaceDatasetId,
+                        };
+                        return (
+                          <Category
+                            key={dataset.surfaceDatasetName}
+                            datasetId={datasetId}
+                            name={dataset.surfaceDatasetName}
+                            check={check}
+                            iconColor={dataset.fillColorCode}
+                            handleChange={handleChange}
+                          />
+                        );
+                      })}
+                  </Grid>
+                </Box>
+              </Grid>
+            );
+          })}
         </Grid>
       </DialogContent>
     </>

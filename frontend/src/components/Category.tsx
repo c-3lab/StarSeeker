@@ -6,6 +6,8 @@ import FormControl from '@material-ui/core/FormControl';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import CheckBox from '@material-ui/core/Checkbox';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -20,20 +22,26 @@ const useStyles = makeStyles((theme: Theme) =>
       fontWeight: 'bold',
       textAlign: 'left',
     },
+    icon: {
+      margin: theme.spacing(1),
+    },
   })
 );
 
 type Props = {
+  datasetId: { [key: string]: number };
   name: string;
-  check: string[];
+  check: { [key: string]: number }[];
   iconColor: string;
   handleChange: (
     event: React.ChangeEvent<HTMLInputElement>,
-    arg: string
+    datasetId: { [key: string]: number },
+    iconColor: string
   ) => void;
 };
 
 const Category: React.VFC<Props> = ({
+  datasetId,
   name,
   check,
   iconColor,
@@ -50,10 +58,21 @@ const Category: React.VFC<Props> = ({
                 <>
                   <CheckBox
                     color="primary"
-                    checked={check.includes(name)}
-                    onChange={(e) => handleChange(e, name)}
+                    checked={check.some(
+                      (data) =>
+                        Object.keys(data)[0] == Object.keys(datasetId)[0] &&
+                        Object.values(data)[0] === Object.values(datasetId)[0]
+                    )}
+                    onChange={(e) => handleChange(e, datasetId, iconColor)}
                     name={name}
                   />
+                  {Object.keys(datasetId)[0].startsWith('point') && (
+                    <FontAwesomeIcon
+                      icon={faMapMarkerAlt}
+                      color={iconColor}
+                      className={classes.icon}
+                    />
+                  )}
                 </>
               }
               label={name}

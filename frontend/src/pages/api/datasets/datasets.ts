@@ -5,9 +5,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { datasetId } = req.query;
   const ret = await axios
-    .get(`http://localhost:4000/api/points/${datasetId}/entities?limit=100`)
+    .get(`http://localhost:4000/api/datasets`)
     .then((r) => res.status(200).json(r.data))
-    .catch((e) => console.log('error', 'status code：' + e.response.status));
+    .catch((e) => console.log('error', 'status code:' + e.response.status));
 }

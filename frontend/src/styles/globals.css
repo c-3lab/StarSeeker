@@ -39,15 +39,23 @@ th {
   border: solid 1px;
   border-color: #a9a9a9;
   padding: 10px;
+  min-width: 100px;
+  word-wrap: break-word;
 }
 
 td {
   border: solid 1px;
   border-color: #a9a9a9;
   padding: 10px;
+  min-width: 200px;
+  word-wrap: break-word;
 }
 
 table {
   border-collapse: collapse;
   table-layout: auto;
+}
+
+.fa-stack {
+  filter: saturate(70%);
 }

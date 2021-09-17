@@ -1,13 +1,16 @@
-import React, { useCallback } from 'react';
-import { GeoJSON } from 'react-leaflet';
-import { Layer } from 'leaflet';
-import { GeoJsonObject, Feature, Geometry } from 'geojson';
+import React from 'react';
+import ReactDOMServer from 'react-dom/server';
+import { useMap, Marker } from 'react-leaflet';
+import Leaflet from 'leaflet';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMapMarker } from '@fortawesome/free-solid-svg-icons';
+import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 
 function getUniqueId() {
   return (
     new Date().getTime().toString(16) +
-    Math.floor(Math.random() * 1000).toString(16)
+    Math.floor(Math.random() * 1000000).toString(16)
   );
 }
 
@@ -16,48 +19,80 @@ async function getDetails(
   entityId: string
 ): Promise<string> {
   const ret = await axios.get(
-    `/api/entities/entities?datasetId=${datasetId}&entityId=${entityId}`
+    `/api/points/details?datasetId=${datasetId}&entityId=${entityId}`
   );
+
+  let html = '';
+  ret.data.forEach((d) => {
+    const isImage = d.dataType === 1;
+    if (isImage) {
+      html += `<tr><th>${d.displayTitle}</th><td><img src=${d.value} width='100%' height='100%'></td></tr>`;
+    } else {
+      html += `<tr><th>${d.displayTitle}</th><td>${d.value}</td></tr>`;
+    }
+  });
+
   const popupContent = `
     <table>
-    <tr><th>ID：</th><td>${ret.data[0]['id']}</td></tr>
-    <tr><th>場所名：</th><td>${ret.data[0]['locationName']['value']}</td></tr>
-    <tr><th>住所：</th><td>${ret.data[0]['address']['value']}</td></tr>
+      <colgroup>
+        <col style="width:33%;">
+        <col style="width:67%;">
+      </colgroup>
+      <tbody>
+        ${html}
+      </tbody>
     </table>
   `;
+
   return popupContent;
 }
 
-const DisplayPoints = (props: { data: GeoJsonObject[] }) => {
-  const onEachFeature = useCallback(
-    (feature: Feature<Geometry, any>, layer: Layer) => {
-      layer.bindPopup('');
-      layer.addEventListener('click', async () => {
-        const popupContent = await getDetails(
-          feature.properties['datasetId'],
-          feature.properties['id']
-        );
-        layer.setPopupContent(popupContent);
-      });
-    },
-    []
-  );
+const DisplayPoints: React.VFC<{ data: any[] }> = ({ data }) => {
+  const map = useMap();
+  map.closePopup();
 
-  if (typeof props.data === 'undefined') {
-    return null;
-  }
   return (
     <>
-      {props.data.length > 0 &&
-        props.data.map((d) => {
-          return (
-            <GeoJSON
-              key={getUniqueId()}
-              data={d}
-              onEachFeature={onEachFeature}
-            />
-          );
-        })}
+      {data.flat().map((d) => {
+        const position = d.location.value.split(',');
+        return (
+          <Marker
+            key={getUniqueId()}
+            position={[position[0], position[1]]}
+            icon={Leaflet.divIcon({
+              html: ReactDOMServer.renderToString(
+                <span className="fa-stack">
+                  <FontAwesomeIcon
+                    className={'fa-stack-1x'}
+                    icon={faMapMarker}
+                    size={'2x'}
+                    color={'#FFFFFF'}
+                  />
+                  <FontAwesomeIcon
+                    className={'fa-stack-1x'}
+                    icon={faMapMarkerAlt}
+                    size={'2x'}
+                    color={d.iconColor}
+                  />
+                  <div style={{ marginLeft: 2, marginTop: -15 }}>
+                    <img src="/shadow.png"></img>
+                  </div>
+                </span>
+              ),
+              className: '',
+            })}
+            eventHandlers={{
+              click: async () => {
+                const details = await getDetails(d.datasetId, d.id);
+                Leaflet.popup()
+                  .setLatLng(position)
+                  .setContent(details)
+                  .openOn(map);
+              },
+            }}
+          />
+        );
+      })}
     </>
   );
 };

@@ -3,29 +3,26 @@ import Header from './Header';
 import Map from './Map';
 import TemporaryDrawer from './TemporaryDrawer';
 import ModalForm from './ModalForm';
-import { GeoJsonObject } from 'geojson';
 import axios from 'axios';
 import Head from 'next/head';
 
 const App: React.VFC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [check, setCheck] = useState(['']);
-  const [entityData, setEntityData] = useState<GeoJsonObject[]>([]);
+  const [check, setCheck] = useState<{ [key: string]: number }[]>([]);
+  const [entityData, setEntityData] = useState([]);
 
-  const removeData = (arg: string) => {
-    // TODO
+  const removeData = (datasetId: { [key: string]: number }) => {
     const filterData = entityData.filter((d) => {
       let flg = true;
-      Object.values(d['features']).forEach((value) => {
-        Object.keys(value['properties']).forEach((key) => {
-          if (key == 'name') {
-            if (value['properties'][key].replace(/[0-9]/g, '') === arg) {
-              flg = false;
-              return;
-            }
-          }
-        });
+      Object.values(d).forEach((value) => {
+        if (
+          value['keyString'] === Object.keys(datasetId)[0] &&
+          value['datasetId'] === Object.values(datasetId)[0]
+        ) {
+          flg = false;
+          return;
+        }
       });
       if (flg) {
         return true;
@@ -35,14 +32,20 @@ const App: React.VFC = () => {
     setEntityData(filterData);
   };
 
-  const getEntityData = (arg: string) => {
+  const getEntityData = (
+    datasetId: { [key: string]: number },
+    iconColor: string
+  ) => {
     async function getData() {
-      const ret = await axios.get(`/api/points/entities?type=${arg}`);
+      const pointDatasetId = Object.values(datasetId)[0];
+      const ret = await axios.get(
+        `/api/points/entities?datasetId=${pointDatasetId}`
+      );
       const data = entityData.slice();
       Object.values(ret.data).forEach((d) => {
-        Object.values(d).forEach((d) => {
-          d['properties']['datasetId'] = arg === 'Hospital' ? 1 : 2;
-        });
+        d['keyString'] = Object.keys(datasetId)[0];
+        d['datasetId'] = pointDatasetId;
+        d['iconColor'] = iconColor;
       });
       data.push(ret.data);
       setEntityData(data);
