@@ -14,12 +14,13 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: '#EE8133',
       boxShadow: 'none',
     },
+    toolbar: {
+      padding: 0,
+    },
     title: {
       flexGrow: 1,
       fontWeight: theme.typography.fontWeightBold,
-    },
-    menuButton: {
-      marginRight: theme.spacing(2),
+      marginLeft: theme.spacing(5),
     },
     menuIcon: {
       fontSize: 40,
@@ -37,13 +38,12 @@ const Header: React.VFC<Props> = ({ drawerOpen, setDrawerOpen }) => {
 
   return (
     <AppBar className={classes.appBar}>
-      <Toolbar>
+      <Toolbar className={classes.toolbar}>
         <Typography variant="h6" className={classes.title}>
           〇〇市ダッシュボード
         </Typography>
         <IconButton
           edge="start"
-          className={classes.menuButton}
           color="inherit"
           aria-label="menu"
           onClick={() => setDrawerOpen(!drawerOpen)}
