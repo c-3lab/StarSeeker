@@ -1,13 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { AppController } from './app.controller';
+import { AppModule } from './app.module';
 import { AppService } from './app.service';
+
+jest.mock('./app.module');
 
 describe('AppController', () => {
   let appController: AppController;
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
       controllers: [AppController],
       providers: [AppService],
     }).compile();
@@ -15,8 +19,12 @@ describe('AppController', () => {
     appController = app.get<AppController>(AppController);
   });
 
-  describe('root', () => {
-    it('should return "Bad Request"', () => {
+  it('should be defined', () => {
+    expect(appController).toBeDefined();
+  });
+
+  describe('get', () => {
+    it('should throw "Bad Request"', () => {
       expect(appController.get()).rejects.toThrow('Bad Request');
     });
   });

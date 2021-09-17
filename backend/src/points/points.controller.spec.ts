@@ -1,4 +1,4 @@
-import { HttpService } from '@nestjs/axios';
+import { HttpModule, HttpService } from '@nestjs/axios';
 import { Repository } from 'typeorm';
 import { Observable } from 'rxjs';
 
@@ -6,6 +6,12 @@ import { PointsController } from './points.controller';
 import { PointsService } from './points.service';
 import { PointDataset } from '../../db/entities/PointDataset';
 import { PointDetail } from '../../db/entities/PointDetail';
+import { Test, TestingModule } from '@nestjs/testing';
+import { PointsModule } from './points.module';
+import { getRepositoryToken } from '@nestjs/typeorm';
+
+jest.mock('@nestjs/axios');
+jest.mock('./points.module');
 
 describe('PointsController', () => {
   let httpService: HttpService;
@@ -15,15 +21,28 @@ describe('PointsController', () => {
   let pointsService: PointsService;
 
   beforeEach(async () => {
-    httpService = new HttpService();
-    pointDatasetRepository = new Repository<PointDataset>();
-    pointDetailRepository = new Repository<PointDetail>();
-    pointsService = new PointsService(
-      httpService,
-      pointDatasetRepository,
-      pointDetailRepository,
-    );
-    pointsController = new PointsController(pointsService);
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [HttpModule, PointsModule],
+      providers: [
+        HttpService,
+        PointsService,
+        {
+          provide: getRepositoryToken(PointDataset),
+          useClass: Repository,
+        },
+        {
+          provide: getRepositoryToken(PointDetail),
+          useClass: Repository,
+        },
+      ],
+      controllers: [PointsController],
+    }).compile();
+
+    httpService = module.get<HttpService>(HttpService);
+    pointsService = module.get<PointsService>(PointsService);
+    pointsController = module.get<PointsController>(PointsController);
+    pointDatasetRepository = module.get(getRepositoryToken(PointDataset));
+    pointDetailRepository = module.get(getRepositoryToken(PointDetail));
   });
 
   it('should be defined', () => {
@@ -31,43 +50,26 @@ describe('PointsController', () => {
   });
 
   describe('getEntities', () => {
-    it('should return array of orion entities', async () => {
+    it('should return', async () => {
       const result = new Observable((subscriber) => {
-        subscriber.next([
-          {
-            id: 'ParkId001',
-            type: 'Park',
-            location: {
-              type: 'geo:point',
-              value: '35.9045568476736, 139.378167943858',
-              metadata: {},
-            },
-            time: {
-              type: 'DateTime',
-              value: '2021-08-23T15:00:00.000Z',
-              metadata: {},
-            },
-          },
-          {
-            id: 'ParkId002',
-            type: 'Park',
-            location: {
-              type: 'geo:point',
-              value: '35.8901393470751, 139.448973562127',
-              metadata: {},
-            },
-            time: {
-              type: 'DateTime',
-              value: '2021-08-23T15:00:00.000Z',
-              metadata: {},
-            },
-          },
-        ]);
+        subscriber.next([]);
       });
+
       jest
         .spyOn(pointsService, 'getEntities')
         .mockImplementation(async () => result);
       expect(await pointsController.getEntities(0, 0)).toBe(result);
+    });
+  });
+
+  describe('getDetails', () => {
+    it('should return', async () => {
+      const result = [];
+
+      jest
+        .spyOn(pointsService, 'getDetails')
+        .mockImplementation(async () => result);
+      expect(await pointsController.getDetails(0, 'test')).toBe(result);
     });
   });
 });

@@ -1,21 +1,35 @@
-import { HttpService } from '@nestjs/axios';
 import { Repository } from 'typeorm';
+import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
 
 import { DatasetsController } from './datasets.controller';
 import { DatasetsService } from './datasets.service';
+import { DatasetsModule } from './datasets.module';
 import { Category } from '../../db/entities/Category';
 
+jest.mock('./datasets.module');
+
 describe('DatasetsController', () => {
-  let httpService: HttpService;
   let categoryRepository: Repository<Category>;
   let datasetsController: DatasetsController;
   let datasetsService: DatasetsService;
 
   beforeEach(async () => {
-    httpService = new HttpService();
-    categoryRepository = new Repository<Category>();
-    datasetsService = new DatasetsService(httpService, categoryRepository);
-    datasetsController = new DatasetsController(datasetsService);
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [DatasetsModule],
+      providers: [
+        DatasetsService,
+        {
+          provide: getRepositoryToken(Category),
+          useClass: Repository,
+        },
+      ],
+      controllers: [DatasetsController],
+    }).compile();
+
+    datasetsService = module.get<DatasetsService>(DatasetsService);
+    datasetsController = module.get<DatasetsController>(DatasetsController);
+    categoryRepository = module.get(getRepositoryToken(Category));
   });
 
   it('should be defined', () => {
@@ -23,27 +37,9 @@ describe('DatasetsController', () => {
   });
 
   describe('getDatasets', () => {
-    it('should return array of datasets', async () => {
-      const result: Category[] = [
-        {
-          categoryId: 2,
-          categoryName: '獣害情報',
-          categoryColor: '#FFFC30',
-          displayOrder: 2,
-          enabled: true,
-          pointDatasets: [],
-          surfaceDatasets: [],
-        },
-        {
-          categoryId: 1,
-          categoryName: '公共施設',
-          categoryColor: '#00008B',
-          displayOrder: 1,
-          enabled: true,
-          pointDatasets: [],
-          surfaceDatasets: [],
-        },
-      ];
+    it('should return', async () => {
+      const result = [];
+
       jest
         .spyOn(datasetsService, 'getDatasets')
         .mockImplementation(async () => result);

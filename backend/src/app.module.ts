@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { PointsModule } from './points/points.module';
 import { DatasetsModule } from './datasets/datasets.module';
 import { SurfacesModule } from './surfaces/surfaces.module';
+import * as utils from './utils';
 
 @Module({
   imports: [
@@ -20,13 +21,8 @@ import { SurfacesModule } from './surfaces/surfaces.module';
       username: process.env.POSTGRES_USERNAME,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DATABASE,
-      entities: [
-        process.env.NODE_ENV === 'test'
-          ? 'db/entities/*.ts'
-          : 'dist/db/entities/*.js',
-      ],
-      synchronize:
-        process.env.TYPEORM_SYNCHRONIZE.toLowerCase() === 'true' ? true : false,
+      entities: [utils.getEntityFilepath(utils.isTesting())],
+      synchronize: utils.toBoolean(process.env.TYPEORM_SYNCHRONIZE),
       autoLoadEntities: true,
     }),
     PointsModule,

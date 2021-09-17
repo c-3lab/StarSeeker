@@ -1,14 +1,12 @@
-import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 import { Category } from '../../db/entities/Category';
 
 @Injectable()
 export class DatasetsService {
   constructor(
-    private httpService: HttpService,
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
   ) {}
@@ -19,13 +17,7 @@ export class DatasetsService {
       .leftJoinAndSelect('category.pointDatasets', 'pointDataset')
       .leftJoinAndSelect('category.surfaceDatasets', 'surfaceDataset')
       .where('category.enabled = true')
-      .andWhere(
-        new Brackets((qb) => {
-          qb.where('pointDataset.enabled = true').orWhere(
-            'surfaceDataset.enabled = true',
-          );
-        }),
-      )
+      .andWhere('pointDataset.enabled = true or surfaceDataset.enabled = true')
       .orderBy('category.displayOrder', 'ASC')
       .getMany();
   }
