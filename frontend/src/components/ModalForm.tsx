@@ -128,7 +128,6 @@ const ModalForm: React.VFC<Props> = ({
                         const datasetId: { [key: string]: number } = {
                           pointDatasetId: dataset.pointDatasetId,
                         };
-                        console.log(datasetId)
                         return (
                           <Category
                             key={dataset.pointDatasetName}

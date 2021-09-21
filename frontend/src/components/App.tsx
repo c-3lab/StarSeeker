@@ -1,15 +1,10 @@
 import React, { useState } from 'react';
 import Header from './Header';
 import Map from './Map';
-import TemporaryDrawer from './TemporaryDrawer';
-import ModalForm from './ModalForm';
 import axios from 'axios';
 import Head from 'next/head';
 
 const App: React.VFC = () => {
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [check, setCheck] = useState<{ [key: string]: number }[]>([]);
   const [entityData, setEntityData] = useState([]);
 
   const removeData = (datasetId: { [key: string]: number }) => {
@@ -53,29 +48,21 @@ const App: React.VFC = () => {
     getData();
   };
 
+  const resetEntityData = () => {
+    setEntityData([]);
+  };
+
   return (
     <div className={'main'}>
       <Head>
         <title>〇〇市ダッシュボード</title>
       </Head>
-      <Header drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} />
-      <Map data={entityData} />
-      <TemporaryDrawer
-        drawerOpen={drawerOpen}
-        modalOpen={modalOpen}
-        setModalOpen={setModalOpen}
-        entityData={entityData}
-        setEntityData={setEntityData}
-        setCheck={setCheck}
-      />
-      <ModalForm
-        modalOpen={modalOpen}
-        setModalOpen={setModalOpen}
-        removeData={removeData}
-        check={check}
-        setCheck={setCheck}
+      <Header
         getEntityData={getEntityData}
+        removeData={removeData}
+        resetEntityData={resetEntityData}
       />
+      <Map data={entityData} />
     </div>
   );
 };

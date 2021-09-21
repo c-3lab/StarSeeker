@@ -74,9 +74,6 @@ const DisplayPoints: React.VFC<{ data: any[] }> = ({ data }) => {
                     size={'2x'}
                     color={d.iconColor}
                   />
-                  <div style={{ marginLeft: 2, marginTop: -15 }}>
-                    <img src="/shadow.png"></img>
-                  </div>
                 </span>
               ),
               className: '',

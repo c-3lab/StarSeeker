@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
+import TemporaryDrawer from './TemporaryDrawer';
+import ModalForm from './ModalForm';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -29,29 +31,54 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 type Props = {
-  drawerOpen: boolean;
-  setDrawerOpen: Function;
+  getEntityData: Function;
+  removeData: Function;
+  resetEntityData: Function;
 };
 
-const Header: React.VFC<Props> = ({ drawerOpen, setDrawerOpen }) => {
+const Header: React.VFC<Props> = ({
+  getEntityData,
+  removeData,
+  resetEntityData,
+}) => {
   const classes = useStyles();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [check, setCheck] = useState<{ [key: string]: number }[]>([]);
 
   return (
-    <AppBar className={classes.appBar}>
-      <Toolbar className={classes.toolbar}>
-        <Typography variant="h6" className={classes.title}>
-          〇〇市ダッシュボード
-        </Typography>
-        <IconButton
-          edge="start"
-          color="inherit"
-          aria-label="menu"
-          onClick={() => setDrawerOpen(!drawerOpen)}
-        >
-          <MenuIcon className={classes.menuIcon} />
-        </IconButton>
-      </Toolbar>
-    </AppBar>
+    <>
+      <AppBar className={classes.appBar}>
+        <Toolbar className={classes.toolbar}>
+          <Typography variant="h6" className={classes.title}>
+            〇〇市ダッシュボード
+          </Typography>
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={() => setDrawerOpen(!drawerOpen)}
+          >
+            <MenuIcon className={classes.menuIcon} />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+      <TemporaryDrawer
+        drawerOpen={drawerOpen}
+        modalOpen={modalOpen}
+        setModalOpen={setModalOpen}
+        resetEntityData={resetEntityData}
+        setCheck={setCheck}
+      />
+      <ModalForm
+        modalOpen={modalOpen}
+        setModalOpen={setModalOpen}
+        removeData={removeData}
+        check={check}
+        setCheck={setCheck}
+        getEntityData={getEntityData}
+      />
+    </>
   );
 };
 
