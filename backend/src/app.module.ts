@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PointsModule } from './points/points.module';
 import { DatasetsModule } from './datasets/datasets.module';
+import { SurfacesModule } from './surfaces/surfaces.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { DatasetsModule } from './datasets/datasets.module';
     }),
     PointsModule,
     DatasetsModule,
+    SurfacesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
