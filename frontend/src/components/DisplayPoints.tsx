@@ -6,13 +6,7 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMapMarker } from '@fortawesome/free-solid-svg-icons';
 import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
-
-function getUniqueId() {
-  return (
-    new Date().getTime().toString(16) +
-    Math.floor(Math.random() * 1000000).toString(16)
-  );
-}
+import { getUniqueId } from '../utils/utils';
 
 async function getDetails(
   datasetId: string,

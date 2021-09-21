@@ -34,17 +34,21 @@ type Props = {
   getEntityData: Function;
   removeData: Function;
   resetEntityData: Function;
+  removeSurfaceData: Function;
+  getSurfaceData: Function;
 };
 
 const Header: React.VFC<Props> = ({
   getEntityData,
   removeData,
   resetEntityData,
+  removeSurfaceData,
+  getSurfaceData,
 }) => {
   const classes = useStyles();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [check, setCheck] = useState<{ [key: string]: number }[]>([]);
+  const [check, setCheck] = useState(['']);
 
   return (
     <>
@@ -77,6 +81,8 @@ const Header: React.VFC<Props> = ({
         check={check}
         setCheck={setCheck}
         getEntityData={getEntityData}
+        getSurfaceData={getSurfaceData}
+        removeSurfaceData={removeSurfaceData}
       />
     </>
   );

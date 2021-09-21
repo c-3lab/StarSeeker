@@ -6,8 +6,6 @@ import FormControl from '@material-ui/core/FormControl';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import CheckBox from '@material-ui/core/Checkbox';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -29,23 +27,29 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 type Props = {
-  datasetId: { [key: string]: number };
+  datasetId: number;
   name: string;
-  check: { [key: string]: number }[];
-  iconColor: string;
-  handleChange: (
+  entityType: string;
+  check: string[];
+  borderColor: string;
+  fillColor: string;
+  handleSurfacesChange: (
     event: React.ChangeEvent<HTMLInputElement>,
-    datasetId: { [key: string]: number },
-    iconColor: string
+    datasetId: number,
+    entityType: string,
+    borderColor: string,
+    fillColor: string
   ) => void;
 };
 
-const Category: React.VFC<Props> = ({
+const SurfacesCategory: React.VFC<Props> = ({
   datasetId,
   name,
+  entityType,
   check,
-  iconColor,
-  handleChange,
+  borderColor,
+  fillColor,
+  handleSurfacesChange,
 }) => {
   const classes = useStyles();
   return (
@@ -58,21 +62,18 @@ const Category: React.VFC<Props> = ({
                 <>
                   <CheckBox
                     color="primary"
-                    checked={check.some(
-                      (data) =>
-                        Object.keys(data)[0] == Object.keys(datasetId)[0] &&
-                        Object.values(data)[0] === Object.values(datasetId)[0]
-                    )}
-                    onChange={(e) => handleChange(e, datasetId, iconColor)}
+                    checked={check.includes(entityType)}
+                    onChange={(e) =>
+                      handleSurfacesChange(
+                        e,
+                        datasetId,
+                        entityType,
+                        borderColor,
+                        fillColor
+                      )
+                    }
                     name={name}
                   />
-                  {Object.keys(datasetId)[0].startsWith('point') && (
-                    <FontAwesomeIcon
-                      icon={faMapMarkerAlt}
-                      color={iconColor}
-                      className={classes.icon}
-                    />
-                  )}
                 </>
               }
               label={name}
@@ -84,4 +85,4 @@ const Category: React.VFC<Props> = ({
   );
 };
 
-export default Category;
+export default SurfacesCategory;

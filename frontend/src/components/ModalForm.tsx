@@ -6,7 +6,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-import Category from './Category';
+import PointsCategory from './PointsCategory';
+import SurfacesCategory from './SurfacesCategory';
 import Box from '@material-ui/core/Box';
 import FormLabel from '@material-ui/core/FormLabel';
 import axios from 'axios';
@@ -37,9 +38,11 @@ type Props = {
   modalOpen: boolean;
   setModalOpen: Function;
   removeData: Function;
-  check: { [key: string]: number }[];
+  check: string[];
   setCheck: Function;
   getEntityData: Function;
+  getSurfaceData: Function;
+  removeSurfaceData: Function;
 };
 
 const ModalForm: React.VFC<Props> = ({
@@ -49,6 +52,8 @@ const ModalForm: React.VFC<Props> = ({
   check,
   setCheck,
   getEntityData,
+  getSurfaceData,
+  removeSurfaceData,
 }) => {
   const classes = useStyles();
   const [datasets, setDatasets] = useState([]);
@@ -60,38 +65,34 @@ const ModalForm: React.VFC<Props> = ({
     getDatasets();
   }, []);
 
-  const handleChange = (
+  const handlePointsChange = (
     event: React.ChangeEvent<HTMLInputElement>,
-    datasetId: { [key: string]: number },
+    datasetId: number,
+    entityType: string,
     iconColor: string
   ) => {
-    if (
-      check.some(
-        (data) =>
-          Object.keys(data)[0] === Object.keys(datasetId)[0] &&
-          Object.values(data)[0] === Object.values(datasetId)[0]
-      )
-    ) {
-      const hoge = check.filter(
-        (data) =>
-          !(
-            Object.keys(data)[0] === Object.keys(datasetId)[0] &&
-            Object.values(data)[0] === Object.values(datasetId)[0]
-          )
-      );
-      setCheck(
-        check.filter(
-          (data) =>
-            !(
-              Object.keys(data)[0] === Object.keys(datasetId)[0] &&
-              Object.values(data)[0] === Object.values(datasetId)[0]
-            )
-        )
-      );
+    if (check.includes(entityType)) {
+      setCheck(check.filter((data) => data != entityType));
       removeData(datasetId);
     } else {
-      setCheck([...check, datasetId]);
+      setCheck([...check, entityType]);
       getEntityData(datasetId, iconColor);
+    }
+  };
+
+  const handleSurfacesChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    datasetId: number,
+    entityType: string,
+    borderColor: string,
+    fillColor: string
+  ) => {
+    if (check.includes(entityType)) {
+      setCheck(check.filter((data) => data != entityType));
+      removeSurfaceData(datasetId);
+    } else {
+      setCheck([...check, entityType]);
+      getSurfaceData(datasetId, borderColor, fillColor);
     }
   };
 
@@ -125,33 +126,30 @@ const ModalForm: React.VFC<Props> = ({
                   <Grid container>
                     {data.pointDatasets.length !== 0 &&
                       data.pointDatasets.map((dataset) => {
-                        const datasetId: { [key: string]: number } = {
-                          pointDatasetId: dataset.pointDatasetId,
-                        };
                         return (
-                          <Category
+                          <PointsCategory
                             key={dataset.pointDatasetName}
-                            datasetId={datasetId}
+                            datasetId={dataset.pointDatasetId}
                             name={dataset.pointDatasetName}
+                            entityType={dataset.entityType}
                             check={check}
                             iconColor={dataset.pointColorCode}
-                            handleChange={handleChange}
+                            handlePointsChange={handlePointsChange}
                           />
                         );
                       })}
                     {data.surfaceDatasets.length !== 0 &&
                       data.surfaceDatasets.map((dataset) => {
-                        const datasetId: { [key: string]: number } = {
-                          surfaceDatasetId: dataset.surfaceDatasetId,
-                        };
                         return (
-                          <Category
+                          <SurfacesCategory
                             key={dataset.surfaceDatasetName}
-                            datasetId={datasetId}
+                            datasetId={dataset.surfaceDatasetId}
                             name={dataset.surfaceDatasetName}
+                            entityType={dataset.entityType}
                             check={check}
-                            iconColor={dataset.fillColorCode}
-                            handleChange={handleChange}
+                            borderColor={dataset.borderColorCode}
+                            fillColor={dataset.fillColorCode}
+                            handleSurfacesChange={handleSurfacesChange}
                           />
                         );
                       })}
