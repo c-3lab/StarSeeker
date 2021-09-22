@@ -26,6 +26,7 @@ export class DatasetsService {
           );
         }),
       )
+      .orderBy('category.displayOrder', 'ASC')
       .getMany();
   }
 }
