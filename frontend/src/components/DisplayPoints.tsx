@@ -20,7 +20,7 @@ async function getDetails(
   ret.data.forEach((d) => {
     const isImage = d.dataType === 1;
     if (isImage) {
-      html += `<tr><th>${d.displayTitle}</th><td><img src=${d.value} width='100%' height='100%'></td></tr>`;
+      html += `<tr><th>${d.displayTitle}</th><td><img src=${d.value} width="100%" height="100%"></td></tr>`;
     } else {
       html += `<tr><th>${d.displayTitle}</th><td>${d.value}</td></tr>`;
     }
@@ -29,8 +29,8 @@ async function getDetails(
   const popupContent = `
     <table>
       <colgroup>
-        <col style="width:33%;">
-        <col style="width:67%;">
+        <col style="width:33%">
+        <col style="width:67%">
       </colgroup>
       <tbody>
         ${html}
@@ -88,4 +88,4 @@ const DisplayPoints: React.VFC<{ data: any[] }> = ({ data }) => {
   );
 };
 
-export default DisplayPoints;
+export default React.memo(DisplayPoints);

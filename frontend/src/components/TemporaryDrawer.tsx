@@ -26,26 +26,16 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type Props = {
   drawerOpen: boolean;
-  modalOpen: boolean;
-  setModalOpen: Function;
-  resetEntityData: Function;
-  setCheck: Function;
+  handleModalOpen: React.MouseEventHandler<HTMLDivElement>;
+  handleReset: React.MouseEventHandler<HTMLDivElement>;
 };
 
 const TemporaryDrawer: React.VFC<Props> = ({
   drawerOpen,
-  modalOpen,
-  setModalOpen,
-  resetEntityData,
-  setCheck,
+  handleModalOpen,
+  handleReset,
 }) => {
   const classes = useStyles();
-
-  const handleResetClick = () => {
-    setCheck([]);
-    resetEntityData([]);
-    setCheck([]);
-  };
 
   return (
     <Drawer
@@ -59,11 +49,7 @@ const TemporaryDrawer: React.VFC<Props> = ({
     >
       <div className={classes.toolBar} />
       <List component="nav" disablePadding>
-        <ListItem
-          button
-          key={'データセット'}
-          onClick={() => setModalOpen(!modalOpen)}
-        >
+        <ListItem button key={'データセット'} onClick={handleModalOpen}>
           <StorageIcon />
           <ListItemText primary={'データセット'} />
           <LaunchIcon />
@@ -71,10 +57,7 @@ const TemporaryDrawer: React.VFC<Props> = ({
         <Divider />
         <ListItem button key={'リセット'}>
           <RotateLeftIcon />
-          <ListItemText
-            primary={'リセット'}
-            onClick={() => handleResetClick()}
-          />
+          <ListItemText primary={'リセット'} onClick={handleReset} />
         </ListItem>
       </List>
     </Drawer>

@@ -36,24 +36,24 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type Props = {
   modalOpen: boolean;
-  setModalOpen: Function;
-  removeData: Function;
+  handleModalOpen: VoidFunction;
   check: string[];
   setCheck: Function;
-  getEntityData: Function;
-  getSurfaceData: Function;
-  removeSurfaceData: Function;
+  getPointsData: Function;
+  removePointsData: Function;
+  getSurfacesData: Function;
+  removeSurfacesData: Function;
 };
 
 const ModalForm: React.VFC<Props> = ({
   modalOpen,
-  setModalOpen,
-  removeData,
+  handleModalOpen,
   check,
   setCheck,
-  getEntityData,
-  getSurfaceData,
-  removeSurfaceData,
+  getPointsData,
+  removePointsData,
+  getSurfacesData,
+  removeSurfacesData,
 }) => {
   const classes = useStyles();
   const [datasets, setDatasets] = useState([]);
@@ -73,10 +73,10 @@ const ModalForm: React.VFC<Props> = ({
   ) => {
     if (check.includes(entityType)) {
       setCheck(check.filter((data) => data != entityType));
-      removeData(datasetId);
+      removePointsData(datasetId);
     } else {
       setCheck([...check, entityType]);
-      getEntityData(datasetId, iconColor);
+      getPointsData(datasetId, iconColor);
     }
   };
 
@@ -89,15 +89,11 @@ const ModalForm: React.VFC<Props> = ({
   ) => {
     if (check.includes(entityType)) {
       setCheck(check.filter((data) => data != entityType));
-      removeSurfaceData(datasetId);
+      removeSurfacesData(datasetId);
     } else {
       setCheck([...check, entityType]);
-      getSurfaceData(datasetId, borderColor, fillColor);
+      getSurfacesData(datasetId, borderColor, fillColor);
     }
-  };
-
-  const handleClose = () => {
-    setModalOpen(!modalOpen);
   };
 
   const body = (
@@ -107,7 +103,7 @@ const ModalForm: React.VFC<Props> = ({
         <IconButton
           aria-label="close"
           className={classes.closeButton}
-          onClick={() => handleClose()}
+          onClick={handleModalOpen}
         >
           <CloseIcon />
         </IconButton>
@@ -168,7 +164,7 @@ const ModalForm: React.VFC<Props> = ({
       fullWidth={true}
       maxWidth={'lg'}
       open={modalOpen}
-      onClose={() => setModalOpen(!modalOpen)}
+      onClose={handleModalOpen}
     >
       {body}
     </Dialog>

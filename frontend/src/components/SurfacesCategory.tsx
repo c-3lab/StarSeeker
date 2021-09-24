@@ -72,7 +72,7 @@ const SurfacesCategory: React.VFC<Props> = ({
                         fillColor
                       )
                     }
-                    name={name}
+                    name={entityType}
                   />
                 </>
               }

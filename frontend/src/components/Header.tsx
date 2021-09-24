@@ -31,24 +31,37 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 type Props = {
-  getEntityData: Function;
-  removeData: Function;
-  resetEntityData: Function;
-  removeSurfaceData: Function;
-  getSurfaceData: Function;
+  getPointsData: Function;
+  removePointsData: Function;
+  getSurfacesData: Function;
+  removeSurfacesData: Function;
+  resetData: Function;
 };
 
 const Header: React.VFC<Props> = ({
-  getEntityData,
-  removeData,
-  resetEntityData,
-  removeSurfaceData,
-  getSurfaceData,
+  getPointsData,
+  removePointsData,
+  getSurfacesData,
+  removeSurfacesData,
+  resetData,
 }) => {
   const classes = useStyles();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [check, setCheck] = useState(['']);
+
+  const handleDrawerOpen = () => {
+    setDrawerOpen(!drawerOpen);
+  };
+
+  const handleModalOpen = () => {
+    setModalOpen(!modalOpen);
+  };
+
+  const handleReset = () => {
+    setCheck([]);
+    resetData();
+  };
 
   return (
     <>
@@ -61,7 +74,7 @@ const Header: React.VFC<Props> = ({
             edge="start"
             color="inherit"
             aria-label="menu"
-            onClick={() => setDrawerOpen(!drawerOpen)}
+            onClick={handleDrawerOpen}
           >
             <MenuIcon className={classes.menuIcon} />
           </IconButton>
@@ -69,20 +82,18 @@ const Header: React.VFC<Props> = ({
       </AppBar>
       <TemporaryDrawer
         drawerOpen={drawerOpen}
-        modalOpen={modalOpen}
-        setModalOpen={setModalOpen}
-        resetEntityData={resetEntityData}
-        setCheck={setCheck}
+        handleModalOpen={handleModalOpen}
+        handleReset={handleReset}
       />
       <ModalForm
         modalOpen={modalOpen}
-        setModalOpen={setModalOpen}
-        removeData={removeData}
+        handleModalOpen={handleModalOpen}
         check={check}
         setCheck={setCheck}
-        getEntityData={getEntityData}
-        getSurfaceData={getSurfaceData}
-        removeSurfaceData={removeSurfaceData}
+        getPointsData={getPointsData}
+        removePointsData={removePointsData}
+        getSurfacesData={getSurfacesData}
+        removeSurfacesData={removeSurfacesData}
       />
     </>
   );

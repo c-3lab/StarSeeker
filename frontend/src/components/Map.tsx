@@ -3,17 +3,17 @@ import { LatLngTuple } from 'leaflet';
 import React from 'react';
 import 'leaflet/dist/leaflet.css';
 import DisplayPoints from './DisplayPoints';
-import DisplaySurface from './DisplaySurface';
+import DisplaySurfaces from './DisplaySurfaces';
 
 const defaultPosition: LatLngTuple = [35.967169, 139.394617];
 const defalutZoom: number = 13;
 
 type Props = {
-  entityData: any[];
-  surfaceData: any[];
+  pointsData: any[];
+  surfacesData: any[];
 };
 
-const Map: React.VFC<Props> = ({ entityData, surfaceData }) => {
+const Map: React.VFC<Props> = ({ pointsData, surfacesData }) => {
   return (
     <MapContainer
       center={defaultPosition}
@@ -26,8 +26,8 @@ const Map: React.VFC<Props> = ({ entityData, surfaceData }) => {
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <DisplayPoints data={entityData} />
-      <DisplaySurface data={surfaceData} />
+      <DisplayPoints data={pointsData} />
+      <DisplaySurfaces data={surfacesData} />
     </MapContainer>
   );
 };

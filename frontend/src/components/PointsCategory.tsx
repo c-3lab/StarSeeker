@@ -65,7 +65,7 @@ const PointsCategory: React.VFC<Props> = ({
                     onChange={(e) =>
                       handlePointsChange(e, datasetId, entityType, iconColor)
                     }
-                    name={name}
+                    name={entityType}
                   />
                   <FontAwesomeIcon
                     icon={faMapMarkerAlt}
