@@ -2,17 +2,17 @@ import { Column, Entity, Index, OneToMany } from 'typeorm';
 import { PointDataset } from './PointDataset';
 import { SurfaceDataset } from './SurfaceDataset';
 
-@Index('t_category_pkey', ['categoryId'], { unique: true })
-@Entity('t_category', { schema: 'public' })
+@Index('t_category_pkey', ['id'], { unique: true })
+@Entity('t_category', { orderBy: { displayOrder: 'ASC' } })
 export class Category {
   @Column('integer', { primary: true, name: 'category_id' })
-  categoryId: number;
+  id: number;
 
   @Column('character varying', { name: 'category_name', length: 20 })
-  categoryName: string;
+  name: string;
 
   @Column('character varying', { name: 'category_color', length: 7 })
-  categoryColor: string;
+  color: string;
 
   @Column('integer', { name: 'display_order' })
   displayOrder: number;

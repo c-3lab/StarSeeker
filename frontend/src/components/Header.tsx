@@ -31,31 +31,31 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 type Props = {
-  getPointsData: Function;
-  removePointsData: Function;
-  getSurfacesData: Function;
-  removeSurfacesData: Function;
+  fetchPointData: Function;
+  clearAllPointData: Function;
+  fetchSurfaceData: Function;
+  clearAllSurfaceData: Function;
   resetData: Function;
 };
 
 const Header: React.VFC<Props> = ({
-  getPointsData,
-  removePointsData,
-  getSurfacesData,
-  removeSurfacesData,
+  fetchPointData,
+  clearAllPointData,
+  fetchSurfaceData,
+  clearAllSurfaceData,
   resetData,
 }) => {
   const classes = useStyles();
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [check, setCheck] = useState(['']);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isOpenDatasetDialog, setIsOpenDatasetDialog] = useState(false);
+  const [check, setCheck] = useState([]);
 
-  const handleDrawerOpen = () => {
-    setDrawerOpen(!drawerOpen);
+  const toggleDrawerOpen = () => {
+    setIsDrawerOpen(!isDrawerOpen);
   };
 
-  const handleModalOpen = () => {
-    setModalOpen(!modalOpen);
+  const toggleOpenDatasetDialog = () => {
+    setIsOpenDatasetDialog(!isOpenDatasetDialog);
   };
 
   const handleReset = () => {
@@ -74,26 +74,26 @@ const Header: React.VFC<Props> = ({
             edge="start"
             color="inherit"
             aria-label="menu"
-            onClick={handleDrawerOpen}
+            onClick={toggleDrawerOpen}
           >
             <MenuIcon className={classes.menuIcon} />
           </IconButton>
         </Toolbar>
       </AppBar>
       <TemporaryDrawer
-        drawerOpen={drawerOpen}
-        handleModalOpen={handleModalOpen}
+        isDrawerOpen={isDrawerOpen}
+        handleModalOpen={toggleOpenDatasetDialog}
         handleReset={handleReset}
       />
       <ModalForm
-        modalOpen={modalOpen}
-        handleModalOpen={handleModalOpen}
+        isOpenDatasetDialog={isOpenDatasetDialog}
+        closeDialog={() => setIsOpenDatasetDialog(false)}
         check={check}
         setCheck={setCheck}
-        getPointsData={getPointsData}
-        removePointsData={removePointsData}
-        getSurfacesData={getSurfacesData}
-        removeSurfacesData={removeSurfacesData}
+        fetchPointData={fetchPointData}
+        clearAllPointData={clearAllPointData}
+        fetchSurfaceData={fetchSurfaceData}
+        clearAllSurfaceData={clearAllSurfaceData}
       />
     </>
   );

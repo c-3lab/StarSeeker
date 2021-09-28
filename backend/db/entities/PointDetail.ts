@@ -1,17 +1,17 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 import { PointDataset } from './PointDataset';
 
-@Index('t_point_detail_pkey', ['pointDetailId'], { unique: true })
-@Entity('t_point_detail', { schema: 'public' })
+@Index('t_point_detail_pkey', ['id'], { unique: true })
+@Entity('t_point_detail', { orderBy: { displayOrder: 'ASC' } })
 export class PointDetail {
   @Column('integer', { primary: true, name: 'point_detail_id' })
-  pointDetailId: number;
+  id: number;
 
   @Column('integer', { name: 'display_order' })
   displayOrder: number;
 
   @Column('character varying', { name: 'item_attr_name', length: 50 })
-  itemAttrName: string;
+  itemAttribute: string;
 
   @Column('integer', { name: 'data_type' })
   dataType: number;
@@ -23,8 +23,6 @@ export class PointDetail {
   displayTitle: string;
 
   @ManyToOne(() => PointDataset, (pointDataset) => pointDataset.pointDetails)
-  @JoinColumn([
-    { name: 'point_dataset_id', referencedColumnName: 'pointDatasetId' },
-  ])
+  @JoinColumn([{ name: 'point_dataset_id', referencedColumnName: 'id' }])
   pointDataset: PointDataset;
 }

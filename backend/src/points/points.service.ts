@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { map, Observable } from 'rxjs';
+import { AxiosRequestConfig } from 'axios';
 
 import { OpQuery } from './interfaces/points.interface';
 import { PointDataset } from '../../db/entities/PointDataset';
@@ -22,73 +23,53 @@ export class PointsService {
     datasetId: number,
     limit?: number,
   ): Promise<Observable<any>> {
-    const pointDataset = await this.pointDatasetRepository.findOne({
-      pointDatasetId: datasetId,
-    });
-
-    const entitiyType = pointDataset.entityType;
-
-    const url = `${process.env.ORION_URI}/v2/op/query${
-      limit ? '?limit=' + limit : ''
-    }`;
-
-    const entities = [
-      {
-        idPattern: '.*',
-        type: entitiyType,
-      },
-    ];
-
-    const attrs = [
-      pointDataset.coordinatesAttrName,
-      pointDataset.registerTimeAttrName,
-    ];
-
-    const OpQuery: OpQuery = {
-      entities: entities,
-      attrs: attrs,
-    };
-
-    return this.httpService.post(url, OpQuery).pipe(map((res) => res.data));
-  }
-
-  async getDetails(datasetId: number, entityId: string): Promise<any> {
-    const pointDetails = await this.pointDetailRepository
-      .createQueryBuilder('pointDetail')
-      .leftJoin('pointDetail.pointDataset', 'pointDataset')
-      .where('pointDataset.pointDatasetId = :datasetId', { datasetId })
-      .orderBy('pointDetail.displayOrder', 'ASC')
-      .getMany();
+    const pointDataset = await this.pointDatasetRepository.findOne(datasetId);
 
     const url = `${process.env.ORION_URI}/v2/op/query`;
 
-    const entities = [
-      {
-        id: entityId,
-        typePattern: '.*',
-      },
-    ];
-
-    const attrs = pointDetails.map((pointDetail) => pointDetail.itemAttrName);
-
-    const OpQuery: OpQuery = {
-      entities: entities,
-      attrs: attrs,
+    const data: OpQuery = {
+      entities: [
+        {
+          idPattern: '.*',
+          type: pointDataset.entityType,
+        },
+      ],
+      attrs: [
+        pointDataset.coordinatesAttribute,
+        pointDataset.registerTimeAttribute,
+      ],
     };
 
-    const res = await this.httpService.post(url, OpQuery).toPromise();
-    const data = res.data[0];
+    const config: AxiosRequestConfig = {
+      params: {
+        limit: limit,
+      },
+    };
+
+    return this.httpService
+      .post(url, data, config)
+      .pipe(map((res) => res.data));
+  }
+
+  async getDetails(datasetId: number, entityId: string): Promise<any> {
+    const details = await this.pointDetailRepository
+      .createQueryBuilder('pointDetail')
+      .leftJoin('pointDetail.pointDataset', 'pointDataset')
+      .where('pointDataset.id = :datasetId', { datasetId })
+      .getMany();
+
+    const url = `${process.env.ORION_URI}/v2/entities/${entityId}?options=keyValues`;
+
+    const response = await this.httpService.get(url).toPromise();
 
     const results = [];
-    for (const pointDetail of pointDetails) {
-      const itemAttrName: keyof { [key: string]: any } =
-        pointDetail.itemAttrName as keyof { [key: string]: any };
-      const obj: { [key: string]: any } = {};
-      obj.displayOrder = pointDetail.displayOrder;
-      obj.dataType = pointDetail.dataType;
-      obj.displayTitle = pointDetail.displayTitle;
-      obj.value = data[itemAttrName].value;
-      results.push(obj);
+    for (const detail of details) {
+      const attribute = detail.itemAttribute;
+      const result: { [key: string]: any } = {
+        ...detail,
+        value: response.data[attribute],
+      };
+      results.push(result);
     }
 
     return results;

@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { map, Observable } from 'rxjs';
 import { Repository } from 'typeorm';
+import { AxiosRequestConfig } from 'axios';
 
 import { OpQuery } from './interfaces/surfaces.interface';
 import { SurfaceDataset } from '../../db/entities/SurfaceDataset';
@@ -22,74 +23,55 @@ export class SurfacesService {
     datasetId: number,
     limit?: number,
   ): Promise<Observable<any>> {
-    const surfaceDataset = await this.surfaceDatasetRepository.findOne({
-      surfaceDatasetId: datasetId,
-    });
-
-    const entityType = surfaceDataset.entityType;
-
-    const url = `${process.env.ORION_URI}/v2/op/query${
-      limit ? '?limit=' + limit : ''
-    }`;
-
-    const entities = [
-      {
-        idPattern: '.*',
-        type: entityType,
-      },
-    ];
-
-    const attrs = [
-      surfaceDataset.coordinatesAttrName,
-      surfaceDataset.registerTimeAttrName,
-    ];
-
-    const OpQuery: OpQuery = {
-      entities: entities,
-      attrs: attrs,
-    };
-
-    return this.httpService.post(url, OpQuery).pipe(map((res) => res.data));
-  }
-
-  async getDetails(datasetId: number, entityId: string): Promise<any> {
-    const surfaceDetails = await this.surfaceDetailRepository
-      .createQueryBuilder('surfaceDetail')
-      .leftJoin('surfaceDetail.surfaceDataset', 'surfaceDataset')
-      .where('surfaceDataset.surfaceDatasetId = :datasetId', { datasetId })
-      .orderBy('surfaceDetail.displayOrder', 'ASC')
-      .getMany();
+    const surfaceDataset = await this.surfaceDatasetRepository.findOne(
+      datasetId,
+    );
 
     const url = `${process.env.ORION_URI}/v2/op/query`;
 
-    const entities = [
-      {
-        id: entityId,
-        typePattern: '.*',
-      },
-    ];
-
-    const attrs = surfaceDetails.map(
-      (surfaceDetail) => surfaceDetail.itemAttrName,
-    );
-
-    const opQuery: OpQuery = {
-      entities: entities,
-      attrs: attrs,
+    const data: OpQuery = {
+      entities: [
+        {
+          idPattern: '.*',
+          type: surfaceDataset.entityType,
+        },
+      ],
+      attrs: [
+        surfaceDataset.coordinatesAttribute,
+        surfaceDataset.registerTimeAttribute,
+      ],
     };
 
-    const res = await this.httpService.post(url, opQuery).toPromise();
-    const data = res.data[0];
+    const config: AxiosRequestConfig = {
+      params: {
+        limit: limit,
+      },
+    };
+
+    return this.httpService
+      .post(url, data, config)
+      .pipe(map((res) => res.data));
+  }
+
+  async getDetails(datasetId: number, entityId: string): Promise<any> {
+    const details = await this.surfaceDetailRepository
+      .createQueryBuilder('surfaceDetail')
+      .leftJoin('surfaceDetail.surfaceDataset', 'surfaceDataset')
+      .where('surfaceDataset.id = :datasetId', { datasetId })
+      .getMany();
+
+    const url = `${process.env.ORION_URI}/v2/entities/${entityId}?options=keyValues`;
+
+    const response = await this.httpService.get(url).toPromise();
 
     const results = [];
-    for (const surfaceDetail of surfaceDetails) {
-      const itemAttrName: keyof { [key: string]: any } =
-        surfaceDetail.itemAttrName as keyof { [key: string]: any };
-      const obj: { [key: string]: any } = {};
-      obj.displayOrder = surfaceDetail.displayOrder;
-      obj.displayTitle = surfaceDetail.displayTitle;
-      obj.value = data[itemAttrName].value;
-      results.push(obj);
+    for (const detail of details) {
+      const attribute = detail.itemAttribute;
+      const result: { [key: string]: any } = {
+        ...detail,
+        value: response.data[attribute],
+      };
+      results.push(result);
     }
 
     return results;

@@ -47,18 +47,18 @@ describe('SurfacesService', () => {
   describe('getEntities', () => {
     it('shold return array of orion entities', async () => {
       const testSurfaceDataset: SurfaceDataset = {
-        surfaceDatasetId: 1,
-        surfaceDatasetName: '埼玉県',
-        borderColorCode: '#000000',
-        fillColorCode: '#006400',
+        id: 1,
+        name: '埼玉県',
+        borderColor: '#000000',
+        fillColor: '#006400',
         entityType: 'City',
-        coordinatesAttrName: 'location',
-        registerTimeAttrName: 'time',
+        coordinatesAttribute: 'location',
+        registerTimeAttribute: 'time',
         enabled: true,
         category: {
-          categoryId: 3,
-          categoryName: '市町村情報',
-          categoryColor: '#FFFC30',
+          id: 3,
+          name: '市町村情報',
+          color: '#FFFC30',
           displayOrder: 3,
           enabled: true,
           pointDatasets: [],
@@ -162,18 +162,18 @@ describe('SurfacesService', () => {
   describe('getEntities', () => {
     it('shold return array of orion entities (use limit)', async () => {
       const testSurfaceDataset: SurfaceDataset = {
-        surfaceDatasetId: 1,
-        surfaceDatasetName: '埼玉県',
-        borderColorCode: '#000000',
-        fillColorCode: '#006400',
+        id: 1,
+        name: '埼玉県',
+        borderColor: '#000000',
+        fillColor: '#006400',
         entityType: 'City',
-        coordinatesAttrName: 'location',
-        registerTimeAttrName: 'time',
+        coordinatesAttribute: 'location',
+        registerTimeAttribute: 'time',
         enabled: true,
         category: {
-          categoryId: 3,
-          categoryName: '市町村情報',
-          categoryColor: '#FFFC30',
+          id: 3,
+          name: '市町村情報',
+          color: '#FFFC30',
           displayOrder: 3,
           enabled: true,
           pointDatasets: [],
@@ -278,28 +278,28 @@ describe('SurfacesService', () => {
     it('should return array of details', async () => {
       const testSurfaceDetails: any[] = [
         {
-          surfaceDetailId: 1,
-          itemAttrName: 'cityName',
+          id: 1,
+          itemAttribute: 'cityName',
           displayOrder: 1,
           displayTitle: '都市名',
+          enabled: true,
         },
       ];
 
       const testOrionData = {
-        data: [
-          {
-            id: 'CityId002',
-            cityName: {
-              value: '坂戸市',
-            },
-          },
-        ],
+        data: {
+          id: 'CityId002',
+          cityName: '坂戸市',
+        },
       };
 
       const result = [
         {
+          id: 1,
+          itemAttribute: 'cityName',
           displayOrder: 1,
           displayTitle: '都市名',
+          enabled: true,
           value: '坂戸市',
         },
       ];
@@ -307,7 +307,6 @@ describe('SurfacesService', () => {
       const createQueryBuilder = {
         leftJoin: jest.fn(() => createQueryBuilder),
         where: jest.fn(() => createQueryBuilder),
-        orderBy: jest.fn(() => createQueryBuilder),
         getMany: jest.fn(() => testSurfaceDetails),
       };
 
@@ -319,7 +318,7 @@ describe('SurfacesService', () => {
         .spyOn(surfaceDetailRepository, 'createQueryBuilder')
         .mockImplementation(() => createQueryBuilder);
 
-      jest.spyOn(httpService, 'post').mockImplementation(() => testObservable);
+      jest.spyOn(httpService, 'get').mockImplementation(() => testObservable);
 
       expect(await surfacesService.getDetails(0, 'test')).toStrictEqual(result);
     });

@@ -2,24 +2,18 @@ import React from 'react';
 import { Polygon, useMap } from 'react-leaflet';
 import Leaflet from 'leaflet';
 import axios from 'axios';
-import { getUniqueId } from '../utils/utils';
 
-async function getDetails(
+async function fetchDetails(
   datasetId: string,
   entityId: string
 ): Promise<string> {
-  const ret = await axios.get(
+  const res = await axios.get(
     `/api/surfaces/details?datasetId=${datasetId}&entityId=${entityId}`
   );
 
   let html = '';
-  ret.data.forEach((d) => {
-    const isImage = d.dataType === 1;
-    if (isImage) {
-      html += `<tr><th>${d.displayTitle}</th><td><img src=${d.value} width="100%" height="100%"></td></tr>`;
-    } else {
-      html += `<tr><th>${d.displayTitle}</th><td>${d.value}</td></tr>`;
-    }
+  res.data.forEach((d) => {
+    html += `<tr><th>${d.displayTitle}</th><td>${d.value}</td></tr>`;
   });
 
   const popupContent = `
@@ -37,35 +31,21 @@ async function getDetails(
   return popupContent;
 }
 
-const DisplaySurfaces: React.VFC<{ data: any[] }> = ({ data }) => {
+const DisplaySurfaces: React.VFC<{ data: any }> = ({ data }) => {
   const map = useMap();
-  map.closePopup();
+  const positions = data.location.value.map((d) => d.split(','));
 
   return (
-    <>
-      {data.flat().map((d) => {
-        const positions = d.location.value.map((d) => {
-          return d.split(',');
-        });
-
-        return (
-          <Polygon
-            key={getUniqueId()}
-            positions={positions}
-            pathOptions={{ color: d.borderColor, fillColor: d.fillColor }}
-            eventHandlers={{
-              click: async (e) => {
-                const details = await getDetails(d.datasetId, d.id);
-                Leaflet.popup()
-                  .setLatLng(e.latlng)
-                  .setContent(details)
-                  .openOn(map);
-              },
-            }}
-          />
-        );
-      })}
-    </>
+    <Polygon
+      positions={positions}
+      pathOptions={{ color: data.borderColor, fillColor: data.fillColor }}
+      eventHandlers={{
+        click: async (e) => {
+          const details = await fetchDetails(data.datasetId, data.id);
+          Leaflet.popup().setLatLng(e.latlng).setContent(details).openOn(map);
+        },
+      }}
+    />
   );
 };
 

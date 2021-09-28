@@ -9,32 +9,32 @@ import {
 import { Category } from './Category';
 import { PointDetail } from './PointDetail';
 
-@Index('t_point_dataset_pkey', ['pointDatasetId'], { unique: true })
-@Entity('t_point_dataset', { schema: 'public' })
+@Index('t_point_dataset_pkey', ['id'], { unique: true })
+@Entity('t_point_dataset')
 export class PointDataset {
   @Column('integer', { primary: true, name: 'point_dataset_id' })
-  pointDatasetId: number;
+  id: number;
 
   @Column('character varying', { name: 'point_dataset_name', length: 50 })
-  pointDatasetName: string;
+  name: string;
 
   @Column('character varying', { name: 'point_color_code', length: 7 })
-  pointColorCode: string;
+  color: string;
 
   @Column('character varying', { name: 'entity_type', length: 50 })
   entityType: string;
 
   @Column('character varying', { name: 'coordinates_attr_name', length: 50 })
-  coordinatesAttrName: string;
+  coordinatesAttribute: string;
 
   @Column('character varying', { name: 'register_time_attr_name', length: 50 })
-  registerTimeAttrName: string;
+  registerTimeAttribute: string;
 
   @Column('boolean', { name: 'enabled' })
   enabled: boolean;
 
   @ManyToOne(() => Category, (category) => category.pointDatasets)
-  @JoinColumn([{ name: 'category_id', referencedColumnName: 'categoryId' }])
+  @JoinColumn([{ name: 'category_id', referencedColumnName: 'id' }])
   category: Category;
 
   @OneToMany(() => PointDetail, (pointDetail) => pointDetail.pointDataset)

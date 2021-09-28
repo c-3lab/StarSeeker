@@ -47,17 +47,17 @@ describe('PointsService', () => {
   describe('getEntities', () => {
     it('should return array of orion entities', async () => {
       const testPointDataset: PointDataset = {
-        pointDatasetId: 1,
-        pointDatasetName: '公園',
-        pointColorCode: '#00E500',
+        id: 1,
+        name: '公園',
+        color: '#00E500',
         entityType: 'Park',
-        coordinatesAttrName: 'location',
-        registerTimeAttrName: 'time',
+        coordinatesAttribute: 'location',
+        registerTimeAttribute: 'time',
         enabled: true,
         category: {
-          categoryId: 1,
-          categoryName: '公共施設',
-          categoryColor: '#00008B',
+          id: 1,
+          name: '公共施設',
+          color: '#00008B',
           displayOrder: 1,
           enabled: true,
           pointDatasets: [],
@@ -141,17 +141,17 @@ describe('PointsService', () => {
 
     it('should return array of orion entities (use limit)', async () => {
       const testPointDataset: PointDataset = {
-        pointDatasetId: 1,
-        pointDatasetName: '公園',
-        pointColorCode: '#00E500',
+        id: 1,
+        name: '公園',
+        color: '#00E500',
         entityType: 'Park',
-        coordinatesAttrName: 'location',
-        registerTimeAttrName: 'time',
+        coordinatesAttribute: 'location',
+        registerTimeAttribute: 'time',
         enabled: true,
         category: {
-          categoryId: 1,
-          categoryName: '公共施設',
-          categoryColor: '#00008B',
+          id: 1,
+          name: '公共施設',
+          color: '#00008B',
           displayOrder: 1,
           enabled: true,
           pointDatasets: [],
@@ -238,30 +238,30 @@ describe('PointsService', () => {
     it('should return array of details', async () => {
       const testPointDetails: any[] = [
         {
-          pointDetailId: 1,
-          itemAttrName: 'address',
+          id: 1,
+          itemAttribute: 'address',
           displayOrder: 1,
           displayTitle: '住所',
           dataType: 0,
+          enabled: true,
         },
       ];
 
       const testOrionData = {
-        data: [
-          {
-            entityId: 'ParkId001',
-            address: {
-              value: 'testaddress',
-            },
-          },
-        ],
+        data: {
+          entityId: 'ParkId001',
+          address: 'testaddress',
+        },
       };
 
       const result = [
         {
+          id: 1,
+          itemAttribute: 'address',
           displayOrder: 1,
           dataType: 0,
           displayTitle: '住所',
+          enabled: true,
           value: 'testaddress',
         },
       ];
@@ -269,7 +269,6 @@ describe('PointsService', () => {
       const mockCreateQueryBuilder = {
         leftJoin: jest.fn(() => mockCreateQueryBuilder),
         where: jest.fn(() => mockCreateQueryBuilder),
-        orderBy: jest.fn(() => mockCreateQueryBuilder),
         getMany: jest.fn(() => testPointDetails),
       };
 
@@ -281,7 +280,7 @@ describe('PointsService', () => {
         .spyOn(pointDetailRepository, 'createQueryBuilder')
         .mockImplementation(() => mockCreateQueryBuilder);
 
-      jest.spyOn(httpService, 'post').mockImplementation(() => testObservable);
+      jest.spyOn(httpService, 'get').mockImplementation(() => testObservable);
 
       expect(await pointsService.getDetails(0, 'test')).toStrictEqual(result);
     });

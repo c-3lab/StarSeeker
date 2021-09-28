@@ -8,6 +8,6 @@ export class AppController {
 
   @Get()
   async get() {
-    throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
   }
 }

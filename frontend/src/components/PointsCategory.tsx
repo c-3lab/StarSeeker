@@ -29,12 +29,9 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 type Props = {
-  datasetId: number;
-  name: string;
-  entityType: string;
-  check: string[];
-  iconColor: string;
-  handlePointsChange: (
+  dataset: any;
+  checked: boolean;
+  handleChangePointChecked: (
     event: React.ChangeEvent<HTMLInputElement>,
     datasetId: number,
     name: string,
@@ -43,12 +40,9 @@ type Props = {
 };
 
 const PointsCategory: React.VFC<Props> = ({
-  datasetId,
-  name,
-  entityType,
-  check,
-  iconColor,
-  handlePointsChange,
+  dataset,
+  checked,
+  handleChangePointChecked,
 }) => {
   const classes = useStyles();
   return (
@@ -61,20 +55,25 @@ const PointsCategory: React.VFC<Props> = ({
                 <>
                   <CheckBox
                     color="primary"
-                    checked={check.includes(entityType)}
+                    checked={checked}
                     onChange={(e) =>
-                      handlePointsChange(e, datasetId, entityType, iconColor)
+                      handleChangePointChecked(
+                        e,
+                        dataset.id,
+                        dataset.entityType,
+                        dataset.color
+                      )
                     }
-                    name={entityType}
+                    name={dataset.entityType}
                   />
                   <FontAwesomeIcon
                     icon={faMapMarkerAlt}
-                    color={iconColor}
+                    color={dataset.color}
                     className={classes.icon}
                   />
                 </>
               }
-              label={name}
+              label={dataset.name}
             />
           </FormGroup>
         </FormControl>

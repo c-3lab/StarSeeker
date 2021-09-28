@@ -59,3 +59,41 @@ table {
 .fa-stack {
   filter: saturate(70%);
 }
+
+.popup {
+  z-index: 1;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.8);
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 60vw;
+  min-height: 32vw;
+}
+
+.popup-content {
+  margin: 25px;
+}
+
+#popup-on {
+  display: none;
+}
+
+#popup-on:checked + .popup {
+  display: block;
+}
+
+.icon-close {
+  color: #c3c3c3;
+  font-size: 25px;
+  padding: 0 10px;
+  position: absolute;
+  right: 0;
+}
+
+.img-cursor {
+  cursor: pointer;
+}

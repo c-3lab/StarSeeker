@@ -25,13 +25,13 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 type Props = {
-  drawerOpen: boolean;
+  isDrawerOpen: boolean;
   handleModalOpen: React.MouseEventHandler<HTMLDivElement>;
   handleReset: React.MouseEventHandler<HTMLDivElement>;
 };
 
 const TemporaryDrawer: React.VFC<Props> = ({
-  drawerOpen,
+  isDrawerOpen,
   handleModalOpen,
   handleReset,
 }) => {
@@ -40,7 +40,7 @@ const TemporaryDrawer: React.VFC<Props> = ({
   return (
     <Drawer
       anchor="right"
-      open={drawerOpen}
+      open={isDrawerOpen}
       variant="persistent"
       className={classes.drawer}
       classes={{

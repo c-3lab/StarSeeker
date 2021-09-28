@@ -27,7 +27,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     formLabel: {
       margin: theme.spacing(1),
-      color: '#000000',
       fontWeight: 'bold',
       textAlign: 'left',
     },
@@ -35,37 +34,45 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 type Props = {
-  modalOpen: boolean;
-  handleModalOpen: VoidFunction;
+  isOpenDatasetDialog: boolean;
+  closeDialog: VoidFunction;
   check: string[];
   setCheck: Function;
-  getPointsData: Function;
-  removePointsData: Function;
-  getSurfacesData: Function;
-  removeSurfacesData: Function;
+  fetchPointData: Function;
+  clearAllPointData: Function;
+  fetchSurfaceData: Function;
+  clearAllSurfaceData: Function;
 };
 
+function getColor(backgroundColor) {
+  const r = parseInt(backgroundColor.substr(1, 2), 16) * 299;
+  const g = parseInt(backgroundColor.substr(3, 2), 16) * 587;
+  const b = parseInt(backgroundColor.substr(5, 2), 16) * 114;
+  return (r + g + b) / 1000 < 128 ? 'white' : 'black';
+}
+
 const ModalForm: React.VFC<Props> = ({
-  modalOpen,
-  handleModalOpen,
+  isOpenDatasetDialog,
+  closeDialog,
   check,
   setCheck,
-  getPointsData,
-  removePointsData,
-  getSurfacesData,
-  removeSurfacesData,
+  fetchPointData,
+  clearAllPointData,
+  fetchSurfaceData,
+  clearAllSurfaceData,
 }) => {
   const classes = useStyles();
-  const [datasets, setDatasets] = useState([]);
+  const [categories, setCategories] = useState([]);
+
   useEffect(() => {
-    async function getDatasets() {
-      const ret = await axios.get('/api/datasets/datasets');
-      setDatasets(ret.data);
+    async function fetchCategories() {
+      const res = await axios.get('/api/categories/categories');
+      setCategories(res.data);
     }
-    getDatasets();
+    fetchCategories();
   }, []);
 
-  const handlePointsChange = (
+  const handleChangePointChecked = (
     event: React.ChangeEvent<HTMLInputElement>,
     datasetId: number,
     entityType: string,
@@ -73,14 +80,14 @@ const ModalForm: React.VFC<Props> = ({
   ) => {
     if (check.includes(entityType)) {
       setCheck(check.filter((data) => data != entityType));
-      removePointsData(datasetId);
+      clearAllPointData(datasetId);
     } else {
       setCheck([...check, entityType]);
-      getPointsData(datasetId, iconColor);
+      fetchPointData(datasetId, iconColor);
     }
   };
 
-  const handleSurfacesChange = (
+  const handleChangeSurfaceChecked = (
     event: React.ChangeEvent<HTMLInputElement>,
     datasetId: number,
     entityType: string,
@@ -89,10 +96,10 @@ const ModalForm: React.VFC<Props> = ({
   ) => {
     if (check.includes(entityType)) {
       setCheck(check.filter((data) => data != entityType));
-      removeSurfacesData(datasetId);
+      clearAllSurfaceData(datasetId);
     } else {
       setCheck([...check, entityType]);
-      getSurfacesData(datasetId, borderColor, fillColor);
+      fetchSurfaceData(datasetId, borderColor, fillColor);
     }
   };
 
@@ -103,52 +110,43 @@ const ModalForm: React.VFC<Props> = ({
         <IconButton
           aria-label="close"
           className={classes.closeButton}
-          onClick={handleModalOpen}
+          onClick={closeDialog}
         >
           <CloseIcon />
         </IconButton>
       </DialogTitle>
       <DialogContent dividers>
         <Grid container spacing={1}>
-          {datasets.map((data) => {
+          {categories.map((data) => {
             return (
-              <Grid key={data.categoryName} item xs={12}>
-                <Grid item xs={12} style={{ background: data.categoryColor }}>
-                  <FormLabel component="label" className={classes.formLabel}>
-                    {data.categoryName}
+              <Grid key={data.name} item xs={12}>
+                <Grid item xs={12} style={{ background: data.color }}>
+                  <FormLabel
+                    component="label"
+                    className={classes.formLabel}
+                    style={{ color: getColor(data.color) }}
+                  >
+                    {data.name}
                   </FormLabel>
                 </Grid>
                 <Box className={classes.box}>
                   <Grid container>
-                    {data.pointDatasets.length !== 0 &&
-                      data.pointDatasets.map((dataset) => {
-                        return (
-                          <PointsCategory
-                            key={dataset.pointDatasetName}
-                            datasetId={dataset.pointDatasetId}
-                            name={dataset.pointDatasetName}
-                            entityType={dataset.entityType}
-                            check={check}
-                            iconColor={dataset.pointColorCode}
-                            handlePointsChange={handlePointsChange}
-                          />
-                        );
-                      })}
-                    {data.surfaceDatasets.length !== 0 &&
-                      data.surfaceDatasets.map((dataset) => {
-                        return (
-                          <SurfacesCategory
-                            key={dataset.surfaceDatasetName}
-                            datasetId={dataset.surfaceDatasetId}
-                            name={dataset.surfaceDatasetName}
-                            entityType={dataset.entityType}
-                            check={check}
-                            borderColor={dataset.borderColorCode}
-                            fillColor={dataset.fillColorCode}
-                            handleSurfacesChange={handleSurfacesChange}
-                          />
-                        );
-                      })}
+                    {data.pointDatasets.map((dataset) => (
+                      <PointsCategory
+                        key={dataset.name}
+                        dataset={dataset}
+                        checked={check.includes(dataset.entityType)}
+                        handleChangePointChecked={handleChangePointChecked}
+                      />
+                    ))}
+                    {data.surfaceDatasets.map((dataset) => (
+                      <SurfacesCategory
+                        key={dataset.name}
+                        dataset={dataset}
+                        checked={check.includes(dataset.entityType)}
+                        handleChangeSurfaceChecked={handleChangeSurfaceChecked}
+                      />
+                    ))}
                   </Grid>
                 </Box>
               </Grid>
@@ -163,8 +161,8 @@ const ModalForm: React.VFC<Props> = ({
     <Dialog
       fullWidth={true}
       maxWidth={'lg'}
-      open={modalOpen}
-      onClose={handleModalOpen}
+      open={isOpenDatasetDialog}
+      onClose={closeDialog}
     >
       {body}
     </Dialog>

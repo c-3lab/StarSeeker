@@ -1,17 +1,17 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 import { SurfaceDataset } from './SurfaceDataset';
 
-@Index('t_surface_detail_pkey', ['surfaceDetailId'], { unique: true })
-@Entity('t_surface_detail', { schema: 'public' })
+@Index('t_surface_detail_pkey', ['id'], { unique: true })
+@Entity('t_surface_detail', { orderBy: { displayOrder: 'ASC' } })
 export class SurfaceDetail {
   @Column('integer', { primary: true, name: 'surface_detail_id' })
-  surfaceDetailId: number;
+  id: number;
 
   @Column('integer', { name: 'display_order' })
   displayOrder: number;
 
   @Column('character varying', { name: 'item_attr_name', length: 50 })
-  itemAttrName: string;
+  itemAttribute: string;
 
   @Column('boolean', { name: 'enabled' })
   enabled: boolean;
@@ -23,8 +23,6 @@ export class SurfaceDetail {
     () => SurfaceDataset,
     (surfaceDataset) => surfaceDataset.surfaceDetails,
   )
-  @JoinColumn([
-    { name: 'surface_dataset_id', referencedColumnName: 'surfaceDatasetId' },
-  ])
+  @JoinColumn([{ name: 'surface_dataset_id', referencedColumnName: 'id' }])
   surfaceDataset: SurfaceDataset;
 }

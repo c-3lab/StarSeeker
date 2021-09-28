@@ -18,7 +18,6 @@ export class DatasetsService {
       .leftJoinAndSelect('category.surfaceDatasets', 'surfaceDataset')
       .where('category.enabled = true')
       .andWhere('pointDataset.enabled = true or surfaceDataset.enabled = true')
-      .orderBy('category.displayOrder', 'ASC')
       .getMany();
   }
 }

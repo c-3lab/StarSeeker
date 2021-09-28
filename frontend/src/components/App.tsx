@@ -5,67 +5,48 @@ import axios from 'axios';
 import Head from 'next/head';
 
 const App: React.VFC = () => {
-  const [pointsData, setPointsData] = useState([]);
-  const [surfacesData, setSurfacesData] = useState([]);
+  const [pointEntities, setPointEntities] = useState([]);
+  const [surfaceEntities, setSurfaceEntities] = useState([]);
 
-  const getPointsData = (datasetId: number, iconColor: string) => {
-    async function getData() {
-      const ret = await axios.get(
-        `/api/points/entities?datasetId=${datasetId}`
-      );
-      Object.values(ret.data).forEach((d) => {
-        d['datasetId'] = datasetId;
-        d['iconColor'] = iconColor;
-      });
-      const data = pointsData.slice();
-      data.push(ret.data);
-      setPointsData(data);
-    }
-    getData();
-  };
-
-  const removePointsData = (datasetId: number) => {
-    const filterData = pointsData.filter((d, i) => {
-      if (d[i].datasetId !== datasetId) {
-        return true;
-      }
+  const fetchPointData = async (datasetId: number, iconColor: string) => {
+    const res = await axios.get(`/api/points/entities?datasetId=${datasetId}`);
+    const newEntities = res.data.map((entity) => {
+      return { ...entity, datasetId, iconColor };
     });
-    setPointsData(filterData);
+    setPointEntities([...pointEntities, ...newEntities]);
   };
 
-  const getSurfacesData = (
+  const clearAllPointData = (datasetId: number) => {
+    const filteredData = pointEntities.filter(
+      (d) => d.length === 0 || d.datasetId !== datasetId
+    );
+    setPointEntities(filteredData);
+  };
+
+  const fetchSurfaceData = async (
     datasetId: number,
     borderColor: string,
     fillColor: string
   ) => {
-    async function getData() {
-      const ret = await axios.get(
-        `/api/surfaces/entities?datasetId=${datasetId}`
-      );
-      Object.values(ret.data).forEach((d) => {
-        d['datasetId'] = datasetId;
-        d['borderColor'] = borderColor;
-        d['fillColor'] = fillColor;
-      });
-      const data = surfacesData.slice();
-      data.push(ret.data);
-      setSurfacesData(data);
-    }
-    getData();
+    const res = await axios.get(
+      `/api/surfaces/entities?datasetId=${datasetId}`
+    );
+    const newEntities = res.data.map((entity) => {
+      return { ...entity, datasetId, borderColor, fillColor };
+    });
+    setSurfaceEntities([...surfaceEntities, ...newEntities]);
   };
 
-  const removeSurfacesData = (datasetId: number) => {
-    const filterData = surfacesData.filter((d, i) => {
-      if (d[i].datasetId !== datasetId) {
-        return true;
-      }
-    });
-    setSurfacesData(filterData);
+  const clearAllSurfaceData = (datasetId: number) => {
+    const filteredData = surfaceEntities.filter(
+      (d) => d.length === 0 || d.datasetId !== datasetId
+    );
+    setSurfaceEntities(filteredData);
   };
 
   const resetData = () => {
-    setPointsData([]);
-    setSurfacesData([]);
+    setPointEntities([]);
+    setSurfaceEntities([]);
   };
 
   return (
@@ -74,13 +55,13 @@ const App: React.VFC = () => {
         <title>〇〇市ダッシュボード</title>
       </Head>
       <Header
-        getPointsData={getPointsData}
-        removePointsData={removePointsData}
-        getSurfacesData={getSurfacesData}
-        removeSurfacesData={removeSurfacesData}
+        fetchPointData={fetchPointData}
+        clearAllPointData={clearAllPointData}
+        fetchSurfaceData={fetchSurfaceData}
+        clearAllSurfaceData={clearAllSurfaceData}
         resetData={resetData}
       />
-      <Map pointsData={pointsData} surfacesData={surfacesData} />
+      <Map pointEntities={pointEntities} surfaceEntities={surfaceEntities} />
     </div>
   );
 };

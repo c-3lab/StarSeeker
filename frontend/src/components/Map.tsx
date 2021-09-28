@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, ZoomControl } from 'react-leaflet';
+import { MapContainer, TileLayer, ZoomControl, useMap } from 'react-leaflet';
 import { LatLngTuple } from 'leaflet';
 import React from 'react';
 import 'leaflet/dist/leaflet.css';
@@ -9,11 +9,17 @@ const defaultPosition: LatLngTuple = [35.967169, 139.394617];
 const defalutZoom: number = 13;
 
 type Props = {
-  pointsData: any[];
-  surfacesData: any[];
+  pointEntities: any[];
+  surfaceEntities: any[];
 };
 
-const Map: React.VFC<Props> = ({ pointsData, surfacesData }) => {
+const ClosePopup = () => {
+  const map = useMap();
+  map.closePopup();
+  return null;
+};
+
+const Map: React.VFC<Props> = ({ pointEntities, surfaceEntities }) => {
   return (
     <MapContainer
       center={defaultPosition}
@@ -26,8 +32,13 @@ const Map: React.VFC<Props> = ({ pointsData, surfacesData }) => {
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <DisplayPoints data={pointsData} />
-      <DisplaySurfaces data={surfacesData} />
+      {pointEntities.map((data, index) => (
+        <DisplayPoints key={index} data={data} />
+      ))}
+      {surfaceEntities.map((data, index) => (
+        <DisplaySurfaces key={index} data={data} />
+      ))}
+      <ClosePopup />
     </MapContainer>
   );
 };

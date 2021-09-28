@@ -6,6 +6,8 @@ import FormControl from '@material-ui/core/FormControl';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import CheckBox from '@material-ui/core/Checkbox';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSquare } from '@fortawesome/free-solid-svg-icons';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -27,13 +29,9 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 type Props = {
-  datasetId: number;
-  name: string;
-  entityType: string;
-  check: string[];
-  borderColor: string;
-  fillColor: string;
-  handleSurfacesChange: (
+  dataset: any;
+  checked: boolean;
+  handleChangeSurfaceChecked: (
     event: React.ChangeEvent<HTMLInputElement>,
     datasetId: number,
     entityType: string,
@@ -43,13 +41,9 @@ type Props = {
 };
 
 const SurfacesCategory: React.VFC<Props> = ({
-  datasetId,
-  name,
-  entityType,
-  check,
-  borderColor,
-  fillColor,
-  handleSurfacesChange,
+  dataset,
+  checked,
+  handleChangeSurfaceChecked,
 }) => {
   const classes = useStyles();
   return (
@@ -62,21 +56,26 @@ const SurfacesCategory: React.VFC<Props> = ({
                 <>
                   <CheckBox
                     color="primary"
-                    checked={check.includes(entityType)}
+                    checked={checked}
                     onChange={(e) =>
-                      handleSurfacesChange(
+                      handleChangeSurfaceChecked(
                         e,
-                        datasetId,
-                        entityType,
-                        borderColor,
-                        fillColor
+                        dataset.id,
+                        dataset.entityType,
+                        dataset.borderColor,
+                        dataset.fillColor
                       )
                     }
-                    name={entityType}
+                    name={dataset.entityType}
+                  />
+                  <FontAwesomeIcon
+                    icon={faSquare}
+                    color={dataset.fillColor}
+                    className={classes.icon}
                   />
                 </>
               }
-              label={name}
+              label={dataset.name}
             />
           </FormGroup>
         </FormControl>
