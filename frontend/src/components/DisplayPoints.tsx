@@ -6,6 +6,7 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMapMarker } from '@fortawesome/free-solid-svg-icons';
 import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
+import { escapeSpecialCharacters } from '../utils'
 
 async function fetchDetails(
   datasetId: string,
@@ -17,29 +18,31 @@ async function fetchDetails(
 
   let html = '';
   res.data.forEach((d) => {
+    const escapedDisplayTitle = escapeSpecialCharacters(d.displayTitle);
+    const escapedValue = escapeSpecialCharacters(d.value);
     const isImage = d.dataType === 1;
     if (isImage) {
       html += `
-        <tr><th>${d.displayTitle}</th>
+        <tr><th>${escapedDisplayTitle}</th>
         <td>
         <div>
           <label for="popup-on">
             画像クリックで拡大表示
             <div class="img-cursor">
-              <img src=${d.value} width="100%" height="100%">
+              <img src="${escapedValue}" width="100%" height="100%">
             </div>
           </label>
           <input type="checkbox" id="popup-on">
           <div class="popup">
             <label for="popup-on" class="icon-close">×</label>
             <div class="popup-content">              
-              <img src=${d.value} width="100%" height="100%">
+              <img src="${escapedValue}" width="100%" height="100%">
             </div>
           </div>
         </div>
       </td></tr>`;
     } else {
-      html += `<tr><th>${d.displayTitle}</th><td>${d.value}</td></tr>`;
+      html += `<tr><th>${escapedDisplayTitle}</th><td>${escapedValue}</td></tr>`;
     }
   });
 
