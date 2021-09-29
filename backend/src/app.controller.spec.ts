@@ -24,8 +24,8 @@ describe('AppController', () => {
   });
 
   describe('get', () => {
-    it('should throw "Bad Request"', () => {
-      expect(appController.get()).rejects.toThrow('Bad Request');
+    it('should throw "Not Found"', () => {
+      expect(appController.get()).rejects.toThrow('Not Found');
     });
   });
 });
