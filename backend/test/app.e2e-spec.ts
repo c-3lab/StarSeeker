@@ -17,9 +17,9 @@ describe('AppController (e2e)', () => {
   });
 
   it('/ (GET)', () => {
-    return request(app.getHttpServer()).get('/').expect(400).expect({
-      statusCode: 400,
-      message: 'Bad Request',
+    return request(app.getHttpServer()).get('/').expect(404).expect({
+      statusCode: 404,
+      message: 'Not Found',
     });
   });
 });
