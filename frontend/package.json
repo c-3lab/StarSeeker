@@ -1,6 +1,5 @@
 {
-  "name": "sample-app",
-  "version": "0.1.0",
+  "name": "starseeker-frontend",
   "private": true,
   "scripts": {
     "dev": "next dev",
