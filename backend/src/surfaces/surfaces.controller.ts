@@ -1,9 +1,10 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Observable } from 'rxjs';
 
 import { SurfacesService } from './surfaces.service';
 
+@ApiTags('StarSeeker')
 @Controller('surfaces')
 export class SurfacesController {
   constructor(private readonly surfacesService: SurfacesService) {}

@@ -1,9 +1,10 @@
 import { Controller, Param, Get, Query } from '@nestjs/common';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { DatasetsService } from './datasets.service';
 import { Category } from '../../db/entities/Category';
 
+@ApiTags('StarSeeker')
 @Controller('datasets')
 export class DatasetsController {
   constructor(private readonly datasetsService: DatasetsService) {}
