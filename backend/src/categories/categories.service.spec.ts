@@ -1,22 +1,22 @@
-import { DatasetsService } from './datasets.service';
+import { CategoriesService } from './categories.service';
 import { Category } from '../../db/entities/Category';
 import { Repository } from 'typeorm';
 
-describe('DatasetsService', () => {
+describe('CategoriesService', () => {
   let categoryRepository: Repository<Category>;
-  let datasetsService: DatasetsService;
+  let categoriesService: CategoriesService;
 
   beforeEach(async () => {
     categoryRepository = new Repository<Category>();
-    datasetsService = new DatasetsService(categoryRepository);
+    categoriesService = new CategoriesService(categoryRepository);
   });
 
   it('should be defined', () => {
-    expect(datasetsService).toBeDefined();
+    expect(categoriesService).toBeDefined();
   });
 
-  describe('getDatasets', () => {
-    it('should return array of datasets', async () => {
+  describe('getCategories', () => {
+    it('should return array of categories', async () => {
       const result = [
         {
           id: 2,
@@ -78,7 +78,7 @@ describe('DatasetsService', () => {
       jest
         .spyOn(categoryRepository, 'createQueryBuilder')
         .mockImplementation(() => mockCreateQueryBuilder);
-      expect(await datasetsService.getDatasets()).toBe(result);
+      expect(await categoriesService.getCategories()).toBe(result);
     });
   });
 });

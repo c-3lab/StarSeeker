@@ -5,13 +5,13 @@ import { Repository } from 'typeorm';
 import { Category } from '../../db/entities/Category';
 
 @Injectable()
-export class DatasetsService {
+export class CategoriesService {
   constructor(
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
   ) {}
 
-  getDatasets(): Promise<Category[]> {
+  getCategories(): Promise<Category[]> {
     return this.categoryRepository
       .createQueryBuilder('category')
       .leftJoinAndSelect('category.pointDatasets', 'pointDataset')

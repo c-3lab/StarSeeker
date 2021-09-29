@@ -5,8 +5,8 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import TemporaryDrawer from './TemporaryDrawer';
-import ModalForm from './ModalForm';
+import DrawerWrapper from './DrawerWrapper';
+import DatasetDialog from './DatasetDialog';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -80,12 +80,12 @@ const Header: React.VFC<Props> = ({
           </IconButton>
         </Toolbar>
       </AppBar>
-      <TemporaryDrawer
+      <DrawerWrapper
         isDrawerOpen={isDrawerOpen}
         handleModalOpen={toggleOpenDatasetDialog}
         handleReset={handleReset}
       />
-      <ModalForm
+      <DatasetDialog
         isOpenDatasetDialog={isOpenDatasetDialog}
         closeDialog={() => setIsOpenDatasetDialog(false)}
         check={check}

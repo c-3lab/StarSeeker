@@ -3,26 +3,26 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
-import { DatasetsModule } from './../src/datasets/datasets.module';
-import { DatasetsService } from './../src/datasets/datasets.service';
+import { CategoriesModule } from './../src/categories/categories.module';
+import { CategoriesService } from './../src/categories/categories.service';
 import { Category } from '../db/entities/Category';
 
-describe('DatasetsController (e2e', () => {
+describe('CategoriesController (e2e', () => {
   let app: INestApplication;
 
   const result = { message: 'test' };
-  const datasetsService = {
-    getDatasets: () => result,
+  const categoriesService = {
+    getCategories: () => result,
   };
 
   const mockRepository = {};
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [DatasetsModule],
+      imports: [CategoriesModule],
     })
-      .overrideProvider(DatasetsService)
-      .useValue(datasetsService)
+      .overrideProvider(CategoriesService)
+      .useValue(categoriesService)
       .overrideProvider(getRepositoryToken(Category))
       .useValue(mockRepository)
       .compile();
@@ -35,10 +35,10 @@ describe('DatasetsController (e2e', () => {
     await app.close();
   });
 
-  it(`/datasets (GET)`, () => {
+  it(`/categories (GET)`, () => {
     return request(app.getHttpServer())
-      .get('/datasets')
+      .get('/categories')
       .expect(200)
-      .expect(datasetsService.getDatasets());
+      .expect(categoriesService.getCategories());
   });
 });

@@ -7,7 +7,7 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import CheckBox from '@material-ui/core/Checkbox';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSquare } from '@fortawesome/free-solid-svg-icons';
+import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -31,19 +31,18 @@ const useStyles = makeStyles((theme: Theme) =>
 type Props = {
   dataset: any;
   checked: boolean;
-  handleChangeSurfaceChecked: (
+  handleChangePointChecked: (
     event: React.ChangeEvent<HTMLInputElement>,
     datasetId: number,
-    entityType: string,
-    borderColor: string,
-    fillColor: string
+    name: string,
+    iconColor: string
   ) => void;
 };
 
-const SurfacesCategory: React.VFC<Props> = ({
+const PointDataset: React.VFC<Props> = ({
   dataset,
   checked,
-  handleChangeSurfaceChecked,
+  handleChangePointChecked,
 }) => {
   const classes = useStyles();
   return (
@@ -58,19 +57,18 @@ const SurfacesCategory: React.VFC<Props> = ({
                     color="primary"
                     checked={checked}
                     onChange={(e) =>
-                      handleChangeSurfaceChecked(
+                      handleChangePointChecked(
                         e,
                         dataset.id,
                         dataset.entityType,
-                        dataset.borderColor,
-                        dataset.fillColor
+                        dataset.color
                       )
                     }
                     name={dataset.entityType}
                   />
                   <FontAwesomeIcon
-                    icon={faSquare}
-                    color={dataset.fillColor}
+                    icon={faMapMarkerAlt}
+                    color={dataset.color}
                     className={classes.icon}
                   />
                 </>
@@ -84,4 +82,4 @@ const SurfacesCategory: React.VFC<Props> = ({
   );
 };
 
-export default SurfacesCategory;
+export default PointDataset;

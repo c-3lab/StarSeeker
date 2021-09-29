@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PointsModule } from './points/points.module';
-import { DatasetsModule } from './datasets/datasets.module';
+import { CategoriesModule } from './categories/categories.module';
 import { SurfacesModule } from './surfaces/surfaces.module';
 import * as utils from './utils';
 
@@ -26,7 +26,7 @@ import * as utils from './utils';
       autoLoadEntities: true,
     }),
     PointsModule,
-    DatasetsModule,
+    CategoriesModule,
     SurfacesModule,
   ],
   controllers: [AppController],

@@ -6,8 +6,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-import PointsCategory from './PointsCategory';
-import SurfacesCategory from './SurfacesCategory';
+import PointDataset from './PointDataset';
+import SurfaceDataset from './SurfaceDataset';
 import Box from '@material-ui/core/Box';
 import FormLabel from '@material-ui/core/FormLabel';
 import axios from 'axios';
@@ -51,7 +51,7 @@ function getColor(backgroundColor) {
   return (r + g + b) / 1000 < 128 ? 'white' : 'black';
 }
 
-const ModalForm: React.VFC<Props> = ({
+const DatasetDialog: React.VFC<Props> = ({
   isOpenDatasetDialog,
   closeDialog,
   check,
@@ -132,7 +132,7 @@ const ModalForm: React.VFC<Props> = ({
                 <Box className={classes.box}>
                   <Grid container>
                     {data.pointDatasets.map((dataset) => (
-                      <PointsCategory
+                      <PointDataset
                         key={dataset.name}
                         dataset={dataset}
                         checked={check.includes(dataset.entityType)}
@@ -140,7 +140,7 @@ const ModalForm: React.VFC<Props> = ({
                       />
                     ))}
                     {data.surfaceDatasets.map((dataset) => (
-                      <SurfacesCategory
+                      <SurfaceDataset
                         key={dataset.name}
                         dataset={dataset}
                         checked={check.includes(dataset.entityType)}
@@ -169,4 +169,4 @@ const ModalForm: React.VFC<Props> = ({
   );
 };
 
-export default ModalForm;
+export default DatasetDialog;

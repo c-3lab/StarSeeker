@@ -30,7 +30,7 @@ type Props = {
   handleReset: React.MouseEventHandler<HTMLDivElement>;
 };
 
-const TemporaryDrawer: React.VFC<Props> = ({
+const DrawerWrapper: React.VFC<Props> = ({
   isDrawerOpen,
   handleModalOpen,
   handleReset,
@@ -64,4 +64,4 @@ const TemporaryDrawer: React.VFC<Props> = ({
   );
 };
 
-export default TemporaryDrawer;
+export default DrawerWrapper;

@@ -7,7 +7,7 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import CheckBox from '@material-ui/core/Checkbox';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
+import { faSquare } from '@fortawesome/free-solid-svg-icons';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -31,18 +31,19 @@ const useStyles = makeStyles((theme: Theme) =>
 type Props = {
   dataset: any;
   checked: boolean;
-  handleChangePointChecked: (
+  handleChangeSurfaceChecked: (
     event: React.ChangeEvent<HTMLInputElement>,
     datasetId: number,
-    name: string,
-    iconColor: string
+    entityType: string,
+    borderColor: string,
+    fillColor: string
   ) => void;
 };
 
-const PointsCategory: React.VFC<Props> = ({
+const SurfaceDataset: React.VFC<Props> = ({
   dataset,
   checked,
-  handleChangePointChecked,
+  handleChangeSurfaceChecked,
 }) => {
   const classes = useStyles();
   return (
@@ -57,18 +58,19 @@ const PointsCategory: React.VFC<Props> = ({
                     color="primary"
                     checked={checked}
                     onChange={(e) =>
-                      handleChangePointChecked(
+                      handleChangeSurfaceChecked(
                         e,
                         dataset.id,
                         dataset.entityType,
-                        dataset.color
+                        dataset.borderColor,
+                        dataset.fillColor
                       )
                     }
                     name={dataset.entityType}
                   />
                   <FontAwesomeIcon
-                    icon={faMapMarkerAlt}
-                    color={dataset.color}
+                    icon={faSquare}
+                    color={dataset.fillColor}
                     className={classes.icon}
                   />
                 </>
@@ -82,4 +84,4 @@ const PointsCategory: React.VFC<Props> = ({
   );
 };
 
-export default PointsCategory;
+export default SurfaceDataset;
