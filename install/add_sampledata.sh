@@ -6,7 +6,7 @@ cd img/
 
 mkdir ../../frontend/public/img
 
-\cp -pf *.png ../../frontend/public/img/
+\cp -pf *.jpg ../../frontend/public/img/
 
 if [ $? = 0 ]; then
         echo "The image has been placed."
