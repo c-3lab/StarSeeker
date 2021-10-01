@@ -37,48 +37,6 @@ A platform for realizing smart cities by freely displaying and managing data sto
 
 ### How to install
 
-- Install nginx
-
-  ```
-  sudo apt-get install nginx
-  ```
-
-- Set up a reverse proxy for nginx
-
-  ```
-  sudo vi /etc/nginx/conf.d/sample.conf
-  ```
-
-  Enter the following settings and save
-  ```
-  server {
-        listen 80;
-        listen [::]:80;
-
-        server_name (Enter the IP address of your PC.);
-
-        location / {
-                proxy_http_version 1.1;
-                proxy_cache_bypass $http_upgrade;
-                proxy_set_header Upgrade $http_upgrade;
-                proxy_set_header Connection "upgrade";
-                proxy_set_header Host $host;
-                proxy_set_header X-Real-IP $remote_addr;
-                proxy_set_header X-Forwarded-Host $host;
-                proxy_set_header X-Forwarded-Server $host;
-                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                proxy_set_header X-Forwarded-Proto $scheme;
-
-                proxy_pass http://localhost:3000;
-        }
-  }
-  ```
-
-  Restart nginx
-  ```
-  sudo systemctl start nginx
-  ```
-
 - Install npm
   ```
   sudo apt-get install nodejs
@@ -196,7 +154,7 @@ chmod 755 start_application.sh
 
 #### For Users
 
-- Visit http://localhost:80 from your browser.
+- Visit http://localhost:3000 from your browser.
 
 - Select a category
   - Click on the hamburger menu on the far right.
@@ -239,7 +197,6 @@ chmod 755 start_application.sh
 - [prettier 2.3.2](https://prettier.io/)
 - [nestjs 8.0.0](https://nestjs.com/)
 - [jest 27.0.6](https://jestjs.io/ja/)
-- [nginx 1.18.0](https://www.nginx.co.jp/)
 - [Postgresql 13.3](https://www.postgresql.org/)
 - [FIWARE Cygnus 2.11.0](https://fiware-cygnus.readthedocs.io/en/master/index.html)
 - [FIWARE Orion 3.1.0](https://fiware-orion.readthedocs.io/en/master/index.html)
