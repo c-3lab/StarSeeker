@@ -19,6 +19,7 @@ Architecture diagram TBD
       - [For Administrators](#for-administrators)
       - [How to start the application](#how-to-start-the-application)
       - [For Users](#for-users)
+      - [How to stop the application](#how-to-stop-the-application)
   - [Function](#function)
     - [Management function](#management-function)
     - [User facility](#user-facility)
@@ -171,6 +172,31 @@ chmod 755 start_application.sh
 - View detailed information
   - Click on the pin to view detailed information.<br>
   ![image006](img/image006.png)
+
+#### How to stop the application
+
+- Take down the numbers in the PID column displayed in the execution result of the following command.
+
+  ```
+  lsof -i:3000
+  lsof -i:4000
+  
+  (Execution example)
+  $ lsof -i:3000
+  COMMAND     PID   USER   FD   TYPE  DEVICE SIZE/OFF NODE NAME
+  node    1091233 ubuntu   20u  IPv6 6560326      0t0  TCP *:3000 (LISTEN)
+
+  $ lsof -i:4000
+  COMMAND     PID   USER   FD   TYPE  DEVICE SIZE/OFF NODE NAME
+  node    1091118 ubuntu   21u  IPv6 6560274      0t0  TCP *:4000 (LISTEN)
+  ```
+
+- Stop the application.
+
+  ```
+  kill -9 [The PID you wrote down above]
+  * Please ignore the error message when executing the kill command.
+  ```
 
 ## Function
 

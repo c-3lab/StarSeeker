@@ -19,6 +19,7 @@
       - [管理者向け](#管理者向け)
       - [アプリケーション起動方法](#アプリケーション起動方法)
       - [利用者向け](#利用者向け)
+      - [アプリケーション停止方法](#アプリケーション停止方法)
   - [機能](#機能)
     - [管理機能](#管理機能)
     - [利用者機能](#利用者機能)
@@ -170,6 +171,31 @@ chmod 755 start_application.sh
 - 詳細情報の表示
   - ピンをクリックすると詳細情報が表示されます。<br>
   ![image006](img/image006.png)
+
+#### アプリケーション停止方法
+
+- 以下コマンドの実行結果に表示されているPID列の数字を控えます。
+
+  ```
+  lsof -i:3000
+  lsof -i:4000
+
+  (実行例)
+  $ lsof -i:3000
+  COMMAND     PID   USER   FD   TYPE  DEVICE SIZE/OFF NODE NAME
+  node    1091233 ubuntu   20u  IPv6 6560326      0t0  TCP *:3000 (LISTEN)
+
+  $ lsof -i:4000
+  COMMAND     PID   USER   FD   TYPE  DEVICE SIZE/OFF NODE NAME
+  node    1091118 ubuntu   21u  IPv6 6560274      0t0  TCP *:4000 (LISTEN)
+  ```
+
+- アプリケーションを停止します。
+
+  ```
+  kill -9 [上記で控えたPID]
+  ※killコマンド実行時のエラーメッセージは無視してください
+  ```
 
 ## 機能
 
