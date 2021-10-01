@@ -196,7 +196,7 @@ chmod 755 start_application.sh
 
 #### For Users
 
-- Visit http://serverIp/ from your browser.
+- Visit http://localhost:80 from your browser.
 
 - Select a category
   - Click on the hamburger menu on the far right.
