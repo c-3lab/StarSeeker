@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Copy the PNG image in /install/img/ to /frontend/public/img."
+echo "Copy the JPG image in /install/img/ to /frontend/public/img."
 
 cd img/
 
@@ -12,7 +12,7 @@ if [ $? = 0 ]; then
         echo "The image has been placed."
         ls -la ../../frontend/public/img/
 else
-        echo "Failed to place the image. Please make sure that the PNG image is placed in /install/img/."
+        echo "Failed to place the image. Please make sure that the JPG image is placed in /install/img/."
         exit 0
 fi
 
