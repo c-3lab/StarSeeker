@@ -6,7 +6,6 @@ services:
     hostname: nodeb
     container_name: nodeb
     working_dir: /app
-    tty: true
     ports:
       - "4000:4000"
     command: >
@@ -33,7 +32,6 @@ services:
     hostname: nodef
     container_name: nodef
     working_dir: /app
-    tty: true
     ports:
       - "3000:3000"
     command: >
@@ -45,6 +43,7 @@ services:
       sleep 30"
     volumes:
       - ./frontend:/app/frontend
+      - ./operator/env/img:/app/frontend/public/img
     networks:
       - nw
 
@@ -74,6 +73,7 @@ services:
       - "PGDATABASE=postgres"
     volumes:
       - postgres-db:/var/lib/postgresql/data
+      - ./operator/env:/work
     networks:
       - nw
 
