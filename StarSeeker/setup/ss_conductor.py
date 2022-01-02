@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 
 import csv
+import json
 import os
+import requests
 import sys
+import time
+from datetime import datetime
+from urllib.parse import urljoin
 
 def csv_to_matrix(tables_csv_filename):
 
@@ -220,6 +225,12 @@ def create_model_dmls(models, db_entity_name, is_structured=False):
                 dmls.append(convert_model_to_dml(detail, db_detail_name))
     return dmls
 
+def convert_attribute_format(value, type):
+
+    if type.lower() == 'datetime':
+        value = datetime.strptime(value, '%Y/%m/%d %H:%M:%S').isoformat()
+    return value
+
 def create_data_entities(db_table_names, db_tables_def, filename, dir_path = ''):
 
     matrix = csv_to_matrix(os.path.join(dir_path, filename))
@@ -233,7 +244,7 @@ def create_data_entities(db_table_names, db_tables_def, filename, dir_path = '')
         entity_type = vec[1]
         attr_id = vec[2]
         attr_type = vec[3]
-        attr_value = vec[4]
+        attr_value = convert_attribute_format(vec[4], vec[3])
         if entity_id in entities:
             attributes = entities[entity_id]['__attr__']
             if attr_id in attributes:
@@ -277,7 +288,7 @@ def create_entity_jsons(entities):
         attributes = entity['__attr__']
         json = {}
         json.update({
-            'id:': profile['id'],
+            'id': profile['id'],
             'type': profile['type']
         })
         for name, attribute in attributes.items():
@@ -291,12 +302,48 @@ def create_entity_jsons(entities):
 
     return jsons
 
-def send_to_broker(jsons, broker_url):
+def send_entities_to_broker(entity_jsons, broker_url, do_print_message=False):
 
-    return {
+    message = {
         'actionType': 'append',
-        'entities': jsons
+        'entities': entity_jsons
     }
+
+    if do_print_message is True:
+        pprint.pprint(message)
+        return
+
+    headers = {
+        'Content-Type': 'application/json'
+    }
+
+    res = None
+    try:
+        res = requests.post(broker_url, json=message, headers=headers)
+    except Exception as e:
+        n = type(e).__name__
+        d = str(e)
+        print(f'{n}: failed to fetch {broker_url}', file=sys.stderr)
+        print(f'{d}', file=sys.stderr)
+        return None
+
+    if res is not None:
+        status = res.status_code
+        content_type = res.headers.get('Content-Type')
+        if content_type is None or content_type != 'application/json':
+            text = res.text
+        else:
+            text = json.loads(res.text)
+
+        if status >= 400:
+            if text is not None:
+                error = text['error']
+                detail = text['description']
+                text = f'{error}({status}): {detail}'
+            else:
+                text = f'Error({status})'
+
+    return text
 
 if __name__ == '__main__':
 
@@ -315,14 +362,15 @@ if __name__ == '__main__':
     sp_ddl.add_argument('model', nargs=1, metavar='MODEL', help='data model definition csv file')
     sp_ddl.add_argument('--dir', '-d', default='', metavar='DIRPATH', help='directory path of data source csv files')
     sp_ddl.add_argument('--print-structure', '-p', action='store_true', help='print structure only')
-    sp_dml = sps.add_parser('model', help='Create DML for data model')
-    sp_dml.add_argument('model', nargs=1, metavar='MODEL', help='data model definition csv file')
-    sp_dml.add_argument('--dir', '-d', default='', metavar='DIRPATH', help='directory path of data source csv files')
-    sp_dml = sps.add_parser('action', help='action to broker server')
-    sp_dml.add_argument('model', nargs=1, metavar='MODEL', help='data model definition csv file')
-    sp_dml.add_argument('data', nargs=1, metavar='DATA', help='data csv file')
-    sp_dml.add_argument('url', nargs=1, metavar='URL', help='broker server url')
-    sp_dml.add_argument('--dir', '-d', default='', metavar='DIRPATH', help='directory path of data source csv files')
+    sp_model = sps.add_parser('model', help='Create DML for data model')
+    sp_model.add_argument('model', nargs=1, metavar='MODEL', help='data model definition csv file')
+    sp_model.add_argument('--dir', '-d', default='', metavar='DIRPATH', help='directory path of data source csv files')
+    sp_action = sps.add_parser('action', help='action to broker server')
+    sp_action.add_argument('model', nargs=1, metavar='MODEL', help='data model definition csv file')
+    sp_action.add_argument('data', nargs=1, metavar='DATA', help='data csv file')
+    sp_action.add_argument('url', nargs=1, metavar='URL', help='broker server url')
+    sp_action.add_argument('--dir', '-d', default='', metavar='DIRPATH', help='directory path of data source csv files')
+    sp_action.add_argument('--print-message', '-p', action='store_true', help='print action message only')
 
     if len(sys.argv) < 2:
         print(parser.format_usage(), file=sys.stderr)
@@ -350,6 +398,6 @@ if __name__ == '__main__':
     elif subcommand == 'action':
         db_table_names, db_tables_def = load_table_def(args.model[0], args.dir)
         entities = create_data_entities(db_table_names, db_tables_def, args.data[0], args.dir)
-        jsons = create_entity_jsons(entities)
-        a = send_to_broker(jsons, args.url[0])
-        pprint.pprint(a)
+        entity_jsons = create_entity_jsons(entities)
+        status_message = send_entities_to_broker(entity_jsons, args.url[0], do_print_message=args.print_message)
+        print(status_message)
