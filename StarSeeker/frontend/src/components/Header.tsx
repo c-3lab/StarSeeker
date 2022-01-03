@@ -68,7 +68,7 @@ const Header: React.VFC<Props> = ({
       <AppBar className={classes.appBar}>
         <Toolbar className={classes.toolbar}>
           <Typography variant="h6" className={classes.title}>
-            〇〇市ダッシュボード
+            ダッシュボード
           </Typography>
           <IconButton
             edge="start"
