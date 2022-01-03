@@ -59,8 +59,8 @@
   ```
 
 - 管理データ格納ディレクトリにてデータモデルおよびデータを編集
--- データモデル定義ファイル: datamodels.xlsx
--- データファイル: data.xlsx
+  - データモデル定義ファイル: datamodels.xlsx
+  - データファイル: data.xlsx
 
 - Dockerコンテナを展開
 
@@ -83,6 +83,18 @@
 
   ```
 
+- データモデルが生成されたことを以下のいずれかで確認(ハンバーガーメニューからデータセット選択可能となる)
+  - ブラウザで http://Dockerホスト名:3000 に接続
+  - データ管理用コンテナからpostgresにクエリを投げてテーブルを直接確認
+
+  ```
+  docker exec postgres psql -c 'select * from t_category'
+  docker exec postgres psql -c 'select * from t_point_dataset'
+  docker exec postgres psql -c 'select * from t_point_detail'
+  docker exec postgres psql -c 'select * from t_surface_dataset'
+  docker exec postgres psql -c 'select * from t_surface_detail'
+  ```
+
 ### データの投入と更新
 
 - データ管理用コンテナでデータ(data.xlsx)からNGSI jsonを作成しorionに投入
@@ -92,8 +104,8 @@
   ```
 
 - データが投入されていることを以下のいずれかで確認
--- ブラウザで http://Dockerホスト名:3000 に接続
--- データ管理用コンテナからorionにクエリを投げる
+  - ブラウザで http://Dockerホスト名:3000 に接続
+  - データ管理用コンテナからorionにクエリを投げる
 
   ```
   docker exec op curl -s http://orion:1026/v2/entities?limit=500
