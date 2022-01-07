@@ -38,52 +38,78 @@
 
 ### インストール方法
 
-- npmのインストール
+- git clone
+- 作業ディレクトリに移動
+
   ```
-  sudo apt-get install nodejs
-  sudo apt-get install npm
+  ~/StarSeeker$ cd StarSeeker
   ```
+
+- MongoDBとPostgreSQLのユーザ、パスワードを.envに設定
+
+  ```
+  ~/StarSeeker/StarSeeker$ cp _env .env
+  ~/StarSeeker/StarSeeker$ vi .env ※MongoDBとPostgreSQLのパスワードを指定
+  ```
+
+- 管理データ格納ディレクトリを作成(samplesをコピー)
+
+  ```
+  ~/StarSeeker/StarSeeker$ cp -r operator/samples/ operator/env
+  ```
+
+- 管理データ格納ディレクトリにてデータモデルおよびデータを編集
+  - データモデル定義ファイル: datamodels.xlsx
+  - データファイル: data.xlsx
 
 - Dockerコンテナを展開
 
   ```
-  git clone https://github.com/c-3lab/StarSeeker
-  cd StarSeeker/install
-  vi .env ※MongoDBとPostgreSQLのパスワードを指定
-  docker-compose up -d
+  ~/StarSeeker/StarSeeker$ docker-compose up -d
   ```
 
-- 管理DBのテーブルを作成
+- データ管理用コンテナをdockerネットワークに追加
 
   ```
-  cd StarSeeker/install
-  sudo apt-get install postgresql-client-common postgresql-client
-  psql -h localhost -p 5432 -U postgres -d postgres -f managedb.sql
+  ~/StarSeeker/StarSeeker$ cd operator
+  ~/StarSeeker/StarSeeker/operator$ docker-compose up -d
   ```
 
-### サンプルデータの投入方法
+- データ管理用コンテナでデータモデル定義ファイル(datamodel.xlsx)からデータモデル管理テーブル生成スクリプトを作成し、postgresコンテナで実行
 
-シェルスクリプトを実行し、サンプルデータを追加します。
+  ```
+  ~/StarSeeker/StarSeeker/operator$ docker exec op sh -c 'cd /work; ./setup1-op.sh'
+  ~/StarSeeker/StarSeeker/operator$ docker exec postgres sh -c 'cd /work; ./setup2-postgres.sh'
 
-```
-cd StarSeeker/install
-chmod 755 add_sampledata.sh
-./add_sampledata.sh
-```
+  ```
 
-サンプルデータ追加後、下記のコマンドを実行してデータが入っていることを確認します。
+- データモデルが生成されたことを以下のいずれかで確認(ハンバーガーメニューからデータセット選択可能となる)
+  - ブラウザで http://Dockerホスト名:3000 に接続
+  - データ管理用コンテナからpostgresにクエリを投げてテーブルを直接確認
 
-```
-sudo apt-get install jq
-curl http://localhost:1026/v2/entities?limit=500 | jq .
-```
+  ```
+  docker exec postgres psql -c 'select * from t_category'
+  docker exec postgres psql -c 'select * from t_point_dataset'
+  docker exec postgres psql -c 'select * from t_point_detail'
+  docker exec postgres psql -c 'select * from t_surface_dataset'
+  docker exec postgres psql -c 'select * from t_surface_detail'
+  ```
 
-管理DBのサンプルデータを追加致します。
-```
-cd StarSeeker/install
-sudo apt-get install postgresql-client-common postgresql-client
-psql -h localhost -p 5432 -U postgres -d postgres -f sampledata.sql
-```
+### データの投入と更新
+
+- データ管理用コンテナでデータ(data.xlsx)からNGSI jsonを作成しorionに投入
+
+  ```
+  ~/StarSeeker/StarSeeker/operator$ docker exec op sh -c 'cd /work; ./update-op.sh'
+  ```
+
+- データが投入されていることを以下のいずれかで確認
+  - ブラウザで http://Dockerホスト名:3000 に接続
+  - データ管理用コンテナからorionにクエリを投げる
+
+  ```
+  docker exec op curl -s http://orion:1026/v2/entities?limit=500
+  ```
 
 ### 基本的な使い方
 
@@ -135,26 +161,9 @@ psql -h localhost -p 5432 -U postgres -d postgres -f sampledata.sql
         - Web画面 詳細表示 サンプル例<br>
           ![Sample screen display01](img/park01.png)
 
-
-  - FIWARE Orionへの追加方法
-    - [FIWARE Orion GitHub](https://github.com/telefonicaid/fiware-orion/)を参照しNGSIv2 APIに適合したJSONを新規作成
-    - `http://localhost:1026/v2/entities`宛にエンティティを追加([サンプル実行コマンドを参照](docs/SAMPLE_ENTITY.md))
-  - 管理DBへのデータ追加方法
-    - カラム情報に登録されている値に倣い管理DBにデータを追加([サンプル実行コマンドを参照](docs/SAMPLE_DB.md))
-
-
-#### アプリケーション起動方法
-
-アプリケーションインストールスクリプトを実行します。
-```
-cd install/
-chmod 755 start_application.sh
-./start_application.sh
-```
-
 #### 利用者向け
 
-- ブラウザから http://localhost:3000 でアクセスできます。
+- ブラウザから http://Dockerホスト名:3000 でアクセスできます。
 
 - カテゴリの選択
   - 右端のハンバーガーメニューをクリックします。
@@ -174,44 +183,13 @@ chmod 755 start_application.sh
 
 #### アプリケーション停止方法
 
-- 以下コマンドの実行結果に表示されているPID列の数字を控えます。
+- データ管理用コンテナ、その他のコンテナの順にコンテナを停止
 
   ```
-  lsof -i:3000
-  lsof -i:4000
-
-  (実行例)
-  $ lsof -i:3000
-  COMMAND     PID   USER   FD   TYPE  DEVICE SIZE/OFF NODE NAME
-  node    1091233 ubuntu   20u  IPv6 6560326      0t0  TCP *:3000 (LISTEN)
-
-  $ lsof -i:4000
-  COMMAND     PID   USER   FD   TYPE  DEVICE SIZE/OFF NODE NAME
-  node    1091118 ubuntu   21u  IPv6 6560274      0t0  TCP *:4000 (LISTEN)
+  ~/StarSeeker/StarSeeker/operator$ docker-compose down
+  ~/StarSeeker/StarSeeker/operator$ cd ..
+  ~/StarSeeker/StarSeeker/$ docker-compose down
   ```
-
-- アプリケーションを停止します。
-
-  ```
-  kill -9 [上記で控えたPID]
-  ※killコマンド実行時のエラーメッセージは無視してください
-  ```
-
-## 機能
-
-### 管理機能
-
-- FIWARE Orionに格納されているデータセットのカテゴライズ
-- FIWARE Orionに格納されてている点または面データに詳細情報を紐付ける
-
-### 利用者機能
-
-- 地図の表示
-  - 拡大縮小
-  - スクロール
-- 表示したいカテゴリを選択
-- 選択したカテゴリに属しているデータセットから、任意のデータセットを選択を選択し、そのデータセットに含まれる点または面データを地図上に表示
-- 詳細情報が存在する点または面データをタップ時に、ポップアップで詳細情報を表示
 
 ## 利用バージョン
 
@@ -227,3 +205,7 @@ chmod 755 start_application.sh
 - [FIWARE Orion 3.1.0](https://fiware-orion.readthedocs.io/en/master/index.html)
 - [mongoDB 4.4.7](https://www.mongodb.com/)
 - [node 16.0.0](https://nodejs.org/ja/about/releases/)
+
+## ライセンス
+
+- [AGPL-3.0](https://github.com/mkyutani/StarSeeker/blob/main/LICENSE)

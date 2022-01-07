@@ -52,7 +52,7 @@ const App: React.VFC = () => {
   return (
     <div className={'main'}>
       <Head>
-        <title>〇〇市ダッシュボード</title>
+        <title>ダッシュボード</title>
       </Head>
       <Header
         fetchPointData={fetchPointData}

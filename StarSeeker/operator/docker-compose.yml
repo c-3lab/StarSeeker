@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  starseeker_op:
+    image: python:buster
+    hostname: op
+    container_name: op
+    working_dir: /work
+    tty: true
+    volumes:
+      - ./env:/work
+    networks:
+      - starseeker_nw
+
+networks:
+  starseeker_nw:
+    external: true
+    

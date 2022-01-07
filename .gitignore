@@ -1,0 +1,12 @@
+# .gitignore
+
+# directories
+
+env/
+log/
+
+# file patterns
+
+.env
+*.env
+*.log

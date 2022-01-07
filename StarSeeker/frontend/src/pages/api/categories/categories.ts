@@ -6,7 +6,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const ret = await axios
-    .get(`http://localhost:4000/api/categories`)
+    .get(`http://nodeb:4000/api/categories`)
     .then((r) => res.status(200).json(r.data))
     .catch((e) => console.log('error', 'status code:' + e.response.status));
 }
