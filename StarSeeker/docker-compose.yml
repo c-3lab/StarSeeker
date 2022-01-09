@@ -41,6 +41,10 @@ services:
       npm install &&
       npm run dev &&
       sleep 30"
+    environment:
+      - "NEXT_PUBLIC_MAP_DEFAULT_LATITUDE=${MAP_DEFAULT_LATITUDE}"
+      - "NEXT_PUBLIC_MAP_DEFAULT_LONGITUDE=${MAP_DEFAULT_LONGITUDE}"
+      - "NEXT_PUBLIC_MAP_DEFAULT_ZOOM=${MAP_DEFAULT_ZOOM}"
     volumes:
       - ./frontend:/app/frontend
       - ./operator/env/img:/app/frontend/public/img
