@@ -45,11 +45,11 @@
   ~/StarSeeker$ cd StarSeeker
   ```
 
-- MongoDBとPostgreSQLのユーザ、パスワードを.envに設定
+- MongoDBとPostgreSQLのユーザ、パスワードおよび地図の初期パラメータ値(緯度、経度、ズーム値)を.envに設定
 
   ```
   ~/StarSeeker/StarSeeker$ cp _env .env
-  ~/StarSeeker/StarSeeker$ vi .env ※MongoDBとPostgreSQLのパスワードを指定
+  ~/StarSeeker/StarSeeker$ vi .env # MongoDB、PostgreSQLのアカウントと地図の初期パラメータ値を設定
   ```
 
 - 管理データ格納ディレクトリを作成(samplesをコピー)
@@ -88,11 +88,11 @@
   - データ管理用コンテナからpostgresにクエリを投げてテーブルを直接確認
 
   ```
-  docker exec postgres psql -c 'select * from t_category'
-  docker exec postgres psql -c 'select * from t_point_dataset'
-  docker exec postgres psql -c 'select * from t_point_detail'
-  docker exec postgres psql -c 'select * from t_surface_dataset'
-  docker exec postgres psql -c 'select * from t_surface_detail'
+  ~/StarSeeker/StarSeeker/operator$ docker exec postgres psql -c 'select * from t_category'
+  ~/StarSeeker/StarSeeker/operator$ docker exec postgres psql -c 'select * from t_point_dataset'
+  ~/StarSeeker/StarSeeker/operator$ docker exec postgres psql -c 'select * from t_point_detail'
+  ~/StarSeeker/StarSeeker/operator$ docker exec postgres psql -c 'select * from t_surface_dataset'
+  ~/StarSeeker/StarSeeker/operator$ docker exec postgres psql -c 'select * from t_surface_detail'
   ```
 
 ### データの投入と更新
@@ -108,7 +108,7 @@
   - データ管理用コンテナからorionにクエリを投げる
 
   ```
-  docker exec op curl -s http://orion:1026/v2/entities?limit=500
+  ~/StarSeeker/StarSeeker/operator$ docker exec op curl -s http://orion:1026/v2/entities?limit=500
   ```
 
 ### 基本的な使い方
