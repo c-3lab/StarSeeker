@@ -5,8 +5,8 @@ import 'leaflet/dist/leaflet.css';
 import DisplayPoints from './DisplayPoints';
 import DisplaySurfaces from './DisplaySurfaces';
 
-const defaultPosition: LatLngTuple = [35.967169, 139.394617];
-const defalutZoom: number = 13;
+const defaultPosition: LatLngTuple = [ process.env.NEXT_PUBLIC_MAP_DEFAULT_LATITUDE, process.env.NEXT_PUBLIC_MAP_DEFAULT_LONGITUDE ];
+const defalutZoom: number = process.env.NEXT_PUBLIC_MAP_DEFAULT_ZOOM;
 
 type Props = {
   pointEntities: any[];
