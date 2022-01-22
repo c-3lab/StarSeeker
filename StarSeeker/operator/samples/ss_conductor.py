@@ -3,6 +3,7 @@
 import csv
 import json
 import os
+import pprint
 import requests
 import sys
 import time
@@ -280,38 +281,32 @@ def create_data_entities(db_table_names, db_tables_def, filename, dir_path = '')
 
     return entity_list
 
-def create_entity_jsons(entities):
+def create_entity_json(entity):
 
-    jsons = []
-    for entity in entities:
-        profile = entity['__main__']
-        attributes = entity['__attr__']
-        json = {}
+    profile = entity['__main__']
+    attributes = entity['__attr__']
+    json = {}
+    json.update({
+        'id': profile['id'],
+        'type': profile['type']
+    })
+    for name, attribute in attributes.items():
         json.update({
-            'id': profile['id'],
-            'type': profile['type']
+            name: {
+                'type': attribute['type'],
+                'value': attribute['value'],
+            }
         })
-        for name, attribute in attributes.items():
-            json.update({
-                name: {
-                    'type': attribute['type'],
-                    'value': attribute['value'],
-                }
-            })
-        jsons.append(json)
 
-    return jsons
+    return json
 
-def send_entities_to_broker(entity_jsons, broker_url, do_print_message=False):
+def send_entity_to_broker(entity_json, broker_url, do_print_message=False):
 
-    message = {
-        'actionType': 'append',
-        'entities': entity_jsons
-    }
+    message = entity_json
 
     if do_print_message is True:
         pprint.pprint(message)
-        return
+        return None
 
     headers = {
         'Content-Type': 'application/json'
@@ -348,9 +343,8 @@ def send_entities_to_broker(entity_jsons, broker_url, do_print_message=False):
 if __name__ == '__main__':
 
     import argparse
-    import pprint
     from argparse import HelpFormatter
-
+    from operator import attrgetter
     class SortingHelpFormatter(HelpFormatter):
         def add_arguments(self, actions):
             actions = sorted(actions, key=attrgetter('option_strings'))
@@ -398,6 +392,10 @@ if __name__ == '__main__':
     elif subcommand == 'action':
         db_table_names, db_tables_def = load_table_def(args.model[0], args.dir)
         entities = create_data_entities(db_table_names, db_tables_def, args.data[0], args.dir)
-        entity_jsons = create_entity_jsons(entities)
-        status_message = send_entities_to_broker(entity_jsons, args.url[0], do_print_message=args.print_message)
-        print(status_message)
+        for entity in entities:
+            entity_json = create_entity_json(entity)
+            status_message = send_entity_to_broker(entity_json, args.url[0], do_print_message=args.print_message)
+            if status_message is not None:
+                id = entity['__main__']['id']
+                print(f'{id} {status_message}')
+
