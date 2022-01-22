@@ -4,6 +4,7 @@ import csv
 import json
 import os
 import pprint
+import re
 import requests
 import sys
 import time
@@ -291,10 +292,12 @@ def create_entity_json(entity):
         'type': profile['type']
     })
     for name, attribute in attributes.items():
+        value = attribute['value']
+        value = re.sub('[<>"\'=;()]', ' ', value)
         json.update({
             name: {
                 'type': attribute['type'],
-                'value': attribute['value'],
+                'value': value
             }
         })
 
