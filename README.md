@@ -94,13 +94,17 @@
   root@op:/work# ss_conductor table print tables.csv # DDLのテーブル定義を見やすく表示
   ```
 
+### 地図のカテゴリとデータセット定義の投入
+
 - RDB (postgres)に地図カテゴリ定義を投入
+
   ```
   root@op:/work# ss_conductor category create tables.csv category.csv # DMLを確認
   root@op:/work# ss_conductor category create tables.csv category.csv --send $DSN # RDBに投入
   ```
 
 - RDB (postgres)に地図データセット定義を投入
+
   ```
   root@op:/work# ss_conductor dataset create tables.csv point.csv # DMLを確認
   root@op:/work# ss_conductor dataset create tables.csv point.csv --send $DSN # RDBに投入
@@ -111,7 +115,7 @@
 
 ### データの投入と更新
 
-- データ管理用コンテナでデータからNGSI jsonを作成しorionに投入(環境変数$BROKERはdocker-composeで設定済み)
+- データをorionに投入(環境変数$BROKERはdocker-composeで設定済み)
 
   ```
   root@op:/work# ss_conductor data create tables.csv point_data.csv # メッセージを確認
@@ -122,13 +126,38 @@
   - ブラウザで http://Dockerホスト名:4000 に接続
   - データ管理用コンテナからorionにクエリを投げる(Dockerホストにはポートを公開していない)
 
+    ```
+    root@op:/work# curl -s http://orion:1026/v2/entities?limit=500
+    root@op:/work# curl -s http://orion:1026/v2/entities?limit=500 | python -c '\
+    import pprint;\
+    import json;\
+    import sys;\
+    pprint.pprint(json.loads(sys.stdin.read()))' # 結果を見やすく整形
+    ```
+
+### 投入したデータの削除
+
+- データをorionから削除
+
   ```
-  root@op:/work# curl -s http://orion:1026/v2/entities?limit=500
-  root@op:/work# curl -s http://orion:1026/v2/entities?limit=500 | python -c '\
-  import pprint;\
-  import json;\
-  import sys;\
-  pprint.pprint(json.loads(sys.stdin.read()))' # 結果を見やすく整形
+  root@op:/work# ss_conductor data delete tables.csv point_data.csv # メッセージを確認
+  root@op:/work# ss_conductor data delete tables.csv point_data.csv --send $BROKER # Brokerに投入
+  ```
+
+### 地図のカテゴリとデータセット定義の削除
+
+- RDB (postgres)から地図データセット定義を削除
+
+  ```
+  root@op:/work# ss_conductor dataset delete tables.csv point.csv # DMLを確認
+  root@op:/work# ss_conductor dataset delete tables.csv point.csv --send $DSN # RDBに投入
+  ```
+
+- RDB (postgres)から地図カテゴリ定義を削除
+
+  ```
+  root@op:/work# ss_conductor category delete tables.csv category.csv # DMLを確認
+  root@op:/work# ss_conductor category delete tables.csv category.csv --send $DSN # RDBに投入
   ```
 
 ### 基本的な使い方
