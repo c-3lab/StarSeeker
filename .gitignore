@@ -4,9 +4,14 @@
 
 env/
 log/
+site/
+local/
+work/
 
 # file patterns
 
 .env
 *.env
 *.log
+*.local
+
