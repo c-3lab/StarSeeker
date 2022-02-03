@@ -44,7 +44,7 @@ def load_table_def(filename):
         db_table_name = vec[1]
         db_row_name = vec[2]
         db_row_type = vec[3].lower()
-        if vec[4] == '〇' or vec[4] == 'x':
+        if len(vec[4]) > 0 and vec[4] != '×':
             db_row_primary_key = True
         else:
             db_row_primary_key = False
@@ -172,7 +172,7 @@ def generate_ddls(action, db_table_names, db_tables_def):
 
 def csv_text_to_value(csv_text, row_type):
     if row_type == 'boolean':
-        if csv_text == '〇':
+        if len(csv_text) > 0 and csv_text != '×':
             value = 'TRUE'
         else:
             value = 'FALSE'   
