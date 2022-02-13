@@ -151,6 +151,10 @@ $ ss_conductor data delete tables.csv data.csv
 $ ss_conductor data delete tables.csv data.csv --send ${BROKER}
 ```
 
+## その他のツール
+
+* xlsx2csv-all.sh: `${DIR}`に含まれる`*.xlsx`のすべてのシートをcsvに変換し`${OUTDIR}`に格納する
+
 ## ファイル定義
 
 ### テーブル定義ファイル(`tables.xlsx`)
