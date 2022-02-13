@@ -210,6 +210,8 @@
         - Web画面 詳細表示 サンプル例<br>
           ![Sample screen display01](img/park01.png)
 
+    - `ss_conductor`を使えばCSVをメンテナンスするだけで簡単にORIONへのデータ反映をおこなうことができます。詳細は[StarSeeker/operatorのドキュメント](StarSeeker/operator/README.md)を参照ください。
+
 #### 利用者向け
 
 - ブラウザから http://Dockerホスト名:3000 でアクセスできます。

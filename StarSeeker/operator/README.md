@@ -33,6 +33,9 @@ StarSeekerデータ管理端末コンテナ(通称operator、コンテナ名op)�
 * データセット定義の登録・削除DDL(SQL)の生成およびpostgresへの送信
 * データの登録JSONおよび削除URI生成およびorionへの送信
 
+StarSeekerのpostgres、orionとss_conductorとの関係を以下に示す。
+![`ss_conductor`の役割](img/ss_conductor.png)
+
 ### StarSeeker管理テーブル作成DML(SQL)の生成
 
 * データ構造の表示
