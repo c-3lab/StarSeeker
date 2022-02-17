@@ -14,10 +14,8 @@
   - [StarSeekerの始め方 クイックスタート](#starseekerの始め方-クイックスタート)
     - [概要](#概要)
     - [インストール方法](#インストール方法)
-    - [サンプルデータの投入方法](#サンプルデータの投入方法)
     - [基本的な使い方](#基本的な使い方)
       - [管理者向け](#管理者向け)
-      - [アプリケーション起動方法](#アプリケーション起動方法)
       - [利用者向け](#利用者向け)
       - [アプリケーション停止方法](#アプリケーション停止方法)
   - [機能](#機能)
@@ -52,63 +50,114 @@
   ~/StarSeeker/StarSeeker$ vi .env # MongoDB、PostgreSQLのアカウントと地図の初期パラメータ値を設定
   ```
 
-- 管理データ格納ディレクトリを作成(samplesをコピー)
-
-  ```
-  ~/StarSeeker/StarSeeker$ cp -r operator/samples/ operator/env
-  ```
-
-- 管理データ格納ディレクトリにてデータモデルおよびデータを編集
-  - データモデル定義ファイル: datamodels.xlsx
-  - データファイル: data.xlsx
-
 - Dockerコンテナを展開
 
   ```
   ~/StarSeeker/StarSeeker$ docker-compose up -d
   ```
 
-- データ管理用コンテナをdockerネットワークに追加
+- データ管理端末コンテナで使う管理データ格納ディレクトリworkを作成(samplesをコピー)
 
   ```
   ~/StarSeeker/StarSeeker$ cd operator
+  ~/StarSeeker/StarSeeker/operator$ cp -r samples work
+  ```
+
+- 管理データ格納ディレクトリにてデータモデルおよびデータを編集(それぞれかわりにcsvを用意してもよい)
+  - データモデルテーブル定義ファイル: tables.xlsx
+  - データカテゴリ定義ファイル(サンプル): category.xlsx
+  - 点データセット定義およびデータファイル(サンプル): point.xlsx
+  - 面データセット定義およびデータファイル(サンプル): surface.xlsx
+
+- データ管理端末コンテナに.envを共有しdockerネットワークに追加
+
+  ```
+  ~/StarSeeker/StarSeeker/operator$ ln -s ../.env .env
   ~/StarSeeker/StarSeeker/operator$ docker-compose up -d
   ```
 
-- データ管理用コンテナでデータモデル定義ファイル(datamodel.xlsx)からデータモデル管理テーブル生成スクリプトを作成し、postgresコンテナで実行
+- 以下はdocker execにてデータ管理端末コンテナ(op)上にて作業実施
+  ```
+  ~/StarSeeker/StarSeeker/operator$ docker exec -it op /bin/bash
+  root@op:/work# 
+  ```
+
+- データソースとしてそのままxlsxファイルを使っている場合は、各xlsxファイルからcsvを取り出す
+  ```
+  root@op:/work# ./xlsx2csv-all.sh
+  ```
+
+- RDB (postgres)に地図用テーブルを作成(以下、環境変数$DSNはdocker-composeで設定済み)
+  ```
+  root@op:/work# ss_conductor table create tables.csv # DDLを確認
+  root@op:/work# ss_conductor table create tables.csv --send $DSN # RDBに投入
+  root@op:/work# ss_conductor table print tables.csv # DDLのテーブル定義を見やすく表示
+  ```
+
+### 地図のカテゴリとデータセット定義の投入
+
+- RDB (postgres)に地図カテゴリ定義を投入
 
   ```
-  ~/StarSeeker/StarSeeker/operator$ docker exec op sh -c 'cd /work; ./setup1-op.sh'
-  ~/StarSeeker/StarSeeker/operator$ docker exec postgres sh -c 'cd /work; ./setup2-postgres.sh'
+  root@op:/work# ss_conductor category create tables.csv category.csv # DMLを確認
+  root@op:/work# ss_conductor category create tables.csv category.csv --send $DSN # RDBに投入
+  ```
 
+- RDB (postgres)に地図データセット定義を投入
+
+  ```
+  root@op:/work# ss_conductor dataset create tables.csv point.csv # DMLを確認
+  root@op:/work# ss_conductor dataset create tables.csv point.csv --send $DSN # RDBに投入
   ```
 
 - データモデルが生成されたことを以下のいずれかで確認(ハンバーガーメニューからデータセット選択可能となる)
   - ブラウザで http://Dockerホスト名:3000 に接続
-  - データ管理用コンテナからpostgresにクエリを投げてテーブルを直接確認
-
-  ```
-  ~/StarSeeker/StarSeeker/operator$ docker exec postgres psql -c 'select * from t_category'
-  ~/StarSeeker/StarSeeker/operator$ docker exec postgres psql -c 'select * from t_point_dataset'
-  ~/StarSeeker/StarSeeker/operator$ docker exec postgres psql -c 'select * from t_point_detail'
-  ~/StarSeeker/StarSeeker/operator$ docker exec postgres psql -c 'select * from t_surface_dataset'
-  ~/StarSeeker/StarSeeker/operator$ docker exec postgres psql -c 'select * from t_surface_detail'
-  ```
 
 ### データの投入と更新
 
-- データ管理用コンテナでデータ(data.xlsx)からNGSI jsonを作成しorionに投入
+- データをorionに投入(環境変数$BROKERはdocker-composeで設定済み)
 
   ```
-  ~/StarSeeker/StarSeeker/operator$ docker exec op sh -c 'cd /work; ./update-op.sh'
+  root@op:/work# ss_conductor data create tables.csv point_data.csv # メッセージを確認
+  root@op:/work# ss_conductor data create tables.csv point_data.csv --send $BROKER # Brokerに投入
   ```
 
 - データが投入されていることを以下のいずれかで確認
-  - ブラウザで http://Dockerホスト名:3000 に接続
-  - データ管理用コンテナからorionにクエリを投げる
+  - ブラウザで http://Dockerホスト名:4000 に接続
+  - データ管理用コンテナからorionにクエリを投げる(Dockerホストにはポートを公開していない)
+
+    ```
+    root@op:/work# curl -s http://orion:1026/v2/entities?limit=500
+    root@op:/work# curl -s http://orion:1026/v2/entities?limit=500 | python -c '\
+    import pprint;\
+    import json;\
+    import sys;\
+    pprint.pprint(json.loads(sys.stdin.read()))' # 結果を見やすく整形
+    ```
+
+### 投入したデータの削除
+
+- データをorionから削除
 
   ```
-  ~/StarSeeker/StarSeeker/operator$ docker exec op curl -s http://orion:1026/v2/entities?limit=500
+  root@op:/work# ss_conductor data delete tables.csv point_data.csv # メッセージを確認
+  root@op:/work# ss_conductor data delete tables.csv point_data.csv --send $BROKER # Brokerに投入
+  ```
+
+### 地図のカテゴリとデータセット定義の削除
+
+- RDB (postgres)から地図データセット定義を削除
+
+  ```
+  root@op:/work# ss_conductor dataset delete tables.csv point.csv # DMLを確認
+  root@op:/work# ss_conductor dataset delete tables.csv point.csv --send $DSN # RDBに投入
+  ```
+
+- RDB (postgres)から地図カテゴリ定義を削除
+
+  ```
+  root@op:/work# ss_conductor category delete tables.csv category.csv # DMLを確認
+  root@op:/work# ss_conductor category delete tables.csv category.csv --send $DSN # RDBに投入
   ```
 
 ### 基本的な使い方
@@ -160,6 +209,8 @@
 
         - Web画面 詳細表示 サンプル例<br>
           ![Sample screen display01](img/park01.png)
+
+    - `ss_conductor`を使えばCSVをメンテナンスするだけで簡単にORIONへのデータ反映をおこなうことができます。詳細は[StarSeeker/operatorのドキュメント](StarSeeker/operator/README.md)を参照ください。
 
 #### 利用者向け
 

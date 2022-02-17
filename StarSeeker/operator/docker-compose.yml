@@ -5,10 +5,18 @@ services:
     image: python:buster
     hostname: op
     container_name: op
-    working_dir: /work
     tty: true
+    working_dir: /work
+    command: >
+      sh -c "
+      apt install libpq-dev -y &&
+      pip3 install . &&
+      python3"
+    environment:
+      - "DSN=postgresql://${POSTGREUSER}:${POSTGREPASSWORD}@postgres:5432/postgres"
+      - "BROKER=http://orion:1026/v2/entities"
     volumes:
-      - ./env:/work
+      - ./work:/work
     networks:
       - starseeker_nw
 
