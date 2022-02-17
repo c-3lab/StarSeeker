@@ -88,12 +88,11 @@ services:
     depends_on:
       - mongo
     environment:
-      - "ORION_MONGO_HOST=mongo-db:27017"
+      - "ORION_MONGO_HOST=mongo:27017"
       - "ORION_MONGO_USER=${MONGOUSERNAME}"
       - "ORION_MONGO_PASSWORD=${MONGOPASSWORD}"
       - "ORION_MONGO_AUTH_SOURCE=admin"
       - "ORION_PORT=1026"
-    command: -dbhost mongo
     networks:
       - nw
 
@@ -104,7 +103,7 @@ services:
     depends_on:
       - postgres
     environment:
-      - "CYGNUS_POSTGRESQL_HOST=postgres-db"
+      - "CYGNUS_POSTGRESQL_HOST=postgres"
       - "CYGNUS_POSTGRESQL_PORT=5432"
       - "CYGNUS_POSTGRESQL_USER=${POSTGREUSER}"
       - "CYGNUS_POSTGRESQL_PASS=${POSTGREPASSWORD}"
