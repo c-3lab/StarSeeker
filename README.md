@@ -84,7 +84,7 @@
 
 - データソースとしてそのままxlsxファイルを使っている場合は、各xlsxファイルからcsvを取り出す
   ```
-  root@op:/work# xlsx2csv-all.sh
+  root@op:/work# ./xlsx2csv-all.sh
   ```
 
 - RDB (postgres)に地図用テーブルを作成(以下、環境変数$DSNはdocker-composeで設定済み)
