@@ -6,8 +6,6 @@ services:
     hostname: nodeb
     container_name: nodeb
     working_dir: /app
-    ports:
-      - "4000:4000"
     command: >
       sh -c "
       cd backend &&
