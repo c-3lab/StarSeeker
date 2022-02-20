@@ -2,9 +2,13 @@
 
 ![screenshot](img/clip.png)
 
-アーキテクチャ図 TBD
-
 [English README is here](README_en.md)
+
+## 構成図
+
+![Architecture](https://user-images.githubusercontent.com/6661165/154850549-1a6ce1a9-39f5-4190-8277-151c16875da6.png)
+
+
 
 ## 目次
 
