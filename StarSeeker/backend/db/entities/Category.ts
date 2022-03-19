@@ -8,10 +8,10 @@ export class Category {
   @Column('integer', { primary: true, name: 'category_id' })
   id: number;
 
-  @Column('character varying', { name: 'category_name', length: 20 })
+  @Column('character varying', { name: 'category_name', length: 50 })
   name: string;
 
-  @Column('character varying', { name: 'category_color', length: 7 })
+  @Column('character varying', { name: 'category_color', length: 32 })
   color: string;
 
   @Column('integer', { name: 'display_order' })
