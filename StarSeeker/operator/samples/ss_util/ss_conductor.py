@@ -340,7 +340,13 @@ def generate_message_to_create_entities(entity):
     })
     for name, attribute in attributes.items():
         value = attribute['value']
-        value = re.sub('[<>"\'=;()]', ' ', str(value))
+        if type(value) == list:
+            new_list = []
+            for v in value:
+                new_list.append(re.sub('[<>"\'=;()]', ' ', str(v)))
+            value = new_list
+        else:
+            value = re.sub('[<>"\'=;()]', ' ', str(value))
         message.update({
             name: {
                 'type': attribute['type'],
