@@ -91,13 +91,6 @@
   root@op:/work# ./xlsx2csv-all.sh
   ```
 
-- RDB (postgres)に地図用テーブルを作成(以下、環境変数$DSNはdocker-composeで設定済み)
-  ```
-  root@op:/work# ss_conductor table create tables.csv # DDLを確認
-  root@op:/work# ss_conductor table create tables.csv --send $DSN # RDBに投入
-  root@op:/work# ss_conductor table print tables.csv # DDLのテーブル定義を見やすく表示
-  ```
-
 ### 地図のカテゴリとデータセット定義の投入
 
 - RDB (postgres)に地図カテゴリ定義を投入

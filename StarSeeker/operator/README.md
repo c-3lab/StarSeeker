@@ -28,47 +28,12 @@ StarSeekerデータ管理端末コンテナ(通称operator、コンテナ名op)�
 
 `ss_conductor`はStartSeekerのOrionおよびPostgreSQLへのデータ登録、またはそれらのデータ削除を行うための支援ツールである。以下のことを行うことができる。
 
-* StarSeeker管理テーブルの作成・削除DML(SQL)の生成およびpostgresへの送信
 * データセットカテゴリ定義の登録・削除DDL(SQL)の生成およびpostgresへの送信
 * データセット定義の登録・削除DDL(SQL)の生成およびpostgresへの送信
 * データの登録JSONおよび削除URI生成およびorionへの送信
 
 StarSeekerのpostgres、orionとss_conductorとの関係を以下に示す。
 ![`ss_conductor`の役割](img/ss_conductor.png)
-
-### StarSeeker管理テーブル作成DML(SQL)の生成
-
-* データ構造の表示
-
-```
-$ ss_conductor table print tables.csv
-```
-
-* DML(SQL)の表示
-
-```
-$ ss_conductor table create tables.csv
-```
-
-* DML(SQL)の送信
-
-```
-$ ss_conductor table create tables.csv --send ${DSN}
-```
-
-### StarSeeker管理テーブル削除DML(SQL)の生成
-
-* DML(SQL)の表示
-
-```
-$ ss_conductor table delete tables.csv
-```
-
-* DML(SQL)の送信
-
-```
-$ ss_conductor table delete tables.csv --send ${DSN}
-```
 
 ### データセットカテゴリ定義の登録DDL(SQL)の生成
 
