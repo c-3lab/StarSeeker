@@ -7,7 +7,7 @@ export default async function handler(
 ) {
   const { datasetId } = req.query;
   const ret = await axios
-    .get(`http://nodeb:4000/api/surfaces/${datasetId}/entities?limit=100`)
+    .get(`http://nodeb:4000/api/surfaces/${datasetId}/entities?limit=1000`)
     .then((r) => res.status(200).json(r.data))
     .catch((e) => console.log('error', 'status code：' + e.response.status));
 }
