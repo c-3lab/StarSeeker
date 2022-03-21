@@ -125,51 +125,6 @@ def send_db_message(message, pg_connection=None):
     else:
         print(message)
 
-def generate_printable_table(name, content_list):
-
-    contents = []
-    sep = '=' * len(name)
-    return f'{name}\n{sep}\n' + tabulate(content_list, headers='keys')
-
-def print_table_def(db_table_names, db_tables_def):
-
-    def pop_sheet_row_number(x):
-        x = x.copy()
-        x.pop('sheet_row_number')
-        x.pop('repeat_row_differential')
-        return x
-    contents = []
-    for db_table_name in db_table_names:
-        rows = db_tables_def[db_table_name]['rows']
-        rows = list(map(lambda x: pop_sheet_row_number(x), db_tables_def[db_table_name]['rows']))
-        contents.append(generate_printable_table(db_table_name, rows))
-    print('\n\n'.join(contents))
-
-def generate_ddls(action, db_table_names, db_tables_def):
-
-    ddls = []
-    for db_table_name in db_table_names:
-        if action == 'create':
-            rows_fragments = []
-            for row in db_tables_def[db_table_name]['rows']:
-                row_exp_list = [ row['name'], row['type'] ]
-                if row['primary_key'] is True:
-                    row_exp_list.append('primary key')
-                row_exp_list.append(row['restrict'])
-                rows_fragments.append(' '.join(row_exp_list))
-            ddl = '\n'.join([f'create table {db_table_name} (',
-                             ',\n'.join(rows_fragments),
-                             ');'])
-        elif action == 'delete':
-            ddl = f'drop table {db_table_name};'
-
-        ddls.append(ddl)
-
-    if action == 'delete':
-        ddls.reverse()
-
-    return ddls
-
 def csv_text_to_value(csv_text, row_type):
     if row_type == 'boolean':
         if len(csv_text) > 0 and csv_text != '×':
@@ -385,7 +340,13 @@ def generate_message_to_create_entities(entity):
     })
     for name, attribute in attributes.items():
         value = attribute['value']
-        value = re.sub('[<>"\'=;()]', ' ', str(value))
+        if type(value) == list:
+            new_list = []
+            for v in value:
+                new_list.append(re.sub('[<>"\'=;()]', ' ', str(v)))
+            value = new_list
+        else:
+            value = re.sub('[<>"\'=;()]', ' ', str(value))
         message.update({
             name: {
                 'type': attribute['type'],
@@ -459,17 +420,6 @@ def main():
 
     parser = argparse.ArgumentParser(description='Create DDL/DML from csv files', formatter_class=SortingHelpFormatter)
     sps = parser.add_subparsers(dest='subparser', title='action category arguments')
-
-    sp_table = sps.add_parser('table', help='generate DDL for data model management')
-    sps_table = sp_table.add_subparsers(required=True, dest='action', title='action type')
-    sp_table_create = sps_table.add_parser('create', help='generate DDL to create tables')
-    sp_table_create.add_argument('table', nargs=1, metavar='TABLE-CSV', help='table definition csv file')
-    sp_table_create.add_argument('--send', nargs=1, metavar='DSN', help='send to database (eg. \'postgresql://user:password@host:port/dbname\')')
-    sp_table_delete = sps_table.add_parser('delete', help='generate DDL to delete tables')
-    sp_table_delete.add_argument('table', nargs=1, metavar='TABLE-CSV', help='table definition csv file')
-    sp_table_delete.add_argument('--send', nargs=1, metavar='DSN', help='send to database (eg. \'postgresql://user:password@host:port/dbname\')')
-    sp_table_print = sps_table.add_parser('print', help='print table structure')
-    sp_table_print.add_argument('table', nargs=1, metavar='TABLE-CSV', help='table definition csv file')
 
     sp_category = sps.add_parser('category', help='generate DML for categories')
     sps_category = sp_category.add_subparsers(required=True, dest='action', title='action type')

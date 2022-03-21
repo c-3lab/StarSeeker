@@ -18,7 +18,7 @@ export class PointDataset {
   @Column('character varying', { name: 'point_dataset_name', length: 50 })
   name: string;
 
-  @Column('character varying', { name: 'point_color_code', length: 7 })
+  @Column('character varying', { name: 'point_color_code', length: 32 })
   color: string;
 
   @Column('character varying', { name: 'entity_type', length: 50 })

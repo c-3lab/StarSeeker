@@ -18,10 +18,10 @@ export class SurfaceDataset {
   @Column('character varying', { name: 'surface_dataset_name', length: 50 })
   name: string;
 
-  @Column('character varying', { name: 'border_color_code', length: 7 })
+  @Column('character varying', { name: 'border_color_code', length: 32 })
   borderColor: string;
 
-  @Column('character varying', { name: 'fill_color_code', length: 50 })
+  @Column('character varying', { name: 'fill_color_code', length: 32 })
   fillColor: string;
 
   @Column('character varying', { name: 'entity_type', length: 50 })

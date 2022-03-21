@@ -75,6 +75,7 @@ services:
       - "PGDATABASE=postgres"
     volumes:
       - postgres-db:/var/lib/postgresql/data
+      - ./postgres/initdb:/docker-entrypoint-initdb.d
       - ./operator/env:/work
     networks:
       - nw
