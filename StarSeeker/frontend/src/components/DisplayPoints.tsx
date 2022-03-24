@@ -6,7 +6,7 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMapMarker } from '@fortawesome/free-solid-svg-icons';
 import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
-import { escapeSpecialCharacters } from '../utils'
+import { escapeSpecialCharacters } from '../utils';
 
 async function fetchDetails(
   datasetId: string,
