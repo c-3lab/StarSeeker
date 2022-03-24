@@ -6,8 +6,12 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const { datasetId, entityId } = req.query;
-  const ret = await axios
-    .get(`http://nodeb:4000/api/surfaces/${datasetId}/${entityId}/details`)
+  await axios
+    .get(
+      `http://nodeb:4000/api/surfaces/${encodeURIComponent(
+        datasetId.toString()
+      )}/${encodeURIComponent(entityId.toString())}/details`
+    )
     .then((r) => res.status(200).json(r.data))
     .catch((e) => console.log('error', 'status code：' + e.response.status));
 }
