@@ -84,6 +84,12 @@ const Header: React.VFC<Props> = ({
         isDrawerOpen={isDrawerOpen}
         handleModalOpen={toggleOpenDatasetDialog}
         handleReset={handleReset}
+        check={check}
+        setCheck={setCheck}
+        fetchPointData={fetchPointData}
+        clearAllPointData={clearAllPointData}
+        fetchSurfaceData={fetchSurfaceData}
+        clearAllSurfaceData={clearAllSurfaceData}
       />
       <DatasetDialog
         isOpenDatasetDialog={isOpenDatasetDialog}
