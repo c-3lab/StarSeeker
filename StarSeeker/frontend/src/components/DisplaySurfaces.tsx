@@ -2,7 +2,7 @@ import React from 'react';
 import { Polygon, useMap } from 'react-leaflet';
 import Leaflet from 'leaflet';
 import axios from 'axios';
-import { escapeSpecialCharacters } from '../utils'
+import { escapeSpecialCharacters } from '../utils';
 
 async function fetchDetails(
   datasetId: string,
@@ -14,7 +14,9 @@ async function fetchDetails(
 
   let html = '';
   res.data.forEach((d) => {
-    html += `<tr><th>${escapeSpecialCharacters(d.displayTitle)}</th><td>${escapeSpecialCharacters(d.value)}</td></tr>`;
+    html += `<tr><th>${escapeSpecialCharacters(
+      d.displayTitle
+    )}</th><td>${escapeSpecialCharacters(d.value)}</td></tr>`;
   });
 
   const popupContent = `
