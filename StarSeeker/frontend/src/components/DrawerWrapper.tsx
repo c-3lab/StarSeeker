@@ -32,23 +32,23 @@ const useStyles = makeStyles((theme: Theme) =>
     treeView: {
       maxWidth: drawerWidth,
       flexGrow: 1,
-    }
+    },
   })
 );
 
 const ColorCheckbox = (props) => {
-  const customTheme = theme => ({
+  const customTheme = (theme) => ({
     root: {
       color: props.datasetColor,
       '&$checked': {
         color: props.datasetColor,
-      }
+      },
     },
     checked: {},
-  })
-  const ComponentName = withStyles(customTheme)(Checkbox)
-  return <ComponentName {...props} />
-}
+  });
+  const ComponentName = withStyles(customTheme)(Checkbox);
+  return <ComponentName {...props} />;
+};
 
 type Props = {
   isDrawerOpen: boolean;
@@ -116,7 +116,6 @@ const DrawerWrapper: React.VFC<Props> = ({
   };
 
   if (process.env.NEXT_PUBLIC_DATASET_LIST_BY == 'menu') {
-
     return (
       <Drawer
         anchor="right"
@@ -128,7 +127,7 @@ const DrawerWrapper: React.VFC<Props> = ({
         }}
       >
         <div className={classes.toolBar} />
-        <TreeView component="navtree"
+        <TreeView
           className={classes.treeView}
           defaultCollapseIcon={<ExpandMoreIcon />}
           defaultExpandIcon={<ChevronRightIcon />}
@@ -137,53 +136,63 @@ const DrawerWrapper: React.VFC<Props> = ({
             return (
               <>
                 <TreeItem nodeId={data.name} label={data.name}>
-                {data.pointDatasets.map((dataset) => (
-                    <TreeItem nodeId={dataset.entityType} label={
-                      <FormControlLabel control={
-                        <ColorCheckbox
-                          datasetColor={dataset.color}
-                          name={dataset.entityType}
-                          checked={check.includes(dataset.entityType)}
-                          onChange={(e) =>
-                            handleChangePointChecked(
-                              e,
-                              dataset.id,
-                              dataset.entityType,
-                              dataset.color
-                            )
+                  {data.pointDatasets.map((dataset) => (
+                    <TreeItem
+                      key={dataset.entityId}
+                      nodeId={dataset.entityType}
+                      label={
+                        <FormControlLabel
+                          control={
+                            <ColorCheckbox
+                              datasetColor={dataset.color}
+                              name={dataset.entityType}
+                              checked={check.includes(dataset.entityType)}
+                              onChange={(e) =>
+                                handleChangePointChecked(
+                                  e,
+                                  dataset.id,
+                                  dataset.entityType,
+                                  dataset.color
+                                )
+                              }
+                            />
                           }
+                          label={dataset.name}
                         />
                       }
-                      label={dataset.name} />
-                    }
                     />
-                ))}
-                {data.surfaceDatasets.map((dataset) => (
-                    <TreeItem nodeId={dataset.entityType} label={
-                      <FormControlLabel control={
-                        <ColorCheckbox
-                          datasetColor={dataset.fillColor}
-                          name={dataset.entityType}
-                          checked={check.includes(dataset.entityType)}
-                          onChange={(e) =>
-                            handleChangeSurfaceChecked(
-                              e,
-                              dataset.id,
-                              dataset.entityType,
-                              dataset.borderColor,
-                              dataset.fillColor
-                            )
+                  ))}
+                  {data.surfaceDatasets.map((dataset) => (
+                    <TreeItem
+                      key={dataset.entityId}
+                      nodeId={dataset.entityType}
+                      label={
+                        <FormControlLabel
+                          control={
+                            <ColorCheckbox
+                              datasetColor={dataset.fillColor}
+                              name={dataset.entityType}
+                              checked={check.includes(dataset.entityType)}
+                              onChange={(e) =>
+                                handleChangeSurfaceChecked(
+                                  e,
+                                  dataset.id,
+                                  dataset.entityType,
+                                  dataset.borderColor,
+                                  dataset.fillColor
+                                )
+                              }
+                            />
                           }
+                          label={dataset.name}
                         />
                       }
-                      label={dataset.name} />
-                    }
                     />
-                ))}
+                  ))}
                 </TreeItem>
               </>
             );
-            })}
+          })}
         </TreeView>
         <List component="nav" disablePadding>
           <ListItem button key={'リセット'}>
@@ -193,7 +202,6 @@ const DrawerWrapper: React.VFC<Props> = ({
         </List>
       </Drawer>
     );
-
   } else {
     return (
       <Drawer
@@ -207,20 +215,19 @@ const DrawerWrapper: React.VFC<Props> = ({
       >
         <div className={classes.toolBar} />
         <List component="nav" disablePadding>
-        <ListItem button key={'データセット'} onClick={handleModalOpen}>
-          <StorageIcon />
-          <ListItemText primary={'データセット'} />
-          <LaunchIcon />
-        </ListItem>
-        <ListItem button key={'リセット'}>
-          <RotateLeftIcon />
-          <ListItemText primary={'リセット'} onClick={handleReset} />
+          <ListItem button key={'データセット'} onClick={handleModalOpen}>
+            <StorageIcon />
+            <ListItemText primary={'データセット'} />
+            <LaunchIcon />
+          </ListItem>
+          <ListItem button key={'リセット'}>
+            <RotateLeftIcon />
+            <ListItemText primary={'リセット'} onClick={handleReset} />
           </ListItem>
         </List>
       </Drawer>
     );
-
-  };
+  }
 };
 
 export default DrawerWrapper;
