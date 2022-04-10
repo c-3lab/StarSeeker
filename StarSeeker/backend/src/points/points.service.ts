@@ -20,25 +20,30 @@ export class PointsService {
   ) {}
 
   async getEntities(
-    datasetId: number,
+    datasetId?: number,
     limit?: number,
+    q?: string,
   ): Promise<Observable<any>> {
-    const pointDataset = await this.pointDatasetRepository.findOne(datasetId);
-
     const url = `${process.env.ORION_URI}/v2/op/query`;
 
     const data: OpQuery = {
       entities: [
         {
           idPattern: '.*',
-          type: pointDataset.entityType,
         },
       ],
-      attrs: [
+    };
+    if (datasetId != null) {
+      const pointDataset = await this.pointDatasetRepository.findOne(datasetId);
+      data.attrs = [
         pointDataset.coordinatesAttribute,
         pointDataset.registerTimeAttribute,
-      ],
-    };
+      ];
+      data.entities[0].type = pointDataset.entityType;
+    }
+    if (q != null) {
+      data.expression = { q: q };
+    }
 
     const config: AxiosRequestConfig = {
       params: {
@@ -46,9 +51,13 @@ export class PointsService {
       },
     };
 
-    return this.httpService
-      .post(url, data, config)
-      .pipe(map((res) => res.data));
+    console.log(data);
+    return this.httpService.post(url, data, config).pipe(
+      map((res) => {
+        console.log(res);
+        return res.data;
+      }),
+    );
   }
 
   async getDetails(datasetId: number, entityId: string): Promise<any> {

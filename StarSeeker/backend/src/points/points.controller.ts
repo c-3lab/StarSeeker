@@ -1,4 +1,4 @@
-import { Controller, Param, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Observable } from 'rxjs';
 
@@ -9,16 +9,17 @@ import { PointsService } from './points.service';
 export class PointsController {
   constructor(private readonly pointsService: PointsService) {}
 
-  @Get(':datasetId/entities')
+  @Get(['/entities', ':datasetId/entities'])
   @ApiResponse({
     status: 200,
     description: 'Point entities of NGSIv2 format',
   })
   async getEntities(
-    @Param('datasetId') datasetId: number,
+    @Param('datasetId') datasetId?: number,
     @Query('limit') limit?: number,
+    @Query('q') q?: string,
   ): Promise<Observable<any>> {
-    return this.pointsService.getEntities(datasetId, limit);
+    return this.pointsService.getEntities(datasetId, limit, q);
   }
 
   @Get(':datasetId/:entityId/details')
