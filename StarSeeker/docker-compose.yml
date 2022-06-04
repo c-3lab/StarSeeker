@@ -59,7 +59,8 @@ services:
       - "MONGO_INITDB_ROOT_PASSWORD=${MONGOPASSWORD}"
       - "MONGO_INITDB_DATABASE=oriondb"
     volumes:
-      - mongo-db:/data
+      - ./site/mongo/db:/data/db
+      - ./site/mongo/configdb:/data/configdb
     networks:
       - nw
 
@@ -75,7 +76,7 @@ services:
       - "PGUSER=${POSTGREUSER}"
       - "PGDATABASE=postgres"
     volumes:
-      - postgres-db:/var/lib/postgresql/data
+      - ./site/postgres/data:/var/lib/postgresql/data
       - ./postgres/initdb:/docker-entrypoint-initdb.d
       - ./operator/env:/work
     networks:
@@ -117,10 +118,6 @@ services:
       - "CYGNUS_API_PORT=5080"
     networks:
       - nw
-
-volumes:
-  mongo-db:
-  postgres-db:
 
 networks:
   nw:
