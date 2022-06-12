@@ -241,19 +241,19 @@
 
 ## 利用バージョン
 
-- [next 11.1.0](https://nextjs.org/)
-- [react 17.0.2](https://ja.reactjs.org/)
-- [typescript 4.3.5](https://www.typescriptlang.org/)
-- [eslint 7.32.0](https://eslint.org/)
-- [prettier 2.3.2](https://prettier.io/)
+- [next 12.1.6](https://nextjs.org/)
+- [react 18.1.0](https://ja.reactjs.org/)
+- [typescript 4.7.3](https://www.typescriptlang.org/)
+- [eslint 8.17.0](https://eslint.org/)
+- [prettier 2.6.2](https://prettier.io/)
 - [nestjs 8.0.0](https://nestjs.com/)
 - [jest 27.0.6](https://jestjs.io/ja/)
 - [Postgresql 13.3](https://www.postgresql.org/)
 - [FIWARE Cygnus 2.11.0](https://fiware-cygnus.readthedocs.io/en/master/index.html)
 - [FIWARE Orion 3.1.0](https://fiware-orion.readthedocs.io/en/master/index.html)
 - [mongoDB 4.4.7](https://www.mongodb.com/)
-- [node 16.0.0](https://nodejs.org/ja/about/releases/)
+- [node 16.15.1](https://nodejs.org/ja/about/releases/)
 
 ## ライセンス
 
-- [AGPL-3.0](https://github.com/mkyutani/StarSeeker/blob/main/LICENSE)
+- [AGPL-3.0](LICENSE)

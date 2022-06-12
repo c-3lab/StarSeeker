@@ -2,7 +2,7 @@ version: "3"
 
 services:
   backend:
-    image: node:14.0.0
+    image: node:16.15.1
     hostname: nodeb
     container_name: nodeb
     working_dir: /app
@@ -26,7 +26,7 @@ services:
       - nw
 
   frontend:
-    image: node:14.0.0
+    image: node:16.15.1
     hostname: nodef
     container_name: nodef
     working_dir: /app
@@ -36,7 +36,7 @@ services:
       sh -c "
       sleep 60 &&
       cd frontend &&
-      npm install &&
+      npm install --legacy-peer-deps &&
       npm run dev &&
       sleep 30"
     environment:
