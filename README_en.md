@@ -227,7 +227,7 @@ chmod 755 start_application.sh
 - [jest 27.0.6](https://jestjs.io/ja/)
 - [Postgresql 13.3](https://www.postgresql.org/)
 - [FIWARE Cygnus 2.11.0](https://fiware-cygnus.readthedocs.io/en/master/index.html)
-- [FIWARE Orion 3.1.0](https://fiware-orion.readthedocs.io/en/master/index.html)
+- [FIWARE Orion 3.6.0](https://fiware-orion.readthedocs.io/en/master/index.html)
 - [mongoDB 4.4.7](https://www.mongodb.com/)
 - [node 16.15.1](https://nodejs.org/ja/about/releases/)
 
