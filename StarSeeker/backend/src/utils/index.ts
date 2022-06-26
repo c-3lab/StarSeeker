@@ -7,5 +7,8 @@ export function getEntityFilepath(isTesting: boolean) {
 }
 
 export function toBoolean(text: string) {
+  if (text === undefined) {
+    return false;
+  }
   return text.toLowerCase() === 'true' ? true : false;
 }

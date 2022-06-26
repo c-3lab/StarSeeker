@@ -34,7 +34,9 @@ describe('CategoriesController', () => {
   });
 
   it('should be defined', () => {
+    expect(categoriesService).toBeDefined();
     expect(categoriesController).toBeDefined();
+    expect(categoryRepository).toBeDefined();
   });
 
   describe('getCategories', () => {

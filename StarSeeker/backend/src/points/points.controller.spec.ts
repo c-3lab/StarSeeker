@@ -46,7 +46,11 @@ describe('PointsController', () => {
   });
 
   it('should be defined', () => {
+    expect(httpService).toBeDefined();
+    expect(pointsService).toBeDefined();
     expect(pointsController).toBeDefined();
+    expect(pointDatasetRepository).toBeDefined();
+    expect(pointDetailRepository).toBeDefined();
   });
 
   describe('getEntities', () => {
