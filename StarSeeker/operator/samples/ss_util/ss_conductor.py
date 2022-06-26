@@ -29,84 +29,115 @@ def csv_to_matrix(tables_csv_filename):
 
     return matrix
 
-def load_table_def(filename):
+def load_table_def():
 
-    matrix = csv_to_matrix(filename)
-
-    db_table_names = []
-    db_tables = {}
-    for vec in matrix:
-        auto_id_row_number = None
-        auto_id = False
-        repeat_row_number = None
-        repeat_row_differential = None
-        repeat_row_length = 0
-        db_table_name = vec[1]
-        db_row_name = vec[2]
-        db_row_type = vec[3].lower()
-        if len(vec[4]) > 0 and vec[4] != '×':
-            db_row_primary_key = True
-        else:
-            db_row_primary_key = False
-        db_row_restrict = vec[5].lower()
-        if len(vec) > 6 and len(vec[6]) > 0:
-            db_row_data_sheet_row = vec[6]
-            if len(db_row_data_sheet_row) > 1:
-                if db_row_data_sheet_row[0] == '#':
-                    auto_id_row_number = ord(db_row_data_sheet_row[1:].lower()) - 0x61
-                    auto_id = True
-                elif db_row_data_sheet_row[0] == ':':
-                    repeat = db_row_data_sheet_row[1:]
-                    if len(repeat) > 0:
-                        if repeat[0].isalpha():
-                            repeat_row_number = ord(repeat[0].lower()) - 0x61
-                            repeat_row_differential = 0
-                            if len(repeat) > 2 and repeat[1] == '*':
-                                repeat_row_length = int(repeat[2:])
-                            else:
-                                repeat_row_length = 1
-                        else:
-                            repeat_row_differential = int(repeat)
-            else:
-                sheet_row_number = ord(db_row_data_sheet_row[0].lower()) - 0x61
-
-        if db_table_name in db_tables:
-            if auto_id_row_number:
-                db_tables[db_table_name]['auto_id_row_number'] = auto_id_row_number
-            if repeat_row_number:
-                db_tables[db_table_name]['repeat_row_number'] = repeat_row_number
-                db_tables[db_table_name]['repeat_row_length'] = repeat_row_length
-            if db_row_primary_key:
-                db_tables[db_table_name]['primary_key'].apend(row_name)
-            db_tables[db_table_name]['rows'].append({
-                'auto_id': auto_id,
-                'name': db_row_name,
-                'type': db_row_type,
-                'primary_key': db_row_primary_key,
-                'restrict': db_row_restrict,
-                'sheet_row_number': sheet_row_number,
-                'repeat_row_differential': repeat_row_differential
-            })
-        else:
-            db_table_names.append(db_table_name)
-            db_tables.update({
-                db_table_name: {
-                    'name': db_table_name,
-                    'auto_id_row_number': auto_id_row_number,
-                    'repeat_row_number': repeat_row_number,
-                    'repeat_row_length': repeat_row_length,
-                    'primary_key': [ db_row_name ] if db_row_primary_key else [],
-                    'rows': [{
-                        'auto_id': auto_id,
-                        'name': db_row_name,
-                        'type': db_row_type,
-                        'primary_key': db_row_primary_key,
-                        'restrict': db_row_restrict,
-                        'sheet_row_number': sheet_row_number,
-                        'repeat_row_differential': repeat_row_differential
-                    }]
-                }
-            })
+    db_table_names = ['t_category', 't_point_dataset', 't_point_detail', 't_surface_dataset', 't_surface_detail']
+    db_tables = {
+        't_tenant': {
+            'name': 't_tenant',
+            'delete_key_row_number': 0,
+            'rows': [
+                {'auto_id': False, 'name': 'tenant_name', 'type': 'string', 'no':0, 'rep_diff': None }
+            ]
+        },
+        't_service_path': {
+            'name': 't_service_path',
+            'delete_key_row_number': 0,
+            'rows': [
+                {'auto_id': False, 'name': 'service_path_name', 'type': 'string', 'no':0, 'rep_diff': None }
+            ]
+        },
+        't_category': {
+            'name': 't_category',
+            'auto_id_row_number': None,
+            'delete_key_row_number': 2,
+            'rep_number': None,
+            'rep_length': 0,
+            'rows': [
+                {'auto_id': False, 'name': 'category_id', 'type': 'integer', 'no': 0, 'rep_diff': None},
+                {'auto_id': False, 'name': 'category_name', 'type': 'string', 'no': 1, 'rep_diff': None},
+                {'auto_id': False, 'name': 'tenant_id', 'type': 'string', 'no': 2, 'rep_diff': None,
+                 'meta': { 'table': 't_tenant', 'name': 'tenant_name', 'id': 'tenant_id' } },
+                {'auto_id': False, 'name': 'category_color', 'type': 'string', 'no': 3, 'rep_diff': None},
+                {'auto_id': False, 'name': 'display_order', 'type': 'integer', 'no': 4, 'rep_diff': None},
+                {'auto_id': False, 'name': 'enabled', 'type': 'boolean', 'no': 5, 'rep_diff': None}
+            ]
+        },
+        't_point_dataset': {
+            'name': 't_point_dataset',
+            'auto_id_row_number': None,
+            'delete_key_row_number': 3,
+            'rep_number': None,
+            'rep_length': 0,
+            'rows': [
+                {'auto_id': False, 'name': 'point_dataset_id', 'type': 'integer', 'no': 0, 'rep_diff': None},
+                {'auto_id': False, 'name': 'category_id', 'type': 'integer', 'no': 1, 'rep_diff': None},
+                {'auto_id': False, 'name': 'point_dataset_name', 'type': 'string', 'no': 3, 'rep_diff': None},
+                {'auto_id': False, 'name': 'tenant_id', 'type': 'string', 'no': 4, 'rep_diff': None,
+                 'meta': { 'table': 't_tenant', 'name': 'tenant_name', 'id': 'tenant_id' } },
+                {'auto_id': False, 'name': 'service_path_id', 'type': 'string', 'no': 5, 'rep_diff': None,
+                 'meta': { 'table': 't_service_path', 'name': 'service_path_name', 'id': 'service_path_id' } },
+                {'auto_id': False, 'name': 'point_color_code', 'type': 'string', 'no': 6, 'rep_diff': None},
+                {'auto_id': False, 'name': 'entity_type', 'type': 'string', 'no': 7, 'rep_diff': None},
+                {'auto_id': False, 'name': 'coordinates_attr_name', 'type': 'string', 'no': 9, 'rep_diff': None},
+                {'auto_id': False, 'name': 'register_time_attr_name', 'type': 'string', 'no': 10, 'rep_diff': None},
+                {'auto_id': False, 'name': 'enabled', 'type': 'boolean', 'no': 8, 'rep_diff': None}
+            ]
+        },
+        't_point_detail': {
+            'name': 't_point_detail',
+            'auto_id_row_number': 0,
+            'delete_key_row_number': None,
+            'rep_number': 11,
+            'rep_length': 4,
+            'rows': [
+                {'auto_id': True, 'name': 'point_detail_id', 'type': 'integer', 'no': 8, 'rep_diff': None},
+                {'auto_id': False, 'name': 'point_dataset_id', 'type': 'integer', 'no': 0, 'rep_diff': None},
+                {'auto_id': False, 'name': 'item_attr_name', 'type': 'string', 'no': 0, 'rep_diff': 1},
+                {'auto_id': False, 'name': 'data_type', 'type': 'integer', 'no': 0, 'rep_diff': 2},
+                {'auto_id': False, 'name': 'display_title', 'type': 'string', 'no': 0, 'rep_diff': 0},
+                {'auto_id': False, 'name': 'display_order', 'type': 'integer', 'no': 0, 'rep_diff': 3},
+                {'auto_id': False, 'name': 'enabled', 'type': 'boolean', 'no': 8, 'rep_diff': None}
+            ]
+        },
+        't_surface_dataset': {
+            'name': 't_surface_dataset',
+            'auto_id_row_number': None,
+            'delete_key_row_number': 3,
+            'rep_number': None,
+            'rep_length': 0,
+            'rows': [
+                {'auto_id': False, 'name': 'surface_dataset_id', 'type': 'integer', 'no': 0, 'rep_diff': None},
+                {'auto_id': False, 'name': 'category_id', 'type': 'integer', 'no': 1, 'rep_diff': None},
+                {'auto_id': False, 'name': 'surface_dataset_name', 'type': 'string', 'no': 3, 'rep_diff': None},
+                {'auto_id': False, 'name': 'tenant_id', 'type': 'string', 'no': 4, 'rep_diff': None,
+                 'meta': { 'table': 't_tenant', 'name': 'tenant_name', 'id': 'tenant_id' } },
+                {'auto_id': False, 'name': 'service_path_id', 'type': 'string', 'no': 5, 'rep_diff': None,
+                 'meta': { 'table': 't_service_path', 'name': 'service_path_name', 'id': 'service_path_id' } },
+                {'auto_id': False, 'name': 'border_color_code', 'type': 'string', 'no': 6, 'rep_diff': None},
+                {'auto_id': False, 'name': 'fill_color_code', 'type': 'string', 'no': 7, 'rep_diff': None},
+                {'auto_id': False, 'name': 'entity_type', 'type': 'string', 'no': 8, 'rep_diff': None},
+                {'auto_id': False, 'name': 'coordinates_attr_name', 'type': 'string', 'no': 10, 'rep_diff': None},
+                {'auto_id': False, 'name': 'register_time_attr_name', 'type': 'string', 'no': 11, 'rep_diff': None},
+                {'auto_id': False, 'name': 'enabled', 'type': 'boolean', 'no': 9, 'rep_diff': None}
+            ]
+        },
+        't_surface_detail': {
+            'name': 't_surface_detail',
+            'auto_id_row_number': 0,
+            'delete_key_row_number': None,
+            'rep_number': 12,
+            'rep_length': 3,
+            'rows': [
+                {'auto_id': True, 'name': 'surface_detail_id', 'type': 'integer', 'no': 9, 'rep_diff': None},
+                {'auto_id': False, 'name': 'surface_dataset_id', 'type': 'integer', 'no': 0, 'rep_diff': None},
+                {'auto_id': False, 'name': 'item_attr_name', 'type': 'string', 'no': 0, 'rep_diff': 1},
+                {'auto_id': False, 'name': 'display_title', 'type': 'string', 'no': 0, 'rep_diff': 0},
+                {'auto_id': False, 'name': 'display_order', 'type': 'integer', 'no': 0, 'rep_diff': 2},
+                {'auto_id': False, 'name': 'enabled', 'type': 'boolean', 'no': 9, 'rep_diff': None}
+            ]
+        }
+    }
 
     return db_table_names, db_tables
 
@@ -176,20 +207,42 @@ def create_models(db_tables_def, dataset_file_path, model_name=None, is_structur
         })
 
         model_main = {}
-        model_pk = {}
         for row in db_table_def['rows']:
-            value = csv_text_to_value(record[row['sheet_row_number']], row['type'])
-            model_main.update({
-                row['name']: value
-            })
-            if row['name'] in db_table_def['primary_key']:
-                model_pk.update({
+            value = csv_text_to_value(record[row['no']], row['type'])
+            if row.get('meta') is None:
+                model_main.update({
                     row['name']: value
+                })
+            else:
+#                models.append({
+#                    '__profile__': {
+#                        'name': row['meta'],
+#                        'path': dataset_file_path,
+#                        'table': {
+#                            'name': row['meta']['table'],
+#                            'def': db_tables_def[row['meta']['table']]
+#                        },
+#                        'detail': {
+#                            'name': None,
+#                            'def': None
+#                        }
+#                    },
+#                    '__main__': {
+#                        '__instance__': {
+#                            row['meta']['name']: value
+#                        }
+#                    }
+#                })
+                meta_table = row['meta']['table']
+                meta_name = row['meta']['name']
+                meta_id = row['meta']['id']
+                subquery = f'(select {meta_id} from {meta_table} where {meta_name} = {value})'
+                model_main.update({
+                    row['name']: subquery
                 })
         model.update({
             '__main__': {
                 '__instance__': model_main,
-                '__pk__': model_pk
             }})
 
         if is_structured:
@@ -197,32 +250,26 @@ def create_models(db_tables_def, dataset_file_path, model_name=None, is_structur
             if db_detail_def['auto_id_row_number'] is not None:
                 auto_id_base = int(record[db_detail_def['auto_id_row_number']]) + 1
 
-            count = int((len(record) - db_detail_def['repeat_row_number']) / db_detail_def['repeat_row_length'])
+            count = int((len(record) - db_detail_def['rep_number']) / db_detail_def['rep_length'])
 
             model_details = []
             for i in range(count):
-                start = db_detail_def['repeat_row_number'] + db_detail_def['repeat_row_length'] * i
-                end = start + db_detail_def['repeat_row_length']
+                start = db_detail_def['rep_number'] + db_detail_def['rep_length'] * i
+                end = start + db_detail_def['rep_length']
                 if len(''.join(record[start:end])) > 0:
                     model_detail = {}
-                    model_detail_pk = {}
                     for row in db_detail_def['rows']:
                         if row['auto_id'] == True:
                             value = str(auto_id_base + i)
-                        elif row['repeat_row_differential'] is not None:
-                            value = csv_text_to_value(record[start + row['repeat_row_differential']], row['type'])
+                        elif row['rep_diff'] is not None:
+                            value = csv_text_to_value(record[start + row['rep_diff']], row['type'])
                         else:
-                            value = csv_text_to_value(record[row['sheet_row_number']], row['type'])
+                            value = csv_text_to_value(record[row['no']], row['type'])
                         model_detail.update({
                             row['name']: value
                         })
-                        if row['name'] in db_detail_def['primary_key']:
-                            model_detail_pk.update({
-                                row['name']: value
-                            })
                     model_details.append({
                         '__instance__': model_detail,
-                        '__pk__': model_detail_pk
                     })
             model.update({
                 '__detail__': model_details
@@ -244,11 +291,12 @@ def convert_model_to_dml(action, db_entity_name, model_dict):
         values_str = ','.join(values)
         return f'insert into {db_entity_name} ({keys_str}) values ({values_str});'
     elif action == 'delete':
-        conditions = []
-        for k, v in model_dict['__pk__'].items():
-            conditions.append(k + '=' + v)
-        conditions_str = ','.join(conditions)
-        return f'delete from {db_entity_name} where {conditions_str};'
+        return None
+#        conditions = []
+#        for k, v in model_dict['__pk__'].items():
+#            conditions.append(k + '=' + v)
+#        conditions_str = ','.join(conditions)
+#        return f'delete from {db_entity_name} where {conditions_str};'
 
 def generate_dmls(action, models):
 
@@ -421,41 +469,51 @@ def main():
     parser = argparse.ArgumentParser(description='Create DDL/DML from csv files', formatter_class=SortingHelpFormatter)
     sps = parser.add_subparsers(dest='subparser', title='action category arguments')
 
+    sp_tenant = sps.add_parser('tenant', help='generate DML for tenant')
+    sps_tenant = sp_tenant.add_subparsers(required=True, dest='action', title='action type')
+    sp_tenant_create = sps_tenant.add_parser('create', help='generate DML to create tenants')
+    sp_tenant_create.add_argument('source', nargs=1, metavar='TENANT-CSV', help='tenant csv file')
+    sp_tenant_create.add_argument('--send', nargs=1, metavar='DSN', help='send to database (eg. \'postgresql://user:password@host:port/dbname\')')
+    sp_tenant_delete = sps_tenant.add_parser('delete', help='generate DML to delete tenants')
+    sp_tenant_delete.add_argument('source', nargs=1, metavar='TENANT-CSV', help='tenant csv file')
+    sp_tenant_delete.add_argument('--send', nargs=1, metavar='DSN', help='send to database (eg. \'postgresql://user:password@host:port/dbname\')')
+
+    sp_service_path = sps.add_parser('servicepath', help='generate DML for service paths')
+    sps_service_path = sp_service_path.add_subparsers(required=True, dest='action', title='action type')
+    sp_service_path_create = sps_service_path.add_parser('create', help='generate DML to create service paths')
+    sp_service_path_create.add_argument('source', nargs=1, metavar='SERVICE-PATH-CSV', help='service path csv file')
+    sp_service_path_create.add_argument('--send', nargs=1, metavar='DSN', help='send to database (eg. \'postgresql://user:password@host:port/dbname\')')
+    sp_service_path_delete = sps_service_path.add_parser('delete', help='generate DML to delete service paths')
+    sp_service_path_delete.add_argument('source', nargs=1, metavar='SERVICE_PATH-CSV', help='service path csv file')
+    sp_service_path_delete.add_argument('--send', nargs=1, metavar='DSN', help='send to database (eg. \'postgresql://user:password@host:port/dbname\')')
+
     sp_category = sps.add_parser('category', help='generate DML for categories')
     sps_category = sp_category.add_subparsers(required=True, dest='action', title='action type')
     sp_category_create = sps_category.add_parser('create', help='generate DML to create categories')
-    sp_category_create.add_argument('table', nargs=1, metavar='TABLE-CSV', help='table definition csv file')
-    sp_category_create.add_argument('category', nargs=1, metavar='CATEGORY-CSV', help='category csv file')
-    sp_category_create.add_argument('--name', nargs=1, metavar='MODEL-NAME', help='dataset model name')
+    sp_category_create.add_argument('source', nargs=1, metavar='CATEGORY-CSV', help='category csv file')
     sp_category_create.add_argument('--send', nargs=1, metavar='DSN', help='send to database (eg. \'postgresql://user:password@host:port/dbname\')')
-    sp_category_delete = sps_category.add_parser('delete', help='generate DML to delete datasets')
-    sp_category_delete.add_argument('table', nargs=1, metavar='TABLE-CSV', help='table definition csv file')
-    sp_category_delete.add_argument('category', nargs=1, metavar='CATEGORY-CSV', help='category csv file')
-    sp_category_delete.add_argument('--name', nargs=1, metavar='MODEL-NAME', help='dataset model name')
+    sp_category_delete = sps_category.add_parser('delete', help='generate DML to delete categories')
+    sp_category_delete.add_argument('source', nargs=1, metavar='CATEGORY-CSV', help='category csv file')
     sp_category_delete.add_argument('--send', nargs=1, metavar='DSN', help='send to database (eg. \'postgresql://user:password@host:port/dbname\')')
 
     sp_dataset = sps.add_parser('dataset', help='generate DML for datasets')
     sps_dataset = sp_dataset.add_subparsers(required=True, dest='action', title='action type')
     sp_dataset_create = sps_dataset.add_parser('create', help='generate DML to create datasets')
-    sp_dataset_create.add_argument('table', nargs=1, metavar='TABLE-CSV', help='table definition csv file')
-    sp_dataset_create.add_argument('dataset', nargs=1, metavar='DATASET-CSV', help='dataset csv file')
+    sp_dataset_create.add_argument('source', nargs=1, metavar='DATASET-CSV', help='dataset csv file')
     sp_dataset_create.add_argument('--name', nargs=1, metavar='MODEL-NAME', help='dataset model name')
     sp_dataset_create.add_argument('--send', nargs=1, metavar='DSN', help='send to database (eg. \'postgresql://user:password@host:port/dbname\')')
     sp_dataset_delete = sps_dataset.add_parser('delete', help='generate DML to delete datasets')
-    sp_dataset_delete.add_argument('table', nargs=1, metavar='TABLE-CSV', help='table definition csv file')
-    sp_dataset_delete.add_argument('dataset', nargs=1, metavar='DATASET-CSV', help='dataset csv file')
+    sp_dataset_delete.add_argument('source', nargs=1, metavar='DATASET-CSV', help='dataset csv file')
     sp_dataset_delete.add_argument('--name', nargs=1, metavar='MODEL-NAME', help='dataset model name')
     sp_dataset_delete.add_argument('--send', nargs=1, metavar='DSN', help='send to database (eg. \'postgresql://user:password@host:port/dbname\')')
 
     sp_data = sps.add_parser('data', help='generate NGSI message for data')
     sps_data = sp_data.add_subparsers(required=True, dest='action', title='action type')
     sp_data_create = sps_data.add_parser('create', help='generate NGSI message to create data')
-    sp_data_create.add_argument('table', nargs=1, metavar='TABLE-CSV', help='table definition csv file')
-    sp_data_create.add_argument('data', nargs=1, metavar='DATA', help='data csv file')
+    sp_data_create.add_argument('source', nargs=1, metavar='DATA', help='data csv file')
     sp_data_create.add_argument('--send', nargs=1, metavar='BROKER-URL', help='send to NGSI v2 broker (eg. \'http://broker/v2/entities\')')
     sp_data_delete = sps_data.add_parser('delete', help='generate NGSI message to delete data')
-    sp_data_delete.add_argument('table', nargs=1, metavar='TABLE-CSV', help='table definition csv file')
-    sp_data_delete.add_argument('data', nargs=1, metavar='DATA', help='data csv file')
+    sp_data_delete.add_argument('source', nargs=1, metavar='DATA', help='data csv file')
     sp_data_delete.add_argument('--send', nargs=1, metavar='BROKER-URL', help='send to NGSI v2 broker (eg. \'http://broker/v2/entities\')')
 
     if len(sys.argv) < 2:
@@ -465,33 +523,17 @@ def main():
     args = parser.parse_args()
     subcommand = args.subparser
 
-    if subcommand == 'table':
+    if subcommand != 'data':
         action = args.action
-        db_table_names, db_tables_def = load_table_def(args.table[0])
-        if action == 'print':
-            print_table_def(db_table_names, db_tables_def)
-        elif action == 'create' or action == 'delete':
-            if args.send is None:
-                conn = None
-            else:
-                conn = get_pg_connection(args.send[0])
-                if conn is None:
-                    return 1
-            ddls = generate_ddls(action, db_table_names, db_tables_def)
-            for ddl in ddls:
-                send_db_message(ddl, pg_connection=conn)
-            if conn is not None:
-                conn.close()
-    elif subcommand == 'category' or subcommand == 'dataset':
-        action = args.action
-        if subcommand == 'category':
-            dataset_file = args.category[0]
+        if subcommand == 'tenant' or subcommand == 'servicepath' or subcommand == 'category':
+            dataset_file = args.source[0]
             is_structured = False
+            model_name = subcommand if subcommand != 'servicepath' else 'service_path'
         else:
-            dataset_file = args.dataset[0]
+            dataset_file = args.source[0]
             is_structured = True
-        model_name = args.name[0] if args.name is not None else None
-        db_table_names, db_tables_def = load_table_def(args.table[0])
+            model_name = args.name[0] if args.name is not None else None
+        db_table_names, db_tables_def = load_table_def()
         if action == 'create' or action == 'delete':
             models = create_models(db_tables_def, dataset_file, model_name, is_structured=is_structured)
             dmls = generate_dmls(action, models)
@@ -505,12 +547,12 @@ def main():
                 send_db_message(dml, pg_connection=conn)
             if conn is not None:
                 conn.close()
-    elif subcommand == 'data':
+    else:
         action = args.action
-        db_table_names, db_tables_def = load_table_def(args.table[0])
+        db_table_names, db_tables_def = load_table_def()
         if action == 'create' or action == 'delete':
             broker_url = args.send[0] if args.send is not None else None
-            entities = create_data_entities(db_table_names, db_tables_def, args.data[0])
+            entities = create_data_entities(db_table_names, db_tables_def, args.source[0])
             for entity in entities:
                 status_message = send_broker_message(action, entity, broker_url=broker_url)
                 if status_message is not None:
