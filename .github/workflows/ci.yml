@@ -31,5 +31,3 @@ jobs:
         run: npm run test --prefix ./StarSeeker/backend
       - name: Run eslint for frontend
         run: npm run lint --prefix ./StarSeeker/frontend
-      - name: Run test for frontend
-        run: npm run test --prefix ./StarSeeker/frontend
