@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1 
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16.15.1'
+      - name: npm install for backend
+        run: cd StarSeeker/backend && npm install
+      - name: npm install for frontend
+        run: cd StarSeeker/frontend && npm install
+      - name: eslint review
+        uses: reviewdog/action-eslint@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          eslint_flags: './**/*.{ts,js}'
+      - name: Run eslint for backend
+        run: cd StarSeeker/backend && npm run lint
+      - name: Run test for backend
+        run: cd StarSeeker/backend && npm run test
+      - name: Run eslint for frontend
+        run: cd StarSeeker/frontend && npm run lint
+      - name: Run test for frontend
+        run: cd StarSeeker/frontend && npm run test
