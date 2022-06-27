@@ -35,14 +35,14 @@ def load_table_def():
     db_tables = {
         't_tenant': {
             'name': 't_tenant',
-            'delete_key_row_number': 0,
+            'delete_key_names': [ 'tenant_name' ],
             'rows': [
                 {'auto_id': False, 'name': 'tenant_name', 'type': 'string', 'no':0, 'rep_diff': None }
             ]
         },
         't_service_path': {
             'name': 't_service_path',
-            'delete_key_row_number': 0,
+            'delete_key_names': [ 'service_path_name' ],
             'rows': [
                 {'auto_id': False, 'name': 'service_path_name', 'type': 'string', 'no':0, 'rep_diff': None }
             ]
@@ -50,7 +50,7 @@ def load_table_def():
         't_category': {
             'name': 't_category',
             'auto_id_row_number': None,
-            'delete_key_row_number': 2,
+            'delete_key_names': [ 'category_id' ],
             'rep_number': None,
             'rep_length': 0,
             'rows': [
@@ -66,7 +66,7 @@ def load_table_def():
         't_point_dataset': {
             'name': 't_point_dataset',
             'auto_id_row_number': None,
-            'delete_key_row_number': 3,
+            'delete_key_names': [ 'point_dataset_id' ],
             'rep_number': None,
             'rep_length': 0,
             'rows': [
@@ -87,7 +87,7 @@ def load_table_def():
         't_point_detail': {
             'name': 't_point_detail',
             'auto_id_row_number': 0,
-            'delete_key_row_number': None,
+            'delete_key_names': [ 'point_detail_id', 'point_dataset_id' ],
             'rep_number': 11,
             'rep_length': 4,
             'rows': [
@@ -103,7 +103,7 @@ def load_table_def():
         't_surface_dataset': {
             'name': 't_surface_dataset',
             'auto_id_row_number': None,
-            'delete_key_row_number': 3,
+            'delete_key_names': [ 'surface_dataset_id' ],
             'rep_number': None,
             'rep_length': 0,
             'rows': [
@@ -125,7 +125,7 @@ def load_table_def():
         't_surface_detail': {
             'name': 't_surface_detail',
             'auto_id_row_number': 0,
-            'delete_key_row_number': None,
+            'delete_key_names': [ 'surface_detail_id', 'surface_dataset_id' ],
             'rep_number': 12,
             'rep_length': 3,
             'rows': [
@@ -195,11 +195,11 @@ def create_models(db_tables_def, dataset_file_path, model_name=None, is_structur
             'path': dataset_file_path,
             'table': {
                 'name': db_table_name,
-                'def': db_table_def
+                'def': db_table_def,
             },
             'detail': {
                 'name': db_detail_name,
-                'def': db_detail_def
+                'def': db_detail_def,
             }
         }
         model.update({
@@ -214,25 +214,6 @@ def create_models(db_tables_def, dataset_file_path, model_name=None, is_structur
                     row['name']: value
                 })
             else:
-#                models.append({
-#                    '__profile__': {
-#                        'name': row['meta'],
-#                        'path': dataset_file_path,
-#                        'table': {
-#                            'name': row['meta']['table'],
-#                            'def': db_tables_def[row['meta']['table']]
-#                        },
-#                        'detail': {
-#                            'name': None,
-#                            'def': None
-#                        }
-#                    },
-#                    '__main__': {
-#                        '__instance__': {
-#                            row['meta']['name']: value
-#                        }
-#                    }
-#                })
                 meta_table = row['meta']['table']
                 meta_name = row['meta']['name']
                 meta_id = row['meta']['id']
@@ -243,6 +224,7 @@ def create_models(db_tables_def, dataset_file_path, model_name=None, is_structur
         model.update({
             '__main__': {
                 '__instance__': model_main,
+                '__delete_keys__': db_table_def['delete_key_names']
             }})
 
         if is_structured:
@@ -270,6 +252,7 @@ def create_models(db_tables_def, dataset_file_path, model_name=None, is_structur
                         })
                     model_details.append({
                         '__instance__': model_detail,
+                        '__delete_keys__': db_detail_def['delete_key_names']
                     })
             model.update({
                 '__detail__': model_details
@@ -291,12 +274,11 @@ def convert_model_to_dml(action, db_entity_name, model_dict):
         values_str = ','.join(values)
         return f'insert into {db_entity_name} ({keys_str}) values ({values_str});'
     elif action == 'delete':
-        return None
-#        conditions = []
-#        for k, v in model_dict['__pk__'].items():
-#            conditions.append(k + '=' + v)
-#        conditions_str = ','.join(conditions)
-#        return f'delete from {db_entity_name} where {conditions_str};'
+        conditions = []
+        for k in model_dict['__delete_keys__']:
+            conditions.append(k + '=' + model_dict['__instance__'][k])
+        conditions_str = ','.join(conditions)
+        return f'delete from {db_entity_name} where {conditions_str};'
 
 def generate_dmls(action, models):
 
