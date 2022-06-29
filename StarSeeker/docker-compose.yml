@@ -97,6 +97,7 @@ services:
       - "ORION_MONGO_AUTH_SOURCE=admin"
       - "ORION_MONGO_DB=oriondb"
       - "ORION_PORT=1026"
+      - "ORION_MULTI_SERVICE=true"
     networks:
       - nw
 

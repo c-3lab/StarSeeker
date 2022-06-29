@@ -31,7 +31,6 @@ def csv_to_matrix(tables_csv_filename):
 
 def load_table_def():
 
-    db_table_names = ['t_category', 't_point_dataset', 't_point_detail', 't_surface_dataset', 't_surface_detail']
     db_tables = {
         't_tenant': {
             'name': 't_tenant',
@@ -44,7 +43,11 @@ def load_table_def():
             'name': 't_service_path',
             'delete_key_names': [ 'service_path_name' ],
             'rows': [
-                {'auto_id': False, 'name': 'service_path_name', 'type': 'string', 'no':0, 'rep_diff': None }
+                {'auto_id': False, 'name': 'service_path_name', 'type': 'string', 'no':0, 'rep_diff': None },
+                {'auto_id': False, 'name': 'tenant_id', 'type': 'string', 'no': None, 'rep_diff': None,
+                 'method': 'subquery',
+                 'meta': { 'table': 't_tenant', 'id': 'tenant_id', 'name': 'tenant_name', 'no': 1 }
+                }
             ]
         },
         't_category': {
@@ -56,11 +59,20 @@ def load_table_def():
             'rows': [
                 {'auto_id': False, 'name': 'category_id', 'type': 'integer', 'no': 0, 'rep_diff': None},
                 {'auto_id': False, 'name': 'category_name', 'type': 'string', 'no': 1, 'rep_diff': None},
-                {'auto_id': False, 'name': 'tenant_id', 'type': 'string', 'no': 2, 'rep_diff': None,
-                 'meta': { 'table': 't_tenant', 'name': 'tenant_name', 'id': 'tenant_id' } },
-                {'auto_id': False, 'name': 'category_color', 'type': 'string', 'no': 3, 'rep_diff': None},
-                {'auto_id': False, 'name': 'display_order', 'type': 'integer', 'no': 4, 'rep_diff': None},
-                {'auto_id': False, 'name': 'enabled', 'type': 'boolean', 'no': 5, 'rep_diff': None}
+                {'auto_id': False, 'name': 'service_path_id', 'type': 'string', 'no': None, 'rep_diff': None,
+                 'method': 'outerjoin',
+                 'meta': {
+                     'table': 't_service_path', 'id': 'service_path_id',
+                     'join': 't_tenant', 'on_left': 'tenant_id', 'on_right': 'tenant_id',
+                     'cond': [
+                         {'table': 't_tenant', 'name': 'tenant_name', 'type': 'string', 'no': 2},
+                         {'table': 't_service_path', 'name': 'service_path_name', 'type': 'string', 'no': 3}
+                     ]
+                 }
+                },
+                {'auto_id': False, 'name': 'category_color', 'type': 'string', 'no': 4, 'rep_diff': None},
+                {'auto_id': False, 'name': 'display_order', 'type': 'integer', 'no': 5, 'rep_diff': None},
+                {'auto_id': False, 'name': 'enabled', 'type': 'boolean', 'no': 6, 'rep_diff': None}
             ]
         },
         't_point_dataset': {
@@ -73,10 +85,10 @@ def load_table_def():
                 {'auto_id': False, 'name': 'point_dataset_id', 'type': 'integer', 'no': 0, 'rep_diff': None},
                 {'auto_id': False, 'name': 'category_id', 'type': 'integer', 'no': 1, 'rep_diff': None},
                 {'auto_id': False, 'name': 'point_dataset_name', 'type': 'string', 'no': 3, 'rep_diff': None},
-                {'auto_id': False, 'name': 'tenant_id', 'type': 'string', 'no': 4, 'rep_diff': None,
-                 'meta': { 'table': 't_tenant', 'name': 'tenant_name', 'id': 'tenant_id' } },
-                {'auto_id': False, 'name': 'service_path_id', 'type': 'string', 'no': 5, 'rep_diff': None,
-                 'meta': { 'table': 't_service_path', 'name': 'service_path_name', 'id': 'service_path_id' } },
+                {'auto_id': False, 'name': 'service_path_id', 'type': 'string', 'no': None, 'rep_diff': None,
+                 'method': 'subquery',
+                 'meta': { 'table': 't_service_path', 'id': 'service_path_id', 'name': 'service_path_name', 'no': 5 }
+                },
                 {'auto_id': False, 'name': 'point_color_code', 'type': 'string', 'no': 6, 'rep_diff': None},
                 {'auto_id': False, 'name': 'entity_type', 'type': 'string', 'no': 7, 'rep_diff': None},
                 {'auto_id': False, 'name': 'coordinates_attr_name', 'type': 'string', 'no': 9, 'rep_diff': None},
@@ -110,10 +122,10 @@ def load_table_def():
                 {'auto_id': False, 'name': 'surface_dataset_id', 'type': 'integer', 'no': 0, 'rep_diff': None},
                 {'auto_id': False, 'name': 'category_id', 'type': 'integer', 'no': 1, 'rep_diff': None},
                 {'auto_id': False, 'name': 'surface_dataset_name', 'type': 'string', 'no': 3, 'rep_diff': None},
-                {'auto_id': False, 'name': 'tenant_id', 'type': 'string', 'no': 4, 'rep_diff': None,
-                 'meta': { 'table': 't_tenant', 'name': 'tenant_name', 'id': 'tenant_id' } },
-                {'auto_id': False, 'name': 'service_path_id', 'type': 'string', 'no': 5, 'rep_diff': None,
-                 'meta': { 'table': 't_service_path', 'name': 'service_path_name', 'id': 'service_path_id' } },
+                {'auto_id': False, 'name': 'service_path_id', 'type': 'string', 'no': None, 'rep_diff': None,
+                 'method': 'subquery',
+                 'meta': { 'table': 't_service_path', 'id': 'service_path_id', 'name': 'service_path_name', 'no': 5 }
+                },
                 {'auto_id': False, 'name': 'border_color_code', 'type': 'string', 'no': 6, 'rep_diff': None},
                 {'auto_id': False, 'name': 'fill_color_code', 'type': 'string', 'no': 7, 'rep_diff': None},
                 {'auto_id': False, 'name': 'entity_type', 'type': 'string', 'no': 8, 'rep_diff': None},
@@ -139,7 +151,7 @@ def load_table_def():
         }
     }
 
-    return db_table_names, db_tables
+    return db_tables
 
 def send_db_message(message, pg_connection=None):
 
@@ -151,8 +163,8 @@ def send_db_message(message, pg_connection=None):
             pg_connection.commit()
         except Exception as e:
             n = type(e).__name__
-            d = str(e).strip()
-            print(f'[{n}] {d}', file=sys.stderr)
+            d = str(e).strip().replace('\n', '; ')
+            print(f'[{n}] {d}; SQL: {message}', file=sys.stderr)
     else:
         print(message)
 
@@ -208,19 +220,35 @@ def create_models(db_tables_def, dataset_file_path, model_name=None, is_structur
 
         model_main = {}
         for row in db_table_def['rows']:
-            value = csv_text_to_value(record[row['no']], row['type'])
-            if row.get('meta') is None:
-                model_main.update({
-                    row['name']: value
-                })
-            else:
+            value = None
+            if row['no'] is not None:
+                value = csv_text_to_value(record[row['no']], row['type'])
+            elif row['method'] == 'subquery':
                 meta_table = row['meta']['table']
                 meta_name = row['meta']['name']
                 meta_id = row['meta']['id']
-                subquery = f'(select {meta_id} from {meta_table} where {meta_name} = {value})'
-                model_main.update({
-                    row['name']: subquery
-                })
+                meta_no = row['meta']['no']
+                subquery_value = csv_text_to_value(record[row['meta']['no']], row['type'])
+                value = f'(select {meta_id} from {meta_table} where {meta_name} = {subquery_value})'
+            elif row['method'] == 'outerjoin':
+                meta_table = row['meta']['table']
+                meta_id = row['meta']['id']
+                meta_join = row['meta']['join']
+                meta_on_left = row['meta']['on_left']
+                meta_on_right = row['meta']['on_right']
+                conditions = []
+                for condition in row['meta']['cond']:
+                    cond_table = condition['table']
+                    cond_name = condition['name']
+                    cond_no = condition['no']
+                    cond_type = condition['type']
+                    cond_value = csv_text_to_value(record[cond_no], cond_type)
+                    conditions.append(f'{cond_table}.{cond_name} = {cond_value}')
+                cond_value = ' and '.join(conditions)
+                value = f'(select {meta_id} from {meta_table} inner join {meta_join} on {meta_table}.{meta_on_left} = {meta_join}.{meta_on_right} where {cond_value})'
+            model_main.update({
+                row['name']: value
+            })
         model.update({
             '__main__': {
                 '__instance__': model_main,
@@ -277,7 +305,7 @@ def convert_model_to_dml(action, db_entity_name, model_dict):
         conditions = []
         for k in model_dict['__delete_keys__']:
             conditions.append(k + '=' + model_dict['__instance__'][k])
-        conditions_str = ','.join(conditions)
+        conditions_str = ' and '.join(conditions)
         return f'delete from {db_entity_name} where {conditions_str};'
 
 def generate_dmls(action, models):
@@ -310,20 +338,22 @@ def convert_attribute_format(value, type):
         value = datetime.strptime(value, '%Y/%m/%d %H:%M:%S').isoformat()
     return value
 
-def create_data_entities(db_table_names, db_tables_def, filename):
+def create_data_entities(db_tables_def, filename):
 
     matrix = csv_to_matrix(filename)
 
     entities = {}
     for vec in matrix:
-        if len(vec) < 5:
+        if len(vec) < 7:
             pass
 
         entity_id = vec[0]
         entity_type = vec[1]
-        attr_id = vec[2]
-        attr_type = vec[3]
-        attr_value = convert_attribute_format(vec[4], vec[3])
+        tenant = vec[2]
+        service_path = vec[3]
+        attr_id = vec[4]
+        attr_type = vec[5]
+        attr_value = convert_attribute_format(vec[6], vec[5])
         if entity_id in entities:
             attributes = entities[entity_id]['__attr__']
             if attr_id in attributes:
@@ -341,7 +371,9 @@ def create_data_entities(db_table_names, db_tables_def, filename):
             entity = {
                 '__main__': {
                     'id': entity_id,
-                    'type': entity_type
+                    'type': entity_type,
+                    'tenant': tenant if len(tenant) > 1 else None,
+                    'service_path': service_path if len(service_path) > 1 else None
                 },
                 '__attr__': {
                     attr_id: {
@@ -393,24 +425,34 @@ def send_broker_message(action, entity, broker_url=None):
     try:
         if action == 'create':
             message = generate_message_to_create_entities(entity)
+            tenant = entity['__main__']['tenant'] if entity['__main__']['tenant'] else ''
+            service_path = entity['__main__']['service_path'] if entity['__main__']['service_path'] else ''
             if broker_url is not None:
                 headers = {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Fiware-Service': tenant,
+                    'Fiware-ServicePath': service_path
                 }
                 url = broker_url
                 res = requests.post(url, json=message, headers=headers)
             else:
-                print(f'POST {message}')
+                print(f'POST {message} tenant={tenant} service_path={service_path}')
                 return None
         elif action == 'delete':
+            id = entity['__main__']['id']
+            tenant = entity['__main__']['tenant'] if entity['__main__']['tenant'] else ''
+            service_path = entity['__main__']['service_path'] if entity['__main__']['service_path'] else ''
             if broker_url is not None:
                 if len(broker_url) > 0 and broker_url[-1] != '/':
                     broker_url = broker_url + '/'
-                url = urljoin(broker_url, entity['__main__']['id'])
-                res = requests.delete(url)
+                headers = {
+                    'Fiware-Service': tenant,
+                    'Fiware-ServicePath': service_path
+                }
+                url = urljoin(broker_url, id)
+                res = requests.delete(url, headers=headers)
             else:
-                id = entity['__main__']['id']
-                print(f'DELETE {id}')
+                print(f'DELETE {id} tenant={tenant} service_path={service_path}')
                 return None
     except Exception as e:
         n = type(e).__name__
@@ -515,26 +557,26 @@ def main():
             dataset_file = args.source[0]
             is_structured = True
             model_name = args.name[0] if args.name is not None else None
-        db_table_names, db_tables_def = load_table_def()
+        db_tables_def = load_table_def()
         if action == 'create' or action == 'delete':
             models = create_models(db_tables_def, dataset_file, model_name, is_structured=is_structured)
             dmls = generate_dmls(action, models)
-            if args.send is None:
-                conn = None
-            else:
-                conn = get_pg_connection(args.send[0])
-                if conn is None:
-                    return 1
             for dml in dmls:
+                if args.send is None:
+                    conn = None
+                else:
+                    conn = get_pg_connection(args.send[0])
+                    if conn is None:
+                        return 1
                 send_db_message(dml, pg_connection=conn)
-            if conn is not None:
-                conn.close()
+                if conn is not None:
+                    conn.close()
     else:
         action = args.action
-        db_table_names, db_tables_def = load_table_def()
+        db_tables_def = load_table_def()
         if action == 'create' or action == 'delete':
             broker_url = args.send[0] if args.send is not None else None
-            entities = create_data_entities(db_table_names, db_tables_def, args.source[0])
+            entities = create_data_entities(db_tables_def, args.source[0])
             for entity in entities:
                 status_message = send_broker_message(action, entity, broker_url=broker_url)
                 if status_message is not None:
