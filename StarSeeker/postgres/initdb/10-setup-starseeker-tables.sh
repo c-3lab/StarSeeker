@@ -20,7 +20,7 @@ tenant_name varchar(50) not null unique\
 create_table t_service_path "create table t_service_path (\
 service_path_id serial primary key not null unique,\
 tenant_id integer references t_tenant(tenant_id) not null,\
-service_path_name varchar(550) not null unique\
+service_path_name varchar(550) not null\
 );"
 
 create_table t_category "create table t_category (\
