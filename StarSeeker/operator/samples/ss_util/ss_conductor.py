@@ -60,7 +60,7 @@ def load_table_def():
                 {'auto_id': False, 'name': 'category_id', 'type': 'integer', 'no': 0, 'rep_diff': None},
                 {'auto_id': False, 'name': 'category_name', 'type': 'string', 'no': 1, 'rep_diff': None},
                 {'auto_id': False, 'name': 'service_path_id', 'type': 'string', 'no': None, 'rep_diff': None,
-                 'method': 'outerjoin',
+                 'method': 'join',
                  'meta': {
                      'table': 't_service_path', 'id': 'service_path_id',
                      'join': 't_tenant', 'on_left': 'tenant_id', 'on_right': 'tenant_id',
@@ -230,7 +230,7 @@ def create_models(db_tables_def, dataset_file_path, model_name=None, is_structur
                 meta_no = row['meta']['no']
                 subquery_value = csv_text_to_value(record[row['meta']['no']], row['type'])
                 value = f'(select {meta_id} from {meta_table} where {meta_name} = {subquery_value})'
-            elif row['method'] == 'outerjoin':
+            elif row['method'] == 'join':
                 meta_table = row['meta']['table']
                 meta_id = row['meta']['id']
                 meta_join = row['meta']['join']
