@@ -44,9 +44,14 @@ def load_table_def():
             'delete_key_names': [ 'service_path_name' ],
             'rows': [
                 {'auto_id': False, 'name': 'service_path_name', 'type': 'string', 'no':0, 'rep_diff': None },
-                {'auto_id': False, 'name': 'tenant_id', 'type': 'string', 'no': None, 'rep_diff': None,
-                 'method': 'subquery',
-                 'meta': { 'table': 't_tenant', 'id': 'tenant_id', 'name': 'tenant_name', 'no': 1 }
+                {'auto_id': False, 'name': 'tenant_id', 'no': None, 'rep_diff': None,
+                 'subquery': {
+                     'table': 't_tenant',
+                     'name': 'tenant_id',
+                     'cond': [
+                         { 'name': 'tenant_name', 'type': 'string', 'no': 1 }
+                     ]
+                 }
                 }
             ]
         },
@@ -57,22 +62,26 @@ def load_table_def():
             'rep_number': None,
             'rep_length': 0,
             'rows': [
-                {'auto_id': False, 'name': 'category_id', 'type': 'integer', 'no': 0, 'rep_diff': None},
-                {'auto_id': False, 'name': 'category_name', 'type': 'string', 'no': 1, 'rep_diff': None},
-                {'auto_id': False, 'name': 'service_path_id', 'type': 'string', 'no': None, 'rep_diff': None,
-                 'method': 'join',
-                 'meta': {
-                     'table': 't_service_path', 'id': 'service_path_id',
-                     'join': 't_tenant', 'on_left': 'tenant_id', 'on_right': 'tenant_id',
+                {'auto_id': False, 'name': 'category_name', 'type': 'string', 'no': 0, 'rep_diff': None},
+                {'auto_id': False, 'name': 'service_path_id', 'no': None, 'rep_diff': None,
+                 'subquery': {
+                     'table': 't_service_path',
+                     'name': 'service_path_id',
+                     'innerjoin': {
+                         'target': 't_tenant',
+                         'on_left': 'tenant_id',
+                         'on_right': 'tenant_id'
+                     },
                      'cond': [
-                         {'table': 't_tenant', 'name': 'tenant_name', 'type': 'string', 'no': 2},
-                         {'table': 't_service_path', 'name': 'service_path_name', 'type': 'string', 'no': 3}
+                         { 'table': 't_tenant', 'name': 'tenant_name', 'type': 'string', 'no': 1 },
+                         { 'table': 't_service_path', 'name': 'service_path_name', 'type': 'string', 'no': 2 }
                      ]
+
                  }
                 },
-                {'auto_id': False, 'name': 'category_color', 'type': 'string', 'no': 4, 'rep_diff': None},
-                {'auto_id': False, 'name': 'display_order', 'type': 'integer', 'no': 5, 'rep_diff': None},
-                {'auto_id': False, 'name': 'enabled', 'type': 'boolean', 'no': 6, 'rep_diff': None}
+                {'auto_id': False, 'name': 'category_color', 'type': 'string', 'no': 3, 'rep_diff': None},
+                {'auto_id': False, 'name': 'display_order', 'type': 'integer', 'no': 4, 'rep_diff': None},
+                {'auto_id': False, 'name': 'enabled', 'type': 'boolean', 'no': 5, 'rep_diff': None}
             ]
         },
         't_point_dataset': {
@@ -82,34 +91,92 @@ def load_table_def():
             'rep_number': None,
             'rep_length': 0,
             'rows': [
-                {'auto_id': False, 'name': 'point_dataset_id', 'type': 'integer', 'no': 0, 'rep_diff': None},
-                {'auto_id': False, 'name': 'category_id', 'type': 'integer', 'no': 1, 'rep_diff': None},
-                {'auto_id': False, 'name': 'point_dataset_name', 'type': 'string', 'no': 3, 'rep_diff': None},
-                {'auto_id': False, 'name': 'service_path_id', 'type': 'string', 'no': None, 'rep_diff': None,
-                 'method': 'subquery',
-                 'meta': { 'table': 't_service_path', 'id': 'service_path_id', 'name': 'service_path_name', 'no': 5 }
+                {'auto_id': False, 'name': 'point_dataset_name', 'type': 'string', 'no': 0, 'rep_diff': None},
+                {'auto_id': False, 'name': 'category_id', 'no': None, 'rep_diff': None,
+                 'subquery': {
+                     'table': 't_category',
+                     'name': 'category_id',
+                     'innerjoin': {
+                         'target': {
+                             'alias': 'cat',
+                             'subquery': {
+                                 'table': 't_service_path',
+                                 'name': 'service_path_id',
+                                 'innerjoin': {
+                                     'target': 't_tenant',
+                                     'on_left': 'tenant_id',
+                                     'on_right': 'tenant_id'
+                                 },
+                                 'cond': [
+                                     { 'table': 't_tenant', 'name': 'tenant_name', 'type': 'string', 'no': 1 },
+                                     { 'table': 't_service_path', 'name': 'service_path_name', 'type': 'string', 'no': 2 }
+                                 ]
+                             }
+                         },
+                         'on_left': 'service_path_id',
+                         'on_right': 'service_path_id'
+                     }
+                 }
                 },
-                {'auto_id': False, 'name': 'point_color_code', 'type': 'string', 'no': 6, 'rep_diff': None},
-                {'auto_id': False, 'name': 'entity_type', 'type': 'string', 'no': 7, 'rep_diff': None},
-                {'auto_id': False, 'name': 'coordinates_attr_name', 'type': 'string', 'no': 9, 'rep_diff': None},
-                {'auto_id': False, 'name': 'register_time_attr_name', 'type': 'string', 'no': 10, 'rep_diff': None},
-                {'auto_id': False, 'name': 'enabled', 'type': 'boolean', 'no': 8, 'rep_diff': None}
+                {'auto_id': False, 'name': 'entity_type', 'type': 'string', 'no': 3, 'rep_diff': None},
+                {'auto_id': False, 'name': 'point_color_code', 'type': 'string', 'no': 4, 'rep_diff': None},
+                {'auto_id': False, 'name': 'coordinates_attr_name', 'type': 'string', 'no': 6, 'rep_diff': None},
+                {'auto_id': False, 'name': 'register_time_attr_name', 'type': 'string', 'no': 7, 'rep_diff': None},
+                {'auto_id': False, 'name': 'enabled', 'type': 'boolean', 'no': 5, 'rep_diff': None}
             ]
         },
         't_point_detail': {
             'name': 't_point_detail',
-            'auto_id_row_number': 0,
+            'auto_id_row_number': None,
             'delete_key_names': [ 'point_detail_id', 'point_dataset_id' ],
-            'rep_number': 11,
+            'rep_number': 8,
             'rep_length': 4,
             'rows': [
-                {'auto_id': True, 'name': 'point_detail_id', 'type': 'integer', 'no': 8, 'rep_diff': None},
-                {'auto_id': False, 'name': 'point_dataset_id', 'type': 'integer', 'no': 0, 'rep_diff': None},
+                {'auto_id': False, 'name': 'point_dataset_id', 'no': None, 'rep_diff': None,
+                 'subquery': {
+                     'table': 't_point_dataset',
+                     'name': 'point_dataset_id',
+                     'innerjoin': {
+                         'target': {
+                             'alias': 'ds',
+                             'subquery': {
+                                 'table': 't_category',
+                                 'name': 'category_id',
+                                 'innerjoin': {
+                                     'target': {
+                                         'alias': 'cat',
+                                         'subquery': {
+                                             'table': 't_service_path',
+                                             'name': 'service_path_id',
+                                             'innerjoin': {
+                                                 'target': 't_tenant',
+                                                 'on_left': 'tenant_id',
+                                                 'on_right': 'tenant_id'
+                                             },
+                                             'cond': [
+                                                 { 'table': 't_tenant', 'name': 'tenant_name', 'type': 'string', 'no': 1 },
+                                                 { 'table': 't_service_path', 'name': 'service_path_name', 'type': 'string', 'no': 2 }
+                                             ]
+                                         }
+                                     },
+                                     'on_left': 'service_path_id',
+                                     'on_right': 'service_path_id'
+                                 }
+                             }
+                         },
+                         'on_left': 'category_id',
+                         'on_right': 'category_id'
+                     },
+                     'cond': [
+                         { 'name': 'entity_type', 'type': 'string', 'no': 3 }
+                     ]
+                 }
+                },
                 {'auto_id': False, 'name': 'item_attr_name', 'type': 'string', 'no': 0, 'rep_diff': 1},
                 {'auto_id': False, 'name': 'data_type', 'type': 'integer', 'no': 0, 'rep_diff': 2},
                 {'auto_id': False, 'name': 'display_title', 'type': 'string', 'no': 0, 'rep_diff': 0},
                 {'auto_id': False, 'name': 'display_order', 'type': 'integer', 'no': 0, 'rep_diff': 3},
-                {'auto_id': False, 'name': 'enabled', 'type': 'boolean', 'no': 8, 'rep_diff': None}
+                {'auto_id': False, 'name': 'enabled', 'type': 'boolean', 'no': 5, 'rep_diff': None}
             ]
         },
         't_surface_dataset': {
@@ -119,34 +186,92 @@ def load_table_def():
             'rep_number': None,
             'rep_length': 0,
             'rows': [
-                {'auto_id': False, 'name': 'surface_dataset_id', 'type': 'integer', 'no': 0, 'rep_diff': None},
-                {'auto_id': False, 'name': 'category_id', 'type': 'integer', 'no': 1, 'rep_diff': None},
-                {'auto_id': False, 'name': 'surface_dataset_name', 'type': 'string', 'no': 3, 'rep_diff': None},
-                {'auto_id': False, 'name': 'service_path_id', 'type': 'string', 'no': None, 'rep_diff': None,
-                 'method': 'subquery',
-                 'meta': { 'table': 't_service_path', 'id': 'service_path_id', 'name': 'service_path_name', 'no': 5 }
+                {'auto_id': False, 'name': 'surface_dataset_name', 'type': 'string', 'no': 0, 'rep_diff': None},
+                {'auto_id': False, 'name': 'category_id', 'no': None, 'rep_diff': None,
+                 'subquery': {
+                     'table': 't_category',
+                     'name': 'category_id',
+                     'innerjoin': {
+                         'target': {
+                             'alias': 'cat',
+                             'subquery': {
+                                 'table': 't_service_path',
+                                 'name': 'service_path_id',
+                                 'innerjoin': {
+                                     'target': 't_tenant',
+                                     'on_left': 'tenant_id',
+                                     'on_right': 'tenant_id'
+                                 },
+                                 'cond': [
+                                     { 'table': 't_tenant', 'name': 'tenant_name', 'type': 'string', 'no': 1 },
+                                     { 'table': 't_service_path', 'name': 'service_path_name', 'type': 'string', 'no': 2 }
+                                 ]
+                             }
+                         },
+                         'on_left': 'service_path_id',
+                         'on_right': 'service_path_id'
+                     }
+                 }
                 },
-                {'auto_id': False, 'name': 'border_color_code', 'type': 'string', 'no': 6, 'rep_diff': None},
-                {'auto_id': False, 'name': 'fill_color_code', 'type': 'string', 'no': 7, 'rep_diff': None},
-                {'auto_id': False, 'name': 'entity_type', 'type': 'string', 'no': 8, 'rep_diff': None},
-                {'auto_id': False, 'name': 'coordinates_attr_name', 'type': 'string', 'no': 10, 'rep_diff': None},
-                {'auto_id': False, 'name': 'register_time_attr_name', 'type': 'string', 'no': 11, 'rep_diff': None},
-                {'auto_id': False, 'name': 'enabled', 'type': 'boolean', 'no': 9, 'rep_diff': None}
+                {'auto_id': False, 'name': 'entity_type', 'type': 'string', 'no': 3, 'rep_diff': None},
+                {'auto_id': False, 'name': 'border_color_code', 'type': 'string', 'no': 4, 'rep_diff': None},
+                {'auto_id': False, 'name': 'fill_color_code', 'type': 'string', 'no': 5, 'rep_diff': None},
+                {'auto_id': False, 'name': 'coordinates_attr_name', 'type': 'string', 'no': 7, 'rep_diff': None},
+                {'auto_id': False, 'name': 'register_time_attr_name', 'type': 'string', 'no': 8, 'rep_diff': None},
+                {'auto_id': False, 'name': 'enabled', 'type': 'boolean', 'no': 6, 'rep_diff': None}
             ]
         },
         't_surface_detail': {
             'name': 't_surface_detail',
-            'auto_id_row_number': 0,
+            'auto_id_row_number': None,
             'delete_key_names': [ 'surface_detail_id', 'surface_dataset_id' ],
-            'rep_number': 12,
+            'rep_number': 9,
             'rep_length': 3,
             'rows': [
-                {'auto_id': True, 'name': 'surface_detail_id', 'type': 'integer', 'no': 9, 'rep_diff': None},
-                {'auto_id': False, 'name': 'surface_dataset_id', 'type': 'integer', 'no': 0, 'rep_diff': None},
+                {'auto_id': False, 'name': 'surface_dataset_id', 'type': 'integer', 'no': None, 'rep_diff': None,
+                 'subquery': {
+                     'table': 't_surface_dataset',
+                     'name': 'surface_dataset_id',
+                     'innerjoin': {
+                         'target': {
+                             'alias': 'ds',
+                             'subquery': {
+                                 'table': 't_category',
+                                 'name': 'category_id',
+                                 'innerjoin': {
+                                     'target': {
+                                         'alias': 'cat',
+                                         'subquery': {
+                                             'table': 't_service_path',
+                                             'name': 'service_path_id',
+                                             'innerjoin': {
+                                                 'target': 't_tenant',
+                                                 'on_left': 'tenant_id',
+                                                 'on_right': 'tenant_id'
+                                             },
+                                             'cond': [
+                                                 { 'table': 't_tenant', 'name': 'tenant_name', 'type': 'string', 'no': 1 },
+                                                 { 'table': 't_service_path', 'name': 'service_path_name', 'type': 'string', 'no': 2 }
+                                             ]
+                                         }
+                                     },
+                                     'on_left': 'service_path_id',
+                                     'on_right': 'service_path_id'
+                                 }
+                             }
+                         },
+                         'on_left': 'category_id',
+                         'on_right': 'category_id'
+                     },
+                     'cond': [
+                         { 'name': 'entity_type', 'type': 'string', 'no': 3 }
+                     ]
+                 }
+                },
                 {'auto_id': False, 'name': 'item_attr_name', 'type': 'string', 'no': 0, 'rep_diff': 1},
                 {'auto_id': False, 'name': 'display_title', 'type': 'string', 'no': 0, 'rep_diff': 0},
                 {'auto_id': False, 'name': 'display_order', 'type': 'integer', 'no': 0, 'rep_diff': 2},
-                {'auto_id': False, 'name': 'enabled', 'type': 'boolean', 'no': 9, 'rep_diff': None}
+                {'auto_id': False, 'name': 'enabled', 'type': 'boolean', 'no': 6, 'rep_diff': None}
             ]
         }
     }
@@ -179,6 +304,52 @@ def csv_text_to_value(csv_text, row_type):
     else:
         value = f'\'{csv_text}\''
     return value
+
+def build_subquery(record, subquery):
+
+    name_str = subquery['name']
+
+    table = subquery['table']
+    if type(table) is str:
+        table_str = table
+        table_name = table
+    elif type(table) is dict:
+        alias_str = table['alias']
+        table_subquery = build_subquery(record, table['subquery'])
+        table_str = f'(select {alias_str}.{name_str} from {table_subquery} as {alias_str})'
+        table_name = alias_str
+
+    innerjoin = subquery.get('innerjoin')
+    if innerjoin is None:
+        innerjoin_str = ''
+    else:
+        innerjoin_target = innerjoin['target']
+        innerjoin_on_left_str = innerjoin['on_left']
+        innerjoin_on_right_str = innerjoin['on_right']
+        if type(innerjoin_target) is str:
+            innerjoin_target_str = innerjoin_target
+            innerjoin_target_name = innerjoin_target
+        elif type(innerjoin_target) is dict:
+            alias_str = innerjoin_target['alias']
+            innerjoin_target_subquery = build_subquery(record, innerjoin_target['subquery'])
+            innerjoin_target_str = f'{innerjoin_target_subquery} as {alias_str}'
+            innerjoin_target_name = alias_str
+        innerjoin_str = f'inner join {innerjoin_target_str} on {table_name}.{innerjoin_on_left_str} = {innerjoin_target_name}.{innerjoin_on_right_str}'
+
+    if subquery.get('cond') is None:
+        cond_str = ''
+    else:
+        conds = []
+        for cond in subquery['cond']:
+            cond_table = cond['table'] if cond.get('table') is not None else subquery['table']
+            cond_name = cond['name']
+            cond_no = cond['no']
+            cond_type = cond['type']
+            cond_value = csv_text_to_value(record[cond_no], cond_type)
+            conds.append(f'{cond_table}.{cond_name} = {cond_value}')
+        cond_str = 'where ' + (' and '.join(conds))
+
+    return f'(select {name_str} from {table_str} {innerjoin_str} {cond_str})'
 
 def create_models(db_tables_def, dataset_file_path, model_name=None, is_structured=False):
 
@@ -223,29 +394,8 @@ def create_models(db_tables_def, dataset_file_path, model_name=None, is_structur
             value = None
             if row['no'] is not None:
                 value = csv_text_to_value(record[row['no']], row['type'])
-            elif row['method'] == 'subquery':
-                meta_table = row['meta']['table']
-                meta_name = row['meta']['name']
-                meta_id = row['meta']['id']
-                meta_no = row['meta']['no']
-                subquery_value = csv_text_to_value(record[row['meta']['no']], row['type'])
-                value = f'(select {meta_id} from {meta_table} where {meta_name} = {subquery_value})'
-            elif row['method'] == 'join':
-                meta_table = row['meta']['table']
-                meta_id = row['meta']['id']
-                meta_join = row['meta']['join']
-                meta_on_left = row['meta']['on_left']
-                meta_on_right = row['meta']['on_right']
-                conditions = []
-                for condition in row['meta']['cond']:
-                    cond_table = condition['table']
-                    cond_name = condition['name']
-                    cond_no = condition['no']
-                    cond_type = condition['type']
-                    cond_value = csv_text_to_value(record[cond_no], cond_type)
-                    conditions.append(f'{cond_table}.{cond_name} = {cond_value}')
-                cond_value = ' and '.join(conditions)
-                value = f'(select {meta_id} from {meta_table} inner join {meta_join} on {meta_table}.{meta_on_left} = {meta_join}.{meta_on_right} where {cond_value})'
+            else:
+                value = build_subquery(record, row['subquery'])
             model_main.update({
                 row['name']: value
             })
@@ -273,8 +423,10 @@ def create_models(db_tables_def, dataset_file_path, model_name=None, is_structur
                             value = str(auto_id_base + i)
                         elif row['rep_diff'] is not None:
                             value = csv_text_to_value(record[start + row['rep_diff']], row['type'])
-                        else:
+                        elif row['no'] is not None:
                             value = csv_text_to_value(record[row['no']], row['type'])
+                        else:
+                            value = build_subquery(record, row['subquery'])
                         model_detail.update({
                             row['name']: value
                         })
