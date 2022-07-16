@@ -500,9 +500,9 @@ def create_data_entities(db_tables_def, filename):
             pass
 
         entity_id = vec[0]
-        entity_type = vec[1]
-        tenant = vec[2]
-        service_path = vec[3]
+        tenant = vec[1]
+        service_path = vec[2]
+        entity_type = vec[3]
         attr_id = vec[4]
         attr_type = vec[5]
         attr_value = convert_attribute_format(vec[6], vec[5])
