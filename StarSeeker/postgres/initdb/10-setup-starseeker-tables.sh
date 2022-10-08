@@ -38,7 +38,6 @@ category_name varchar(50) not null,\
 category_color varchar(32) not null,\
 display_order integer not null,\
 enabled boolean not null,\
-unique (service_path_id),\
 foreign key (service_path_id) references t_service_path(service_path_id) on delete cascade\
 );"
 
