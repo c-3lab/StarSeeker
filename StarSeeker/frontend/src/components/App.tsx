@@ -3,8 +3,9 @@ import Header from './Header';
 import Map from './Map';
 import axios from 'axios';
 import Head from 'next/head';
+import { AppProps } from 'next/app';
 
-const App: React.VFC = () => {
+const App: React.VFC<Props> = ({ fiware }) => {
   const [pointEntities, setPointEntities] = useState([]);
   const [surfaceEntities, setSurfaceEntities] = useState([]);
 
@@ -49,10 +50,12 @@ const App: React.VFC = () => {
     setSurfaceEntities([]);
   };
 
+  const title = 'ダッシュボード: ' + '[' + fiware.tenant + ':' + fiware.servicePath + ']';
+
   return (
     <div className={'main'}>
       <Head>
-        <title>ダッシュボード</title>
+        <title>{title}</title>
       </Head>
       <Header
         fetchPointData={fetchPointData}
@@ -60,6 +63,7 @@ const App: React.VFC = () => {
         fetchSurfaceData={fetchSurfaceData}
         clearAllSurfaceData={clearAllSurfaceData}
         resetData={resetData}
+        fiware={fiware}
       />
       <Map pointEntities={pointEntities} surfaceEntities={surfaceEntities} />
     </div>

@@ -60,6 +60,10 @@ type Props = {
   clearAllPointData: Function;
   fetchSurfaceData: Function;
   clearAllSurfaceData: Function;
+  fiware: {
+    tenant: string;
+    servicePath: string;
+  }
 };
 
 const DrawerWrapper: React.VFC<Props> = ({
@@ -72,6 +76,7 @@ const DrawerWrapper: React.VFC<Props> = ({
   clearAllPointData,
   fetchSurfaceData,
   clearAllSurfaceData,
+  fiware
 }) => {
   const classes = useStyles();
   const [categories, setCategories] = useState([]);
