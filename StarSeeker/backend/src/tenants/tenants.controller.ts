@@ -1,25 +1,25 @@
 import { Controller, Headers, Get } from '@nestjs/common';
 import { ApiResponse, ApiHeader, ApiTags } from '@nestjs/swagger';
 
-import { CategoriesService } from './categories.service';
-import { Category } from '../../db/entities/Category';
+import { TenantsService } from './tenants.service';
+import { Tenant } from '../../db/entities/Tenant';
 
 @ApiTags('StarSeeker')
-@Controller('categories')
-export class CategoriesController {
-  constructor(private readonly categoriesService: CategoriesService) {}
+@Controller('tenants')
+export class TenantsController {
+  constructor(private readonly tenantsService: TenantsService) {}
 
   @Get()
   @ApiHeader({ name: 'fiware-service', description: 'Tenant' })
   @ApiHeader({ name: 'fiware-servicepath', description: 'Service path' })
   @ApiResponse({
     status: 200,
-    description: 'find a dataset list from a management database',
+    description: 'find a tenant and service path list from a management database',
   })
-  getCategories(
+  getTenants(
       @Headers('fiware-service') tenant,
       @Headers('fiware-servicepath') path
-    ): Promise<Category[]> {
-    return this.categoriesService.getCategories(tenant, path);
+    ): Promise<Tenant[]> {
+    return this.tenantsService.getTenants(tenant, path)
   }
 }
