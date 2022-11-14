@@ -1,0 +1,130 @@
+version: "3"
+
+services:
+  backend:
+    image: node:16.15.1
+    hostname: nodeb
+    container_name: nodeb
+    working_dir: /app
+    ports:
+      - "4000:4000"
+    command: >
+      sh -c "
+      cd backend &&
+      npm install &&
+      npm run start"
+    environment:
+      - "API_PORT=4000"
+      - "ORION_URI=http://orion:1026"
+      - "POSTGRES_HOST=postgres"
+      - "POSTGRES_PORT=5432"
+      - "POSTGRES_USERNAME=${POSTGREUSER}"
+      - "POSTGRES_PASSWORD=${POSTGREPASSWORD}"
+      - "POSTGRES_DATABASE=postgres"
+      - "TYPEORM_SYNCHRONIZE=false"
+    volumes:
+      - ./backend:/app/backend
+    networks:
+      - nw
+
+  frontend:
+    image: node:16.15.1
+    hostname: nodef
+    container_name: nodef
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    command: >
+      sh -c "
+      sleep 60 &&
+      cd frontend &&
+      npm install --legacy-peer-deps &&
+      npm run dev &&
+      sleep 30"
+    environment:
+      - "NEXT_PUBLIC_MAP_DEFAULT_LATITUDE=${MAP_DEFAULT_LATITUDE}"
+      - "NEXT_PUBLIC_MAP_DEFAULT_LONGITUDE=${MAP_DEFAULT_LONGITUDE}"
+      - "NEXT_PUBLIC_MAP_DEFAULT_ZOOM=${MAP_DEFAULT_ZOOM}"
+      - "NEXT_PUBLIC_DATASET_LIST_BY=${DATASET_LIST_BY}"
+    volumes:
+      - ./frontend:/app/frontend
+      - ./operator/env/img:/app/frontend/public/img
+    networks:
+      - nw
+
+  mongo:
+    image: mongo:4.4.7
+    hostname: mongo
+    container_name: mongo
+    environment:
+      - "MONGO_INITDB_ROOT_USERNAME=${MONGOUSERNAME}"
+      - "MONGO_INITDB_ROOT_PASSWORD=${MONGOPASSWORD}"
+      - "MONGO_INITDB_DATABASE=oriondb"
+    volumes:
+      - ./site/mongo/db:/data/db
+      - ./site/mongo/configdb:/data/configdb
+    networks:
+      - nw
+
+  postgres:
+    image: postgres:13.3
+    hostname: postgres
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - "POSTGRES_USER=${POSTGREUSER}"
+      - "POSTGRES_PASSWORD=${POSTGREPASSWORD}"
+      - "POSTGRES_DB=postgres"
+      - "PGPASSWORD=${POSTGREPASSWORD}"
+      - "PGUSER=${POSTGREUSER}"
+      - "PGDATABASE=postgres"
+    volumes:
+      - ./site/postgres/data:/var/lib/postgresql/data
+      - ./postgres/initdb:/docker-entrypoint-initdb.d
+      - ./operator/env:/work
+    networks:
+      - nw
+
+  orion:
+    image: fiware/orion:3.6.0
+    hostname: orion
+    container_name: orion
+    ports:
+      - "1026:1026"
+    depends_on:
+      - mongo
+    environment:
+      - "ORION_MONGO_HOST=mongo:27017"
+      - "ORION_MONGO_USER=${MONGOUSERNAME}"
+      - "ORION_MONGO_PASSWORD=${MONGOPASSWORD}"
+      - "ORION_MONGO_AUTH_SOURCE=admin"
+      - "ORION_MONGO_DB=oriondb"
+      - "ORION_PORT=1026"
+      - "ORION_MULTI_SERVICE=true"
+    networks:
+      - nw
+
+  cygnus:
+    image: fiware/cygnus-ngsi:2.11.0
+    hostname: cygnus
+    container_name: fiware-cygnus
+    depends_on:
+      - postgres
+    environment:
+      - "CYGNUS_POSTGRESQL_HOST=postgres"
+      - "CYGNUS_POSTGRESQL_PORT=5432"
+      - "CYGNUS_POSTGRESQL_USER=${POSTGREUSER}"
+      - "CYGNUS_POSTGRESQL_PASS=${POSTGREPASSWORD}"
+      - "CYGNUS_POSTGRESQL_ENABLE_CACHE=true"
+      - "CYGNUS_POSTGRESQL_SERVICE_PORT=5055"
+      - "CYGNUS_LOG_LEVEL=DEBUG"
+      - "CYGNUS_SERVICE_PORT=5055"
+      - "CYGNUS_API_PORT=5080"
+    networks:
+      - nw
+
+networks:
+  nw:
+    driver: bridge
+    

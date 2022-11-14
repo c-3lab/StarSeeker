@@ -19,14 +19,14 @@ create_table() {
 
 create_table t_tenant "create table t_tenant (\
 tenant_id serial primary key not null,\
-tenant_name varchar(50) not null,\
+tenant_name varchar(50),\
 unique (tenant_name)\
 );"
 
 create_table t_service_path "create table t_service_path (\
 service_path_id serial primary key not null,\
 tenant_id integer not null,\
-service_path_name varchar(550) not null,\
+service_path_name varchar(550),\
 unique (tenant_id, service_path_name),\
 foreign key (tenant_id) references t_tenant(tenant_id) on delete cascade\
 );"

@@ -293,7 +293,7 @@ def send_db_message(message, pg_connection=None):
     else:
         print(message)
 
-def csv_text_to_value(csv_text, row_type):
+def csv_text_to_value(csv_text, row_type, is_nullable=True):
     if row_type == 'boolean':
         if len(csv_text) > 0 and csv_text != '×':
             value = 'TRUE'
@@ -302,10 +302,13 @@ def csv_text_to_value(csv_text, row_type):
     elif row_type == 'integer':
         value = csv_text
     else:
-        value = f'\'{csv_text}\''
+        if is_nullable is True and csv_text == 'NULL':
+            value = 'NULL'
+        else:
+            value = f'\'{csv_text}\''
     return value
 
-def build_subquery(record, subquery):
+def build_subquery(record, subquery, is_nullable=True):
 
     name_str = subquery['name']
 
@@ -315,7 +318,7 @@ def build_subquery(record, subquery):
         table_name = table
     elif type(table) is dict:
         alias_str = table['alias']
-        table_subquery = build_subquery(record, table['subquery'])
+        table_subquery = build_subquery(record, table['subquery'], is_nullable=is_nullable)
         table_str = f'(select {alias_str}.{name_str} from {table_subquery} as {alias_str})'
         table_name = alias_str
 
@@ -331,7 +334,7 @@ def build_subquery(record, subquery):
             innerjoin_target_name = innerjoin_target
         elif type(innerjoin_target) is dict:
             alias_str = innerjoin_target['alias']
-            innerjoin_target_subquery = build_subquery(record, innerjoin_target['subquery'])
+            innerjoin_target_subquery = build_subquery(record, innerjoin_target['subquery'], is_nullable=is_nullable)
             innerjoin_target_str = f'{innerjoin_target_subquery} as {alias_str}'
             innerjoin_target_name = alias_str
         innerjoin_str = f'inner join {innerjoin_target_str} on {table_name}.{innerjoin_on_left_str} = {innerjoin_target_name}.{innerjoin_on_right_str}'
@@ -345,13 +348,16 @@ def build_subquery(record, subquery):
             cond_name = cond['name']
             cond_no = cond['no']
             cond_type = cond['type']
-            cond_value = csv_text_to_value(record[cond_no], cond_type)
-            conds.append(f'{cond_table}.{cond_name} = {cond_value}')
+            cond_value = csv_text_to_value(record[cond_no], cond_type, is_nullable=is_nullable)
+            if is_nullable is True and cond_value == 'NULL':
+                conds.append(f'{cond_table}.{cond_name} IS NULL')
+            else:
+                conds.append(f'{cond_table}.{cond_name} = {cond_value}')
         cond_str = 'where ' + (' and '.join(conds))
 
     return f'(select {name_str} from {table_str} {innerjoin_str} {cond_str})'
 
-def create_models(db_tables_def, dataset_file_path, model_name=None, is_structured=False):
+def create_models(db_tables_def, dataset_file_path, model_name=None, is_structured=False, is_nullable=True):
 
     if model_name is None:
         model_name = os.path.splitext(os.path.basename(dataset_file_path))[0]
@@ -393,9 +399,9 @@ def create_models(db_tables_def, dataset_file_path, model_name=None, is_structur
         for row in db_table_def['rows']:
             value = None
             if row['no'] is not None:
-                value = csv_text_to_value(record[row['no']], row['type'])
+                value = csv_text_to_value(record[row['no']], row['type'], is_nullable=is_nullable)
             else:
-                value = build_subquery(record, row['subquery'])
+                value = build_subquery(record, row['subquery'], is_nullable=is_nullable)
             model_main.update({
                 row['name']: value
             })
@@ -422,11 +428,11 @@ def create_models(db_tables_def, dataset_file_path, model_name=None, is_structur
                         if row['auto_id'] == True:
                             value = str(auto_id_base + i)
                         elif row['rep_diff'] is not None:
-                            value = csv_text_to_value(record[start + row['rep_diff']], row['type'])
+                            value = csv_text_to_value(record[start + row['rep_diff']], row['type'], is_nullable=is_nullable)
                         elif row['no'] is not None:
-                            value = csv_text_to_value(record[row['no']], row['type'])
+                            value = csv_text_to_value(record[row['no']], row['type'], is_nullable=is_nullable)
                         else:
-                            value = build_subquery(record, row['subquery'])
+                            value = build_subquery(record, row['subquery'], is_nullable=is_nullable)
                         model_detail.update({
                             row['name']: value
                         })
@@ -442,7 +448,7 @@ def create_models(db_tables_def, dataset_file_path, model_name=None, is_structur
 
     return models
 
-def convert_model_to_dml(action, db_entity_name, model_dict):
+def convert_model_to_dml(action, db_entity_name, model_dict, is_nullable=True):
 
     if action == 'create':
         keys = []
@@ -450,21 +456,25 @@ def convert_model_to_dml(action, db_entity_name, model_dict):
         for k, v in model_dict['__instance__'].items():
             keys.append(k)
             values.append(v)
-        keys_str = ','.join(keys)
+            keys_str = ','.join(keys)
         values_str = ','.join(values)
         return f'insert into {db_entity_name} ({keys_str}) values ({values_str});'
     elif action == 'delete':
         conditions = []
         for k in model_dict['__delete_keys__']:
-            conditions.append(k + '=' + model_dict['__instance__'][k])
+            v = model_dict['__instance__'][k]
+            if v == 'NULL':
+                conditions.append(f'{k} IS NULL')
+            else:
+                conditions.append(f'{k} = {v}')
         conditions_str = ' and '.join(conditions)
         return f'delete from {db_entity_name} where {conditions_str};'
 
-def generate_dmls(action, models):
+def generate_dmls(action, models, is_nullable=True):
 
     dmls = []
     for model in models:
-        dmls.append(convert_model_to_dml(action, model['__profile__']['table']['name'], model['__main__']))
+        dmls.append(convert_model_to_dml(action, model['__profile__']['table']['name'], model['__main__'], is_nullable=is_nullable))
         if '__detail__' in model:
             for detail in model['__detail__']:
                 dmls.append(convert_model_to_dml(action, model['__profile__']['detail']['name'], detail))
@@ -699,6 +709,8 @@ def main():
     args = parser.parse_args()
     subcommand = args.subparser
 
+    is_nullable = True
+
     if subcommand != 'data':
         action = args.action
         if subcommand == 'tenant' or subcommand == 'servicepath' or subcommand == 'category':
@@ -711,7 +723,7 @@ def main():
             model_name = args.name[0] if args.name is not None else None
         db_tables_def = load_table_def()
         if action == 'create' or action == 'delete':
-            models = create_models(db_tables_def, dataset_file, model_name, is_structured=is_structured)
+            models = create_models(db_tables_def, dataset_file, model_name, is_structured=is_structured, is_nullable=is_nullable)
             dmls = generate_dmls(action, models)
             for dml in dmls:
                 if args.send is None:

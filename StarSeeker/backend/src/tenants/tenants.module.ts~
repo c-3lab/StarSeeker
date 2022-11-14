@@ -1,0 +1,14 @@
+import { HttpModule } from '@nestjs/axios';
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { ServicePathsController } from './servicePaths.controller';
+import { ServicePathsService } from './servicePaths.service';
+import { ServicePath } from '../../db/entities/ServicePath';
+
+@Module({
+  imports: [HttpModule, TypeOrmModule.forFeature([ServicePath])],
+  controllers: [ServicePathsController],
+  providers: [ServicePathsService],
+})
+export class ServicePathsModule {}
