@@ -7,7 +7,7 @@ import { AxiosResponse } from 'axios';
 import { PointsService } from './points.service';
 import { PointDataset } from '../../db/entities/PointDataset';
 import { PointDetail } from '../../db/entities/PointDetail';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 
 jest.mock('@nestjs/axios');
 

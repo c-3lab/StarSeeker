@@ -1,6 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { bootstrap } from './main';
 
+jest.mock('./app.module');
+
 describe('Main', () => {
   describe('bootstrap', () => {
     let app;
