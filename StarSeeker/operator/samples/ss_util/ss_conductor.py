@@ -41,7 +41,7 @@ def load_table_def():
         },
         't_service_path': {
             'name': 't_service_path',
-            'delete_key_names': [ 'service_path_name' ],
+            'delete_key_names': [ 'service_path_name', 'tenant_id' ],
             'rows': [
                 {'auto_id': False, 'name': 'service_path_name', 'type': 'string', 'no':0, 'rep_diff': None },
                 {'auto_id': False, 'name': 'tenant_id', 'no': None, 'rep_diff': None,
@@ -58,7 +58,7 @@ def load_table_def():
         't_category': {
             'name': 't_category',
             'auto_id_row_number': None,
-            'delete_key_names': [ 'category_id' ],
+            'delete_key_names': [ 'category_name', 'service_path_id' ],
             'rep_number': None,
             'rep_length': 0,
             'rows': [
@@ -87,7 +87,7 @@ def load_table_def():
         't_point_dataset': {
             'name': 't_point_dataset',
             'auto_id_row_number': None,
-            'delete_key_names': [ 'point_dataset_id' ],
+            'delete_key_names': [ 'entity_type', 'category_id' ],
             'rep_number': None,
             'rep_length': 0,
             'rows': [
@@ -128,7 +128,7 @@ def load_table_def():
         't_point_detail': {
             'name': 't_point_detail',
             'auto_id_row_number': None,
-            'delete_key_names': [ 'point_detail_id', 'point_dataset_id' ],
+            'delete_key_names': [ 'point_dataset_id' ],
             'rep_number': 8,
             'rep_length': 4,
             'rows': [
@@ -182,7 +182,7 @@ def load_table_def():
         't_surface_dataset': {
             'name': 't_surface_dataset',
             'auto_id_row_number': None,
-            'delete_key_names': [ 'surface_dataset_id' ],
+            'delete_key_names': [ 'entity_type', 'category_id' ],
             'rep_number': None,
             'rep_length': 0,
             'rows': [
@@ -224,7 +224,7 @@ def load_table_def():
         't_surface_detail': {
             'name': 't_surface_detail',
             'auto_id_row_number': None,
-            'delete_key_names': [ 'surface_detail_id', 'surface_dataset_id' ],
+            'delete_key_names': [ 'surface_dataset_id' ],
             'rep_number': 9,
             'rep_length': 3,
             'rows': [
@@ -611,11 +611,7 @@ def send_broker_message(action, entity, broker_url=None):
             tenant = entity['__main__']['tenant'] if entity['__main__']['tenant'] else ''
             service_path = entity['__main__']['service_path'] if entity['__main__']['service_path'] else ''
             if broker_url is not None:
-                if len(broker_url) > 0 and broker_url[-1] != '/':
-                    broker_url = broker_url + '/'
-                headers = {
-                    'Content-Type': 'application/json'
-                }
+                headers = {}
                 if tenant != 'NULL':
                     headers.update({
                         'Fiware-Service': tenant
@@ -624,8 +620,13 @@ def send_broker_message(action, entity, broker_url=None):
                     headers.update({
                         'Fiware-ServicePath': service_path
                     })
+                if len(broker_url) > 0 and broker_url[-1] != '/':
+                    broker_url = broker_url + '/'
                 url = urljoin(broker_url, id)
-                res = requests.delete(url, headers=headers)
+                if len(headers) > 0:
+                    res = requests.delete(url, headers=headers)
+                else:
+                    res = requests.delete(url)
             else:
                 print(f'DELETE {id} tenant={tenant} service_path={service_path}')
                 return None
