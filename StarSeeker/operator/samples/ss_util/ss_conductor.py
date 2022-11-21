@@ -591,10 +591,16 @@ def send_broker_message(action, entity, broker_url=None):
             service_path = entity['__main__']['service_path'] if entity['__main__']['service_path'] else ''
             if broker_url is not None:
                 headers = {
-                    'Content-Type': 'application/json',
-                    'Fiware-Service': tenant,
-                    'Fiware-ServicePath': service_path
+                    'Content-Type': 'application/json'
                 }
+                if tenant != 'NULL':
+                    headers.update({
+                        'Fiware-Service': tenant
+                    })
+                if service_path != 'NULL':
+                    headers.update({
+                        'Fiware-ServicePath': service_path
+                    })
                 url = broker_url
                 res = requests.post(url, json=message, headers=headers)
             else:
@@ -608,9 +614,16 @@ def send_broker_message(action, entity, broker_url=None):
                 if len(broker_url) > 0 and broker_url[-1] != '/':
                     broker_url = broker_url + '/'
                 headers = {
-                    'Fiware-Service': tenant,
-                    'Fiware-ServicePath': service_path
+                    'Content-Type': 'application/json'
                 }
+                if tenant != 'NULL':
+                    headers.update({
+                        'Fiware-Service': tenant
+                    })
+                if service_path != 'NULL':
+                    headers.update({
+                        'Fiware-ServicePath': service_path
+                    })
                 url = urljoin(broker_url, id)
                 res = requests.delete(url, headers=headers)
             else:
