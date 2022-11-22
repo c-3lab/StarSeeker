@@ -50,7 +50,7 @@ const App: React.VFC<Props> = ({ fiware }) => {
     setSurfaceEntities([]);
   };
 
-  const title = 'ダッシュボード: ' + '[' + fiware.tenant + ':' + fiware.servicePath + ']';
+  const title = 'ダッシュボード';
 
   return (
     <div className={'main'}>

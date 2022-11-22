@@ -64,7 +64,7 @@ const Header: React.VFC<Props> = ({
     resetData();
   };
 
-  const title = 'ダッシュボード: ' + '[' + fiware.tenant + ':' + fiware.servicePath + ']';
+  const title = 'ダッシュボード';
 
   return (
     <>
