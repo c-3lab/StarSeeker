@@ -65,7 +65,8 @@ const App: React.VFC<Props> = ({ fiware }) => {
       }
     }
     const res = await axios.get(
-      `/api/surfaces/entities?datasetId=${datasetId}`
+      `/api/surfaces/entities?datasetId=${datasetId}`,
+      { headers: headers }
     );
     const newEntities = res.data.map((entity) => {
       return { ...entity, datasetId, borderColor, fillColor };

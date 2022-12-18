@@ -104,6 +104,7 @@ const Header: React.VFC<Props> = ({
         clearAllPointData={clearAllPointData}
         fetchSurfaceData={fetchSurfaceData}
         clearAllSurfaceData={clearAllSurfaceData}
+	fiware={fiware}
       />
     </>
   );

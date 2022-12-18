@@ -123,7 +123,7 @@ export class SurfacesService {
 
     console.log('url: ' + JSON.stringify(url));
     console.log('config: ' + JSON.stringify(config));
-    const response = await this.httpService.get(url).toPromise();
+    const response = await this.httpService.get(url, config).toPromise();
 
     const results = [];
     for (const detail of details) {
