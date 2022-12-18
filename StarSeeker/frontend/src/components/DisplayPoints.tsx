@@ -10,10 +10,28 @@ import { escapeSpecialCharacters } from '../utils';
 
 async function fetchDetails(
   datasetId: string,
-  entityId: string
+  entityId: string,
+  fiware: any
 ): Promise<string> {
+  const tenant = fiware.tenant;
+  const servicePath = fiware.servicePath;
+  let headers;
+  if (tenant != null) {
+    if (servicePath != null) {
+      headers = { 'tenant': tenant, 'servicepath': servicePath };
+    } else {
+      headers = { 'tenant': tenant };
+    }
+  } else {
+    if (servicePath != null) {
+      headers = { 'servicepath': servicePath };
+    } else {
+      headers = {};
+    }
+  }
   const res = await axios.get(
-    `/api/points/details?datasetId=${datasetId}&entityId=${entityId}`
+    `/api/points/details?datasetId=${datasetId}&entityId=${entityId}`,
+    { headers: headers }
   );
 
   let html = '';
@@ -61,7 +79,7 @@ async function fetchDetails(
   return popupContent;
 }
 
-const DisplayPoints: React.VFC<{ data: any }> = ({ data }) => {
+const DisplayPoints: React.VFC<{ data: any, fiware: any }> = ({ data, fiware }) => {
   const map = useMap();
   const position = data.location.value.split(',');
 
@@ -89,7 +107,7 @@ const DisplayPoints: React.VFC<{ data: any }> = ({ data }) => {
       })}
       eventHandlers={{
         click: async () => {
-          const details = await fetchDetails(data.datasetId, data.id);
+          const details = await fetchDetails(data.datasetId, data.id, fiware);
           Leaflet.popup().setLatLng(position).setContent(details).openOn(map);
         },
       }}

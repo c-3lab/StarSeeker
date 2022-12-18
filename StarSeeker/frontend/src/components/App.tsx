@@ -10,7 +10,26 @@ const App: React.VFC<Props> = ({ fiware }) => {
   const [surfaceEntities, setSurfaceEntities] = useState([]);
 
   const fetchPointData = async (datasetId: number, iconColor: string) => {
-    const res = await axios.get(`/api/points/entities?datasetId=${datasetId}`);
+    const tenant = fiware.tenant;
+    const servicePath = fiware.servicePath;
+    let headers;
+    if (tenant != null) {
+      if (servicePath != null) {
+        headers = { 'tenant': tenant, 'servicepath': servicePath };
+      } else {
+        headers = { 'tenant': tenant };
+      }
+    } else {
+      if (servicePath != null) {
+        headers = { 'servicepath': servicePath };
+      } else {
+        headers = {};
+      }
+    }
+    const res = await axios.get(
+      `/api/points/entities?datasetId=${datasetId}`,
+      { headers: headers }
+    );
     const newEntities = res.data.map((entity) => {
       return { ...entity, datasetId, iconColor };
     });
@@ -29,6 +48,22 @@ const App: React.VFC<Props> = ({ fiware }) => {
     borderColor: string,
     fillColor: string
   ) => {
+    const tenant = fiware.tenant;
+    const servicePath = fiware.servicePath;
+    let headers;
+    if (tenant != null) {
+      if (servicePath != null) {
+        headers = { 'tenant': tenant, 'servicepath': servicePath };
+      } else {
+        headers = { 'tenant': tenant };
+      }
+    } else {
+      if (servicePath != null) {
+        headers = { 'servicepath': servicePath };
+      } else {
+        headers = {};
+      }
+    }
     const res = await axios.get(
       `/api/surfaces/entities?datasetId=${datasetId}`
     );
@@ -65,7 +100,11 @@ const App: React.VFC<Props> = ({ fiware }) => {
         resetData={resetData}
         fiware={fiware}
       />
-      <Map pointEntities={pointEntities} surfaceEntities={surfaceEntities} />
+      <Map
+        pointEntities={pointEntities}
+        surfaceEntities={surfaceEntities}
+        fiware={fiware}
+      />
     </div>
   );
 };

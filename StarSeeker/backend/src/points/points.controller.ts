@@ -1,5 +1,5 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Headers, Get, Param, Query } from '@nestjs/common';
+import { ApiHeader, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Observable } from 'rxjs';
 
 import { PointsService } from './points.service';
@@ -10,6 +10,8 @@ export class PointsController {
   constructor(private readonly pointsService: PointsService) {}
 
   @Get(['/entities', ':datasetId/entities'])
+  @ApiHeader({ name: 'fiware-service', description: 'Tenant' })
+  @ApiHeader({ name: 'fiware-servicepath', description: 'Service path' })
   @ApiResponse({
     status: 200,
     description: 'Point entities of NGSIv2 format',
@@ -18,11 +20,15 @@ export class PointsController {
     @Param('datasetId') datasetId?: number,
     @Query('limit') limit?: number,
     @Query('q') q?: string,
+    @Headers('fiware-service') tenant?: string,
+    @Headers('fiware-servicepath') path?: string
   ): Promise<Observable<any>> {
-    return this.pointsService.getEntities(datasetId, limit, q);
+    return this.pointsService.getEntities(datasetId, limit, q, tenant, path);
   }
 
   @Get(':datasetId/:entityId/details')
+  @ApiHeader({ name: 'fiware-service', description: 'Tenant' })
+  @ApiHeader({ name: 'fiware-servicepath', description: 'Service path' })
   @ApiResponse({
     status: 200,
     description: 'Data for displaying point details',
@@ -30,7 +36,9 @@ export class PointsController {
   async getDetails(
     @Param('datasetId') datasetId: number,
     @Param('entityId') entityId: string,
+    @Headers('fiware-service') tenant?: string,
+    @Headers('fiware-servicepath') path?: string
   ): Promise<any> {
-    return this.pointsService.getDetails(datasetId, entityId);
+    return this.pointsService.getDetails(datasetId, entityId, tenant, path);
   }
 }

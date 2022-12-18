@@ -14,6 +14,7 @@ const defalutZoom: number = process.env.NEXT_PUBLIC_MAP_DEFAULT_ZOOM;
 type Props = {
   pointEntities: any[];
   surfaceEntities: any[];
+  fiware: any[];
 };
 
 const ClosePopup = () => {
@@ -22,7 +23,7 @@ const ClosePopup = () => {
   return null;
 };
 
-const Map: React.VFC<Props> = ({ pointEntities, surfaceEntities }) => {
+const Map: React.VFC<Props> = ({ pointEntities, surfaceEntities, fiware }) => {
   return (
     <MapContainer
       center={defaultPosition}
@@ -36,10 +37,10 @@ const Map: React.VFC<Props> = ({ pointEntities, surfaceEntities }) => {
         url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       {pointEntities.map((data, index) => (
-        <DisplayPoints key={index} data={data} />
+        <DisplayPoints key={index} data={data} fiware={fiware} />
       ))}
       {surfaceEntities.map((data, index) => (
-        <DisplaySurfaces key={index} data={data} />
+        <DisplaySurfaces key={index} data={data} fiware={fiware} />
       ))}
       <ClosePopup />
     </MapContainer>
