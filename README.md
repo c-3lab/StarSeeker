@@ -1,6 +1,6 @@
 # StarSeeker - FIWAREのデータを様々な形式で表示・管理が行えるプラットフォーム
 
-![screenshot](img/clip.png)
+![screenshot](img/dashboard.png)
 
 [English README is here](README_en.md)
 
@@ -68,10 +68,11 @@
   ```
 
 - 管理データ格納ディレクトリにてデータモデルおよびデータを編集(それぞれかわりにcsvを用意してもよい)
-  - データモデルテーブル定義ファイル: tables.xlsx
-  - データカテゴリ定義ファイル(サンプル): category.xlsx
-  - 点データセット定義およびデータファイル(サンプル): point.xlsx
-  - 面データセット定義およびデータファイル(サンプル): surface.xlsx
+  - テナント定義: tenant.xlsx
+  - サービスパス定義: servicepath.xlsx
+  - データカテゴリ定義: category.xlsx
+  - 点データセット定義およびデータ: point.xlsx
+  - 面データセット定義およびデータ: surface.xlsx
 
 - データ管理端末コンテナに.envを共有しdockerネットワークに追加
 
@@ -81,30 +82,48 @@
   ```
 
 - 以下はdocker execにてデータ管理端末コンテナ(op)上にて作業実施
+
   ```
   ~/StarSeeker/StarSeeker/operator$ docker exec -it op /bin/bash
   root@op:/work# 
   ```
 
-- データソースとしてそのままxlsxファイルを使っている場合は、各xlsxファイルからcsvを取り出す
+- 必要があれば各xlsxファイルからcsvを取り出す
+
   ```
   root@op:/work# ./xlsx2csv-all.sh
   ```
 
-### 地図のカテゴリとデータセット定義の投入
+### テナント、サービスパス、カテゴリとデータセット定義の投入
+
+下記のコマンド例に関して、変数`$DSN`と変数`$BROKER`はdocker-compose.ymlにて初期設定済み
+
+- RDB (postgres)にテナント定義を投入
+
+  ```
+  root@op:/work# ss_conductor tenant create tenant.csv # DMLを確認
+  root@op:/work# ss_conductor tenant create tenant.csv --send $DSN # RDBに投入
+  ```
+
+- RDB (postgres)にサービスパス定義を投入
+
+  ```
+  root@op:/work# ss_conductor servicepath create servicepath.csv # DMLを確認
+  root@op:/work# ss_conductor servicepath create servicepath.csv --send $DSN # RDBに投入
+  ```
 
 - RDB (postgres)に地図カテゴリ定義を投入
 
   ```
-  root@op:/work# ss_conductor category create tables.csv category.csv # DMLを確認
-  root@op:/work# ss_conductor category create tables.csv category.csv --send $DSN # RDBに投入
+  root@op:/work# ss_conductor category create category.csv # DMLを確認
+  root@op:/work# ss_conductor category create category.csv --send $DSN # RDBに投入
   ```
 
 - RDB (postgres)に地図データセット定義を投入
 
   ```
-  root@op:/work# ss_conductor dataset create tables.csv point.csv # DMLを確認
-  root@op:/work# ss_conductor dataset create tables.csv point.csv --send $DSN # RDBに投入
+  root@op:/work# ss_conductor dataset create point.csv # DMLを確認
+  root@op:/work# ss_conductor dataset create point.csv --send $DSN # RDBに投入
   ```
 
 - データモデルが生成されたことを以下のいずれかで確認(ハンバーガーメニューからデータセット選択可能となる)
@@ -112,15 +131,15 @@
 
 ### データの投入と更新
 
-- データをorionに投入(環境変数$BROKERはdocker-composeで設定済み)
+- データをorionに投入
 
   ```
-  root@op:/work# ss_conductor data create tables.csv point_data.csv # メッセージを確認
-  root@op:/work# ss_conductor data create tables.csv point_data.csv --send $BROKER # Brokerに投入
+  root@op:/work# ss_conductor data create point_data.csv # メッセージを確認
+  root@op:/work# ss_conductor data create point_data.csv --send $BROKER # Brokerに投入
   ```
 
 - データが投入されていることを以下のいずれかで確認
-  - ブラウザで http://Dockerホスト名:4000 に接続
+
   - データ管理用コンテナからorionにクエリを投げる(Dockerホストにはポートを公開していない)
 
     ```
@@ -137,24 +156,38 @@
 - データをorionから削除
 
   ```
-  root@op:/work# ss_conductor data delete tables.csv point_data.csv # メッセージを確認
-  root@op:/work# ss_conductor data delete tables.csv point_data.csv --send $BROKER # Brokerに投入
+  root@op:/work# ss_conductor data delete point_data.csv # メッセージを確認
+  root@op:/work# ss_conductor data delete point_data.csv --send $BROKER # Brokerに投入
   ```
 
-### 地図のカテゴリとデータセット定義の削除
+### テナント、サービスパス、カテゴリとデータセット定義の削除
 
 - RDB (postgres)から地図データセット定義を削除
 
   ```
-  root@op:/work# ss_conductor dataset delete tables.csv point.csv # DMLを確認
-  root@op:/work# ss_conductor dataset delete tables.csv point.csv --send $DSN # RDBに投入
+  root@op:/work# ss_conductor dataset delete point.csv # DMLを確認
+  root@op:/work# ss_conductor dataset delete point.csv --send $DSN # RDBに投入
   ```
 
 - RDB (postgres)から地図カテゴリ定義を削除
 
   ```
-  root@op:/work# ss_conductor category delete tables.csv category.csv # DMLを確認
-  root@op:/work# ss_conductor category delete tables.csv category.csv --send $DSN # RDBに投入
+  root@op:/work# ss_conductor category delete category.csv # DMLを確認
+  root@op:/work# ss_conductor category delete category.csv --send $DSN # RDBに投入
+  ```
+
+- RDB (postgres)からサービスパス定義を削除
+
+  ```
+  root@op:/work# ss_conductor servicepath delete servicepath.csv # DMLを確認
+  root@op:/work# ss_conductor servicepath delete servicepath.csv --send $DSN # RDBに投入
+  ```
+
+- RDB (postgres)からテナント定義を削除
+
+  ```
+  root@op:/work# ss_conductor tenant delete tenant.csv # DMLを確認
+  root@op:/work# ss_conductor tenant delete tenant.csv --send $DSN # RDBに投入
   ```
 
 ### 基本的な使い方
@@ -162,56 +195,19 @@
 #### 管理者向け
 
 - 管理DBへの反映方法
-  - カラム情報<br>
-    [テーブル構成を参照](docs/DB_TABLE.md)
 
-  - 詳細情報のフィールド名とFIWARE Orionとの対応づけ
-    - location(位置情報)とtime(登録時刻)を除く要素名を詳細情報テーブルに追加
-      - FIWARE Orion エンティティ サンプル例
-        ```
-        {
-          "id": "ParkId001",
-          "type": "Park",
-          "address": {  ※詳細表示テーブル紐づけ対象
-            "type": "Text",
-            "value": "ParkAddress001",
-            "metadata": {}
-          },
-            "location": {
-              "type": "geo:point",
-              "value": "35.9045568476736, 139.378167943858",
-              "metadata": {}
-            },
-            "locationName": {  ※詳細表示テーブル紐づけ対象
-            "type": "Text",
-            "value": "Park001",
-            "metadata": {}
-            },
-            "time": {
-            "type": "DateTime",
-            "value": "2021-08-23T15:00:00.000Z",
-            "metadata": {}
-            }
-        }
-        ```
-        
-        - PostgreSQL 詳細表示テーブル サンプル例
-        ```
-        postgres=# select * from t_point_detail where point_dataset_id = 1;
-        point_detail_id  | point_dataset_id | display_order | item_attr_name | data_type | enabled | display_title
-        -----------------+------------------+---------------+----------------+-----------+---------+---------------
-                       1 |                1 |             1 | address        |         0 | t       | 住所
-                       2 |                1 |             1 | locationName   |         0 | t       | 施設名
-        ```
+  - `ss_conductor`はCSVから管理データベースおよびORIONへのデータ反映をおこなうことができます。詳細は[StarSeeker/operatorのドキュメント](StarSeeker/operator/README.md)を参照ください。
 
-        - Web画面 詳細表示 サンプル例<br>
-          ![Sample screen display01](img/park01.png)
+- マルチテナント、サービスパス機能
 
-    - `ss_conductor`を使えばCSVをメンテナンスするだけで簡単にORIONへのデータ反映をおこなうことができます。詳細は[StarSeeker/operatorのドキュメント](StarSeeker/operator/README.md)を参照ください。
+  - ORIONには[マルチテナント](https://fiware-orion.letsfiware.jp/user/multitenancy/)および[エンティティ・サービスパス](https://fiware-orion.letsfiware.jp/user/service_path/)(サービスパス)という機能があります。StarSeekerでもフロントエンドにて同様の制御をおこなうことができます。
+  - フロントエンドサーバは、管理DBのテナント(`T_TETNANT`)、サービスパス(`T_SERVICE_PATH`)にテナントとサービスパスに登録された組合せに従ってカテゴリ、データセット、データ(Orionから取得)を返します。
+  - 利用者がブラウザからアクセスしたおきにデフォルトではテナント`NULL`、サービスパス`NULL`の情報が表示されます。テナントとサービスパスはhttpヘッダーの`fiware-service`と`fiware-servicepath`に対応しますが、通常ブラウザの基本機能ではヘッダーを追加できません。したがって、この機能を利用する際には、フロントエンドブラウザの前にリバースプロキシなどを設置し、アクセス先ホスト名に応じてヘッダを追加してStarSeekerに渡すといった工夫が必要になるでしょう。
 
 #### 利用者向け
 
-- ブラウザから http://Dockerホスト名:3000 でアクセスできます。
+- ブラウザから http://Dockerホスト名:3000 でアクセスします。
+  ![initial](img/initial.png)
 
 - カテゴリの選択
   - 右端のハンバーガーメニューをクリックします。
@@ -223,8 +219,7 @@
   ![image008](img/image008.png)
   - チェック後、ピンが表示されたことを確認します。
   ![image009](img/image009.png)
-- ハンバーガーメニューをクリックしたときに「データセット」と「リセット」とだけある場合は、前者をクリックするとデータセットを選択するダイアログが表示されますので、その中からカテゴリを選択します。
-  ![image004](img/image004.png)
+
 - 詳細情報の表示
   - ピンをクリックすると詳細情報が表示されます。<br>
   ![image006](img/image006.png)
