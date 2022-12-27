@@ -19,12 +19,6 @@ jobs:
         run: npm --prefix ./StarSeeker/backend install ./StarSeeker/backend --legacy-peer-deps
       - name: npm install for frontend
         run: npm --prefix ./StarSeeker/frontend install ./StarSeeker/frontend --legacy-peer-deps
-      - name: eslint review
-        uses: reviewdog/action-eslint@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: github-pr-review
-          eslint_flags: './**/*.{ts,js}'
       - name: Run eslint for backend
         run: npm run lint --prefix ./StarSeeker/backend
       - name: Run test for backend
