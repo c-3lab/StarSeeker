@@ -19,28 +19,19 @@ export class TenantsService {
 
     let query1
     if (!tenant) {
-      if (!path) {
-        query1 = query0
-          .where('tenant.name IS NULL')
-          .andWhere('servicePath.name IS NULL')
-      } else {
-        query1 = query0
-          .where('tenant.name IS NULL')
-          .andWhere('servicePath.name = :path', { path })
-      }
+        query1 = query0.where('tenant.name IS NULL')
     } else {
-      if (!path) {
-        query1 = query0
-          .where('tenant.name = :tenant', { tenant })
-          .andWhere('servicePath.name IS NULL')
-      } else {
-        query1 = query0
-          .where('tenant.name = :tenant', { tenant })
-          .andWhere('servicePath.name = :path', { path })
-      }
+        query1 = query0.where('tenant.name = :tenant', { tenant })
     }
 
-    const tenants = query1.getMany();
+    let query2
+    if (!path) {
+        query2 = query1.andWhere('servicePath.name IS NULL')
+    } else {
+        query2 = query1.andWhere('servicePath.name = :path', { path })
+    }
+
+    const tenants = query2.getMany();
 
     return tenants;
 

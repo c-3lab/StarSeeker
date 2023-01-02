@@ -28,28 +28,19 @@ export class CategoriesService {
 
     let query1
     if (!tenantName) {
-      if (!servicePathName) {
-        query1 = await query0
-          .where('tenant.name IS NULL')
-          .andWhere('servicePath.name IS NULL')
-      } else {
-        query1 = await query0
-          .where('tenant.name IS NULL')
-          .andWhere('servicePath.name = :servicePathName', { servicePathName: servicePathName })
-      }
+        query1 = query0.where('tenant.name IS NULL')
     } else {
-      if (!servicePathName) {
-        query1 = await query0
-          .where('tenant.name = :tenantName', { tenantName: tenantName })
-          .andWhere('servicePath.name IS NULL')
-      } else {
-        query1 = await query0
-          .where('tenant.name = :tenantName', { tenantName: tenantName })
-          .andWhere('servicePath.name = :servicePathName', { servicePathName: servicePathName })
-      }
+        query1 = query0.where('tenant.name = :tenantName', { tenantName: tenantName })
     }
 
-    const categories = await query1
+    let query2
+    if (!servicePathName) {
+        query2 = query1.andWhere('servicePath.name IS NULL')
+    } else {
+        query2 = query1.andWhere('servicePath.name = :servicePathName', { servicePathName: servicePathName })
+    }
+
+    const categories = await query2
       .andWhere('category.enabled = true')
       .andWhere(new Brackets(queryOr => {
         queryOr.where('pointDataset.enabled = true')
