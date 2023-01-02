@@ -47,26 +47,15 @@ export class PointsService {
       data.expression = { q: q };
     }
 
-    let headers
+    const headers = {
+      'fiware-service': tenantName,
+      'fiware-servicepath': servicePathName
+    };
     if (!tenantName) {
-      if (!servicePathName) {
-        headers = {}
-      } else {
-        headers = {
-          'fiware-servicepath': servicePathName
-        }
-      }
-    } else {
-      if (!servicePathName) {
-        headers = {
-          'fiware-service': tenantName
-        }
-      } else {
-        headers = {
-          'fiware-service': tenantName,
-          'fiware-servicepath': servicePathName
-        }
-      }
+      delete headers['fiware-service'];
+    }
+    if (!servicePathName) {
+      delete headers['fiware-servicepath'];
     }
 
     const config: AxiosRequestConfig = {
@@ -100,26 +89,15 @@ export class PointsService {
 
     const url = `${process.env.ORION_URI}/v2/entities/${entityId}?options=keyValues`;
 
-    let headers
+    const headers = {
+      'fiware-service': tenantName,
+      'fiware-servicepath': servicePathName
+    };
     if (!tenantName) {
-      if (!servicePathName) {
-        headers = {}
-      } else {
-        headers = {
-          'fiware-servicepath': servicePathName
-        }
-      }
-    } else {
-      if (!servicePathName) {
-        headers = {
-          'fiware-service': tenantName
-        }
-      } else {
-        headers = {
-          'fiware-service': tenantName,
-          'fiware-servicepath': servicePathName
-        }
-      }
+      delete headers['fiware-service'];
+    }
+    if (!servicePathName) {
+      delete headers['fiware-servicepath'];
     }
 
     const config: AxiosRequestConfig = {

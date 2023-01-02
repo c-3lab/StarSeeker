@@ -19,72 +19,44 @@ export class CategoriesService {
 
   async getCategories(tenantName: string, servicePathName: string): Promise<Category[]> {
 
-    let categories
+    const query0 = this.categoryRepository
+          .createQueryBuilder('category')
+          .leftJoinAndSelect('category.servicePath', 'servicePath')
+          .leftJoinAndSelect('servicePath.tenant', 'tenant')
+          .leftJoinAndSelect('category.pointDatasets', 'pointDataset')
+          .leftJoinAndSelect('category.surfaceDatasets', 'surfaceDataset')
+
+    let query1
     if (!tenantName) {
       if (!servicePathName) {
-        categories = await this.categoryRepository
-          .createQueryBuilder('category')
-          .leftJoinAndSelect('category.servicePath', 'servicePath')
-          .leftJoinAndSelect('servicePath.tenant', 'tenant')
-          .leftJoinAndSelect('category.pointDatasets', 'pointDataset')
-          .leftJoinAndSelect('category.surfaceDatasets', 'surfaceDataset')
-          .where('servicePath.name IS NULL')
-          .andWhere('tenant.name IS NULL')
-          .andWhere('category.enabled = true')
-          .andWhere(new Brackets(queryOr => {
-	    queryOr.where('pointDataset.enabled = true')
-	      .orWhere('surfaceDataset.enabled = true')
-	    }))
-          .getMany()
+        query1 = await query0
+          .where('tenant.name IS NULL')
+          .andWhere('servicePath.name IS NULL')
       } else {
-        categories = await this.categoryRepository
-          .createQueryBuilder('category')
-          .leftJoinAndSelect('category.servicePath', 'servicePath')
-          .leftJoinAndSelect('servicePath.tenant', 'tenant')
-          .leftJoinAndSelect('category.pointDatasets', 'pointDataset')
-          .leftJoinAndSelect('category.surfaceDatasets', 'surfaceDataset')
-          .where('servicePath.name = :servicePathName', { servicePathName: servicePathName })
-          .andWhere('tenant.name IS NULL')
-          .andWhere('category.enabled = true')
-          .andWhere(new Brackets(queryOr => {
-	    queryOr.where('pointDataset.enabled = true')
-	      .orWhere('surfaceDataset.enabled = true')
-	    }))
-          .getMany()
+        query1 = await query0
+          .where('tenant.name IS NULL')
+          .andWhere('servicePath.name = :servicePathName', { servicePathName: servicePathName })
       }
     } else {
       if (!servicePathName) {
-        categories = await this.categoryRepository
-          .createQueryBuilder('category')
-          .leftJoinAndSelect('category.servicePath', 'servicePath')
-          .leftJoinAndSelect('servicePath.tenant', 'tenant')
-          .leftJoinAndSelect('category.pointDatasets', 'pointDataset')
-          .leftJoinAndSelect('category.surfaceDatasets', 'surfaceDataset')
-          .where('servicePath.name IS NULL')
-          .andWhere('tenant.name = :tenantName', { tenantName: tenantName })
-          .andWhere('category.enabled = true')
-          .andWhere(new Brackets(queryOr => {
-	    queryOr.where('pointDataset.enabled = true')
-	      .orWhere('surfaceDataset.enabled = true')
-	    }))
-          .getMany()
+        query1 = await query0
+          .where('tenant.name = :tenantName', { tenantName: tenantName })
+          .andWhere('servicePath.name IS NULL')
       } else {
-        categories = await this.categoryRepository
-          .createQueryBuilder('category')
-          .leftJoinAndSelect('category.servicePath', 'servicePath')
-          .leftJoinAndSelect('servicePath.tenant', 'tenant')
-          .leftJoinAndSelect('category.pointDatasets', 'pointDataset')
-          .leftJoinAndSelect('category.surfaceDatasets', 'surfaceDataset')
-          .where('servicePath.name = :servicePathName', { servicePathName: servicePathName })
-          .andWhere('tenant.name = :tenantName', { tenantName: tenantName })
-          .andWhere('category.enabled = true')
-          .andWhere(new Brackets(queryOr => {
-	    queryOr.where('pointDataset.enabled = true')
-	      .orWhere('surfaceDataset.enabled = true')
-	    }))
-          .getMany()
+        query1 = await query0
+          .where('tenant.name = :tenantName', { tenantName: tenantName })
+          .andWhere('servicePath.name = :servicePathName', { servicePathName: servicePathName })
       }
     }
+
+    const categories = await query1
+      .andWhere('category.enabled = true')
+      .andWhere(new Brackets(queryOr => {
+        queryOr.where('pointDataset.enabled = true')
+          .orWhere('surfaceDataset.enabled = true')
+        }))
+      .getMany()
+
     return categories
   }
 }

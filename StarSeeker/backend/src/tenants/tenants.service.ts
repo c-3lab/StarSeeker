@@ -12,38 +12,37 @@ export class TenantsService {
   ) {}
 
   getTenants(tenant: string, path: string): Promise<Tenant[]> {
-    if (tenant != null) {
-      if (path != null) {
-        return this.tenantRepository
+
+    const query0 = this.tenantRepository
           .createQueryBuilder('tenant')
-          .leftJoinAndSelect('tenant.servicePaths', 'servicePath')
-          .where('tenant.name = :tenant', { tenant })
-          .andWhere('servicePath.name = :path', { path })
-          .getMany();
-      } else {
-        return this.tenantRepository
-          .createQueryBuilder('tenant')
-          .leftJoinAndSelect('tenant.servicePaths', 'servicePath')
-          .where('tenant.name = :tenant', { tenant })
+	  .leftJoinAndSelect('tenant.servicePaths', 'servicePath');
+
+    let query1
+    if (!tenant) {
+      if (!path) {
+        query1 = query0
+          .where('tenant.name IS NULL')
           .andWhere('servicePath.name IS NULL')
-          .getMany();
+      } else {
+        query1 = query0
+          .where('tenant.name IS NULL')
+          .andWhere('servicePath.name = :path', { path })
       }
     } else {
-      if (path != null) {
-        return this.tenantRepository
-          .createQueryBuilder('tenant')
-          .leftJoinAndSelect('tenant.servicePaths', 'servicePath')
-          .where('tenant.name IS NULL')
-          .andWhere('servicePath.name = :path', { path })
-          .getMany();
-      } else {
-        return this.tenantRepository
-          .createQueryBuilder('tenant')
-          .leftJoinAndSelect('tenant.servicePaths', 'servicePath')
-          .where('tenant.name IS NULL')
+      if (!path) {
+        query1 = query0
+          .where('tenant.name = :tenant', { tenant })
           .andWhere('servicePath.name IS NULL')
-          .getMany();
+      } else {
+        query1 = query0
+          .where('tenant.name = :tenant', { tenant })
+          .andWhere('servicePath.name = :path', { path })
       }
     }
+
+    const tenants = query1.getMany();
+
+    return tenants;
+
   }
 }

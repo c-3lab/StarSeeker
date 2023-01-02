@@ -12,19 +12,15 @@ const App: React.VFC<Props> = ({ fiware }) => {
   const fetchPointData = async (datasetId: number, iconColor: string) => {
     const tenant = fiware.tenant;
     const servicePath = fiware.servicePath;
-    let headers;
-    if (tenant != null) {
-      if (servicePath != null) {
-        headers = { 'tenant': tenant, 'servicepath': servicePath };
-      } else {
-        headers = { 'tenant': tenant };
-      }
-    } else {
-      if (servicePath != null) {
-        headers = { 'servicepath': servicePath };
-      } else {
-        headers = {};
-      }
+    const headers = {
+      'tenant': tenant,
+      'servicepath': servicePath
+    };
+    if(!tenant) {
+      delete headers['tenant'];
+    }
+    if(!servicePath) {
+      delete headers['servicepath'];
     }
     const res = await axios.get(
       `/api/points/entities?datasetId=${datasetId}`,
@@ -50,19 +46,15 @@ const App: React.VFC<Props> = ({ fiware }) => {
   ) => {
     const tenant = fiware.tenant;
     const servicePath = fiware.servicePath;
-    let headers;
-    if (tenant != null) {
-      if (servicePath != null) {
-        headers = { 'tenant': tenant, 'servicepath': servicePath };
-      } else {
-        headers = { 'tenant': tenant };
-      }
-    } else {
-      if (servicePath != null) {
-        headers = { 'servicepath': servicePath };
-      } else {
-        headers = {};
-      }
+    const headers = {
+      'tenant': tenant,
+      'servicepath': servicePath
+    };
+    if(!tenant) {
+      delete headers['tenant'];
+    }
+    if(!servicePath) {
+      delete headers['servicepath'];
     }
     const res = await axios.get(
       `/api/surfaces/entities?datasetId=${datasetId}`,
