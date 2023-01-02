@@ -6,6 +6,8 @@ import { CategoriesController } from './categories.controller';
 import { CategoriesService } from './categories.service';
 import { CategoriesModule } from './categories.module';
 import { Category } from '../../db/entities/Category';
+import { ServicePath } from '../../db/entities/ServicePath';
+import { Tenant } from '../../db/entities/Tenant';
 
 jest.mock('./categories.module');
 
@@ -23,6 +25,14 @@ describe('CategoriesController', () => {
           provide: getRepositoryToken(Category),
           useClass: Repository,
         },
+        {
+          provide: getRepositoryToken(ServicePath),
+          useClass: Repository
+	},
+        {
+          provide: getRepositoryToken(Tenant),
+          useClass: Repository
+	}
       ],
       controllers: [CategoriesController],
     }).compile();
@@ -46,7 +56,7 @@ describe('CategoriesController', () => {
       jest
         .spyOn(categoriesService, 'getCategories')
         .mockImplementation(async () => result);
-      expect(await categoriesController.getCategories()).toBe(result);
+      expect(await categoriesController.getCategories('tenant', '/path')).toBe(result);
     });
   });
 });
