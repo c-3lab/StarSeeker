@@ -1,12 +1,12 @@
 # StarSeeker - A platform for displaying and managing FIWARE data in a variety of formats
 
-![screenshot](img/clip.png)
+![screenshot](img/dashboard.png)
+
+[日本語版READMEはこちら](README.md)
 
 ## Architecture
 
 ![Architecture](https://user-images.githubusercontent.com/6661165/154850549-1a6ce1a9-39f5-4190-8277-151c16875da6.png)
-
-[日本語版READMEはこちら](README.md)
 
 ## Table of Contents
 
@@ -40,183 +40,202 @@ A platform for realizing smart cities by freely displaying and managing data sto
 
 ### How to install
 
-- Install npm
-  ```
-  sudo apt-get install nodejs
-  sudo apt-get install npm
-  ```
-
-- Deploy Docker containers
+- git clone
+- Change work directory.
 
   ```
-  git clone https://github.com/c-3lab/StarSeeker
-  cd StarSeeker/install
-  vi .env *Specify passwords for MongoDB and PostgreSQL
-  docker-compose up -d
+  ~/StarSeeker$ cd StarSeeker
   ```
 
-- Create a table for the management DB
+- Configure some parameters in .env.
+
+  - MongoDB user and password
+  - PostgreSQL user and password
+  - Initial parameters for maps (longitude, latitude, zoom value)
+
+    ```
+    ~/StarSeeker/StarSeeker$ cp _env .env
+    ~/StarSeeker/StarSeeker$ vi .env # Congire parameters by your favorite editor :-)
+    ```
+
+- Start containers.
 
   ```
-  cd StarSeeker/install
-  sudo apt-get install postgresql-client-common postgresql-client
-  psql -h localhost -p 5432 -U postgres -d postgres -f managedb.sql
+  ~/StarSeeker/StarSeeker$ docker-compose up -d
   ```
 
-### How to input sample data
+- Create a working directory for an operator terminal and copy from samples.
 
-Run the shell script and add the sample data.
+  ```
+  ~/StarSeeker/StarSeeker$ cd operator
+  ~/StarSeeker/StarSeeker/operator$ cp -r samples work
+  ```
 
-```
-cd StarSeeker/install
-chmod 755 add_sampledata.sh
-./add_sampledata.sh
-```
+- Edit the management tables and data csv's.
+  - Tenant definitions: tenant.xlsx
+  - Service path definitions: servicepath.xlsx
+  - Data category definitions: category.xlsx
+  - Point dataset definitions and data: point.xlsx
+  - Surface dataset definitions and data: surface.xlsx
 
-After adding the sample data, execute the following command to confirm that the data is included.
+- Share .env and start the operator terminal.
 
-```
-sudo apt-get install jq
-curl http://localhost:1026/v2/entities?limit=500 | jq .
-```
+  ```
+  ~/StarSeeker/StarSeeker/operator$ ln -s ../.env .env
+  ~/StarSeeker/StarSeeker/operator$ docker-compose up -d
+  ```
 
-Sample data will be added to the management DB.
+- Enter the operator terminal container.
 
-```
-cd StarSeeker/install
-sudo apt-get install postgresql-client-common postgresql-client
-psql -h localhost -p 5432 -U postgres -d postgres -f sampledata.sql
-```
+  ```
+  ~/StarSeeker/StarSeeker/operator$ docker exec -it op /bin/bash
+  root@op:/work# 
+  ```
+
+- Convert *.xlsx to *.csv, if necessarily.
+
+  ```
+  root@op:/work# ./xlsx2csv-all.sh
+  ```
+
+### Register tenant, service path, category, and dataset definitions in management database
+
+Note: Environment variables `$DSN` and `$BROKER` are already defined by docker-compose.
+
+- Register tenant defitions.
+
+  ```
+  root@op:/work# ss_conductor tenant create tenant.csv # dry-run
+  root@op:/work# ss_conductor tenant create tenant.csv --send $DSN # register definitions
+  ```
+
+- Register service path definitions.
+
+  ```
+  root@op:/work# ss_conductor servicepath create servicepath.csv # dry-run
+  root@op:/work# ss_conductor servicepath create servicepath.csv --send $DSN # register definitions
+  ```
+
+- Register category definitions.
+
+  ```
+  root@op:/work# ss_conductor category create category.csv # dry-run
+  root@op:/work# ss_conductor category create category.csv --send $DSN # register definitions
+  ```
+
+- Register dataset definitions.
+
+  ```
+  root@op:/work# ss_conductor dataset create point.csv # dry-run
+  root@op:/work# ss_conductor dataset create point.csv --send $DSN # register definitions
+  ```
+
+- Confirm datasets.
+  - Open http://DockerHost:3000 in your browser.
+  - Categories and datasets are selectable in hamburger menu.
+
+- Register data in orion.
+
+  ```
+  root@op:/work# ss_conductor data create point_data.csv # dry-run
+  root@op:/work# ss_conductor data create point_data.csv --send $BROKER # Register data
+  ```
+
+- Confirm data.
+
+  - Http-get entities from the operator terminal. (not docker host)
+
+    ```
+    root@op:/work# curl -s http://orion:1026/v2/entities?limit=500
+    root@op:/work# curl -s http://orion:1026/v2/entities?limit=500 | python -c '\
+    import pprint;\
+    import json;\
+    import sys;\
+    pprint.pprint(json.loads(sys.stdin.read()))' # pretty print by python
+    ```
+
+### Remove data in orion
+
+- Remove data from orion
+
+  ```
+  root@op:/work# ss_conductor data delete point_data.csv # dry-run
+  root@op:/work# ss_conductor data delete point_data.csv --send $BROKER # Remove data
+  ```
+
+### Remove dataset, category, service path and tenant definitions in management database
+
+- Remove dataset definitions.
+
+  ```
+  root@op:/work# ss_conductor dataset delete point.csv # dry-run
+  root@op:/work# ss_conductor dataset delete point.csv --send $DSN # remove definitions
+  ```
+
+- Remove category definitions.
+
+  ```
+  root@op:/work# ss_conductor category delete category.csv # dry-run
+  root@op:/work# ss_conductor category delete category.csv --send $DSN # remove definitions
+  ```
+
+- Remove service path definitions.
+
+  ```
+  root@op:/work# ss_conductor servicepath delete servicepath.csv # dry-run
+  root@op:/work# ss_conductor servicepath delete servicepath.csv --send $DSN # remove definitions
+  ```
+
+- Remove tenants definitions.
+
+  ```
+  root@op:/work# ss_conductor tenant delete tenant.csv # dry-run
+  root@op:/work# ss_conductor tenant delete tenant.csv --send $DSN # remove definitions
+  ```
 
 ### Basic usage
 
 #### For Administrators
 
 - How to reflect to the management DB
-  - Column Information<br>
-    [See Table Structure](docs/DB_TABLE.md)
 
-  - Mapping of detailed information field names to FIWARE Orion
-    - Add element names except for location and time to the detail information table.
-      - FIWARE Orion Entity Sample Example
-        ```
-        {
-          "id": "ParkId001",
-          "type": "Park",
-          "address": {  *Detail view table connection target
-            "type": "Text",
-            "value": "ParkAddress001",
-            "metadata": {}
-          },
-            "location": {
-              "type": "geo:point",
-              "value": "35.9045568476736, 139.378167943858",
-              "metadata": {}
-            },
-            "locationName": {  *Detail view table connection target
-            "type": "Text",
-            "value": "Park001",
-            "metadata": {}
-            },
-            "time": {
-            "type": "DateTime",
-            "value": "2021-08-23T15:00:00.000Z",
-            "metadata": {}
-            }
-        }
-        ```
-        
-        - PostgreSQL Detail View Table Sample Example
-        ```
-        postgres=# select * from t_point_detail where point_dataset_id = 1;
-        point_detail_id  | point_dataset_id | display_order | item_attr_name | data_type | enabled | display_title
-        -----------------+------------------+---------------+----------------+-----------+---------+---------------
-                       1 |                1 |             1 | address        |         0 | t       | 住所
-                       2 |                1 |             1 | locationName   |         0 | t       | 施設名
-        ```
+  - Use `ss_conductor` to define tenants, service paths, categories, and datasets in the management database, and to register data in Fiware orion broker.
 
-        - Web Screen Sample of Detailed Display<br>
-          ![Sample screen display01](img/park01.png)
+- Multitenancy and entity service path function
 
-
-  - How to add to FIWARE Orion
-    - Refer to [FIWARE Orion GitHub](https://github.com/telefonicaid/fiware-orion/)and create a new JSON that conforms to the NGSIv2 API.
-    - Add an entity addressed to `http://localhost:1026/v2/entities`([see sample execution command](docs/SAMPLE_ENTITY.md))
-  - How to add data to the management DB
-    - Add data to the management DB according to the values registered in the column information([See sample execution command](docs/SAMPLE_DB.md))
-
-#### How to start the application
-
-Run the application installation script.
-
-```
-cd install/
-chmod 755 start_application.sh
-./start_application.sh
-```
+  - StarSeeker supports FIWARE Orion's [multitenacy](https://fiware-orion.readthedocs.io/en/1.4.0/user/multitenancy/index.html) and [entity service path](https://fiware-orion.readthedocs.io/en/1.4.0/user/service_path/index.html) functions.
+  - StarSeeker front-end server returns categories, datasets, and data from Orion related the tenant (defined in `T_TENANT`) and the service path (defined in `T_SERVICE_PATH`).
+  - Because www browsers like chrome, edge and safari http-gets without tenant and service path headers, the front end server returns categories, datasets, and data for `NULL` as tenant and `NULL` as service path to them. Therefore the administrator should use a reverse proxy server that adds `fiware-service` and `fiware-servicepath` headers and fowards requests to the fron-end server.
 
 #### For Users
 
 - Visit http://localhost:3000 from your browser.
 
-- Select a category
+- Select a category.
   - Click on the hamburger menu on the far right.
   ![image001](img/image001.png)
-  - Click on "Datasets".
-  ![image002](img/image002.png)
-  - Make sure that the category list is displayed.
-  ![image003](img/image003.png)
-- Selecting a Data Set
+  - Click the category.
+  ![image002](img/image007.png)
+- Selecting a Data Set.
   - Check the datasets stored in the category.
-  ![image004](img/image004.png)
+  ![image004](img/image008.png)
   - After checking, make sure the pin is visible.
-  ![image005](img/image005.png)
-- View detailed information
+  ![image005](img/image009.png)
+- View details.
   - Click on the pin to view detailed information.<br>
   ![image006](img/image006.png)
 
 #### How to stop the application
 
-- Take down the numbers in the PID column displayed in the execution result of the following command.
+- Stop containers.
 
   ```
-  lsof -i:3000
-  lsof -i:4000
-  
-  (Execution example)
-  $ lsof -i:3000
-  COMMAND     PID   USER   FD   TYPE  DEVICE SIZE/OFF NODE NAME
-  node    1091233 ubuntu   20u  IPv6 6560326      0t0  TCP *:3000 (LISTEN)
-
-  $ lsof -i:4000
-  COMMAND     PID   USER   FD   TYPE  DEVICE SIZE/OFF NODE NAME
-  node    1091118 ubuntu   21u  IPv6 6560274      0t0  TCP *:4000 (LISTEN)
+  ~/StarSeeker/StarSeeker/operator$ docker-compose down
+  ~/StarSeeker/StarSeeker/operator$ cd ..
+  ~/StarSeeker/StarSeeker/$ docker-compose down
   ```
 
-- Stop the application.
-
-  ```
-  kill -9 [The PID you wrote down above]
-  * Please ignore the error message when executing the kill command.
-  ```
-
-## Function
-
-### Management function
-
-- Categorization of the datasets stored in FIWARE Orion.
-- Linking detailed information to the point or surface data stored in FIWARE Orion.
-
-### User facility
-
-- View Map
-  - Zoom in and out
-  - Scroll
-- Select the category you want to display
-- Select any data set from the data sets belonging to the selected category, and display the point or area data contained in that data set on the map
-- Display detailed information in a pop-up window when tapping a point or surface data where detailed information exists
-
-## Version used
+## Versions
 
 - [next 12.1.6](https://nextjs.org/)
 - [react 18.1.0](https://ja.reactjs.org/)

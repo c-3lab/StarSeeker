@@ -3,13 +3,29 @@ import Header from './Header';
 import Map from './Map';
 import axios from 'axios';
 import Head from 'next/head';
+import { AppProps } from 'next/app';
 
-const App: React.VFC = () => {
+const App: React.VFC<Props> = ({ fiware }) => {
   const [pointEntities, setPointEntities] = useState([]);
   const [surfaceEntities, setSurfaceEntities] = useState([]);
 
   const fetchPointData = async (datasetId: number, iconColor: string) => {
-    const res = await axios.get(`/api/points/entities?datasetId=${datasetId}`);
+    const tenant = fiware.tenant;
+    const servicePath = fiware.servicePath;
+    const headers = {
+      'tenant': tenant,
+      'servicepath': servicePath
+    };
+    if(!tenant) {
+      delete headers['tenant'];
+    }
+    if(!servicePath) {
+      delete headers['servicepath'];
+    }
+    const res = await axios.get(
+      `/api/points/entities?datasetId=${datasetId}`,
+      { headers: headers }
+    );
     const newEntities = res.data.map((entity) => {
       return { ...entity, datasetId, iconColor };
     });
@@ -28,8 +44,21 @@ const App: React.VFC = () => {
     borderColor: string,
     fillColor: string
   ) => {
+    const tenant = fiware.tenant;
+    const servicePath = fiware.servicePath;
+    const headers = {
+      'tenant': tenant,
+      'servicepath': servicePath
+    };
+    if(!tenant) {
+      delete headers['tenant'];
+    }
+    if(!servicePath) {
+      delete headers['servicepath'];
+    }
     const res = await axios.get(
-      `/api/surfaces/entities?datasetId=${datasetId}`
+      `/api/surfaces/entities?datasetId=${datasetId}`,
+      { headers: headers }
     );
     const newEntities = res.data.map((entity) => {
       return { ...entity, datasetId, borderColor, fillColor };
@@ -49,10 +78,12 @@ const App: React.VFC = () => {
     setSurfaceEntities([]);
   };
 
+  const title = 'ダッシュボード';
+
   return (
     <div className={'main'}>
       <Head>
-        <title>ダッシュボード</title>
+        <title>{title}</title>
       </Head>
       <Header
         fetchPointData={fetchPointData}
@@ -60,8 +91,13 @@ const App: React.VFC = () => {
         fetchSurfaceData={fetchSurfaceData}
         clearAllSurfaceData={clearAllSurfaceData}
         resetData={resetData}
+        fiware={fiware}
       />
-      <Map pointEntities={pointEntities} surfaceEntities={surfaceEntities} />
+      <Map
+        pointEntities={pointEntities}
+        surfaceEntities={surfaceEntities}
+        fiware={fiware}
+      />
     </div>
   );
 };

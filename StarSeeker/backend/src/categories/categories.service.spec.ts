@@ -1,14 +1,40 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
 import { CategoriesService } from './categories.service';
 import { Category } from '../../db/entities/Category';
-import { Repository } from 'typeorm';
+import { ServicePath } from '../../db/entities/ServicePath';
+import { Tenant } from '../../db/entities/Tenant';
 
 describe('CategoriesService', () => {
   let categoryRepository: Repository<Category>;
   let categoriesService: CategoriesService;
+  let tenantRepository: Repository<Tenant>;
+  let servicePathRepository: Repository<ServicePath>;
 
   beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        {
+          provide: getRepositoryToken(Tenant),
+          useClass: Repository,
+        },
+        {
+          provide: getRepositoryToken(ServicePath),
+          useClass: Repository,
+        },
+      ],
+    }).compile();
+
+    tenantRepository = module.get(getRepositoryToken(Tenant));
+    servicePathRepository = module.get(getRepositoryToken(ServicePath));
     categoryRepository = new Repository<Category>();
-    categoriesService = new CategoriesService(categoryRepository);
+    categoriesService = new CategoriesService(
+      categoryRepository,
+      servicePathRepository,
+      tenantRepository,
+    );
   });
 
   it('should be defined', () => {
@@ -24,6 +50,14 @@ describe('CategoriesService', () => {
           color: '#FFFC30',
           displayOrder: 2,
           enabled: true,
+          servicePath: {
+            id: 1,
+            name: '/path',
+            tenant: {
+              id: 1,
+              name: 'tenant',
+            },
+          },
           pointDatasets: [
             {
               id: 3,
@@ -43,6 +77,14 @@ describe('CategoriesService', () => {
           color: '#00008B',
           displayOrder: 1,
           enabled: true,
+          servicePath: {
+            id: 1,
+            name: '/path',
+            tenant: {
+              id: 1,
+              name: 'tenant',
+            },
+          },
           pointDatasets: [
             {
               id: 2,
@@ -78,7 +120,9 @@ describe('CategoriesService', () => {
       jest
         .spyOn(categoryRepository, 'createQueryBuilder')
         .mockImplementation(() => mockCreateQueryBuilder);
-      expect(await categoriesService.getCategories()).toBe(result);
+      expect(await categoriesService.getCategories('tenant', '/path')).toBe(
+        result,
+      );
     });
   });
 });

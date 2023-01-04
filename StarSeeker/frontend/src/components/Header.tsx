@@ -44,6 +44,7 @@ const Header: React.VFC<Props> = ({
   fetchSurfaceData,
   clearAllSurfaceData,
   resetData,
+  fiware
 }) => {
   const classes = useStyles();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -63,12 +64,14 @@ const Header: React.VFC<Props> = ({
     resetData();
   };
 
+  const title = 'ダッシュボード';
+
   return (
     <>
       <AppBar className={classes.appBar}>
         <Toolbar className={classes.toolbar}>
           <Typography variant="h6" className={classes.title}>
-            ダッシュボード
+            {title}
           </Typography>
           <IconButton
             edge="start"
@@ -90,6 +93,7 @@ const Header: React.VFC<Props> = ({
         clearAllPointData={clearAllPointData}
         fetchSurfaceData={fetchSurfaceData}
         clearAllSurfaceData={clearAllSurfaceData}
+	fiware={fiware}
       />
       <DatasetDialog
         isOpenDatasetDialog={isOpenDatasetDialog}
@@ -100,6 +104,7 @@ const Header: React.VFC<Props> = ({
         clearAllPointData={clearAllPointData}
         fetchSurfaceData={fetchSurfaceData}
         clearAllSurfaceData={clearAllSurfaceData}
+	fiware={fiware}
       />
     </>
   );

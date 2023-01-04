@@ -6,10 +6,24 @@ import { escapeSpecialCharacters } from '../utils';
 
 async function fetchDetails(
   datasetId: string,
-  entityId: string
+  entityId: string,
+  fiware: any
 ): Promise<string> {
+  const tenant = fiware.tenant;
+  const servicePath = fiware.servicePath;
+  const headers = {
+    'tenant': tenant,
+    'servicepath': servicePath
+   };
+  if(!tenant) {
+    delete headers['tenant'];
+  }
+  if(!servicePath) {
+    delete headers['servicepath'];
+  }
   const res = await axios.get(
-    `/api/surfaces/details?datasetId=${datasetId}&entityId=${entityId}`
+    `/api/surfaces/details?datasetId=${datasetId}&entityId=${entityId}`,
+    { headers: headers }
   );
 
   let html = '';
@@ -34,7 +48,7 @@ async function fetchDetails(
   return popupContent;
 }
 
-const DisplaySurfaces: React.VFC<{ data: any }> = ({ data }) => {
+const DisplaySurfaces: React.VFC<{ data: any, fiware: any }> = ({ data, fiware }) => {
   const map = useMap();
   const positions = data.location.value.map((d) => d.split(','));
 
@@ -44,7 +58,7 @@ const DisplaySurfaces: React.VFC<{ data: any }> = ({ data }) => {
       pathOptions={{ color: data.borderColor, fillColor: data.fillColor }}
       eventHandlers={{
         click: async (e) => {
-          const details = await fetchDetails(data.datasetId, data.id);
+          const details = await fetchDetails(data.datasetId, data.id, fiware);
           Leaflet.popup().setLatLng(e.latlng).setContent(details).openOn(map);
         },
       }}

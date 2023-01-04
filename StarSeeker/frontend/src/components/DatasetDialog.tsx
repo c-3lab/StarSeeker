@@ -60,13 +60,26 @@ const DatasetDialog: React.VFC<Props> = ({
   clearAllPointData,
   fetchSurfaceData,
   clearAllSurfaceData,
+  fiware
 }) => {
   const classes = useStyles();
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     async function fetchCategories() {
-      const res = await axios.get('/api/categories/categories');
+      const tenant = fiware.tenant;
+      const servicePath = fiware.servicePath;
+      const headers = {
+        'tenant': tenant,
+        'servicepath': servicePath
+      };
+      if(!tenant) {
+        delete headers['tenant'];
+      }
+      if(!servicePath) {
+        delete headers['servicepath'];
+      }
+      const res = await axios.get('/api/categories/categories', { headers: headers });
       setCategories(res.data);
     }
     fetchCategories();

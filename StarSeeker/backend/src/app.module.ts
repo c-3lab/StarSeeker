@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { TenantsModule } from './tenants/tenants.module';
 import { PointsModule } from './points/points.module';
 import { CategoriesModule } from './categories/categories.module';
 import { SurfacesModule } from './surfaces/surfaces.module';
@@ -24,7 +25,9 @@ import * as utils from './utils';
       entities: [utils.getEntityFilepath(utils.isTesting())],
       synchronize: utils.toBoolean(process.env.TYPEORM_SYNCHRONIZE),
       autoLoadEntities: true,
+      logging: true,
     }),
+    TenantsModule,
     PointsModule,
     CategoriesModule,
     SurfacesModule,

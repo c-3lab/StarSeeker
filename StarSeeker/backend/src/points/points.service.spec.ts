@@ -62,6 +62,16 @@ describe('PointsService', () => {
           enabled: true,
           pointDatasets: [],
           surfaceDatasets: [],
+          servicePath: {
+            id: 1,
+            name: '/path',
+            categories: [],
+            tenant: {
+              id: 1,
+              name: 'tenant',
+              servicePaths: [],
+            },
+          },
         },
         pointDetails: [],
       };
@@ -156,6 +166,16 @@ describe('PointsService', () => {
           enabled: true,
           pointDatasets: [],
           surfaceDatasets: [],
+          servicePath: {
+            id: 1,
+            name: '/path',
+            categories: [],
+            tenant: {
+              id: 1,
+              name: 'tenant',
+              servicePaths: [],
+            },
+          },
         },
         pointDetails: [],
       };

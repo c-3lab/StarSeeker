@@ -6,6 +6,8 @@ services:
     hostname: nodeb
     container_name: nodeb
     working_dir: /app
+    ports:
+      - "4000:4000"
     command: >
       sh -c "
       cd backend &&
@@ -68,6 +70,8 @@ services:
     image: postgres:13.3
     hostname: postgres
     container_name: postgres
+    ports:
+      - "5432:5432"
     environment:
       - "POSTGRES_USER=${POSTGREUSER}"
       - "POSTGRES_PASSWORD=${POSTGREPASSWORD}"

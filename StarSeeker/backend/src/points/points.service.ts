@@ -23,6 +23,8 @@ export class PointsService {
     datasetId?: number,
     limit?: number,
     q?: string,
+    tenantName?: string,
+    servicePathName?: string,
   ): Promise<Observable<any>> {
     const url = `${process.env.ORION_URI}/v2/op/query`;
 
@@ -45,22 +47,40 @@ export class PointsService {
       data.expression = { q: q };
     }
 
+    const headers = {
+      'fiware-service': tenantName,
+      'fiware-servicepath': servicePathName,
+    };
+    if (!tenantName) {
+      delete headers['fiware-service'];
+    }
+    if (!servicePathName) {
+      delete headers['fiware-servicepath'];
+    }
+
     const config: AxiosRequestConfig = {
+      headers: headers,
       params: {
         limit: limit,
       },
     };
 
-    console.log(data);
+    console.log('url: ' + JSON.stringify(url));
+    console.log('data: ' + JSON.stringify(data));
+    console.log('config: ' + JSON.stringify(config));
     return this.httpService.post(url, data, config).pipe(
       map((res) => {
-        console.log(res);
         return res.data;
       }),
     );
   }
 
-  async getDetails(datasetId: number, entityId: string): Promise<any> {
+  async getDetails(
+    datasetId: number,
+    entityId: string,
+    tenantName?: string,
+    servicePathName?: string,
+  ): Promise<any> {
     const details = await this.pointDetailRepository
       .createQueryBuilder('pointDetail')
       .leftJoin('pointDetail.pointDataset', 'pointDataset')
@@ -69,7 +89,24 @@ export class PointsService {
 
     const url = `${process.env.ORION_URI}/v2/entities/${entityId}?options=keyValues`;
 
-    const response = await this.httpService.get(url).toPromise();
+    const headers = {
+      'fiware-service': tenantName,
+      'fiware-servicepath': servicePathName,
+    };
+    if (!tenantName) {
+      delete headers['fiware-service'];
+    }
+    if (!servicePathName) {
+      delete headers['fiware-servicepath'];
+    }
+
+    const config: AxiosRequestConfig = {
+      headers: headers,
+    };
+
+    console.log('url: ' + JSON.stringify(url));
+    console.log('config: ' + JSON.stringify(config));
+    const response = await this.httpService.get(url, config).toPromise();
 
     const results = [];
     for (const detail of details) {
