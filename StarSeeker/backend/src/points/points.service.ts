@@ -24,7 +24,7 @@ export class PointsService {
     limit?: number,
     q?: string,
     tenantName?: string,
-    servicePathName?: string
+    servicePathName?: string,
   ): Promise<Observable<any>> {
     const url = `${process.env.ORION_URI}/v2/op/query`;
 
@@ -49,7 +49,7 @@ export class PointsService {
 
     const headers = {
       'fiware-service': tenantName,
-      'fiware-servicepath': servicePathName
+      'fiware-servicepath': servicePathName,
     };
     if (!tenantName) {
       delete headers['fiware-service'];
@@ -79,7 +79,7 @@ export class PointsService {
     datasetId: number,
     entityId: string,
     tenantName?: string,
-    servicePathName?: string
+    servicePathName?: string,
   ): Promise<any> {
     const details = await this.pointDetailRepository
       .createQueryBuilder('pointDetail')
@@ -91,7 +91,7 @@ export class PointsService {
 
     const headers = {
       'fiware-service': tenantName,
-      'fiware-servicepath': servicePathName
+      'fiware-servicepath': servicePathName,
     };
     if (!tenantName) {
       delete headers['fiware-service'];
@@ -101,7 +101,7 @@ export class PointsService {
     }
 
     const config: AxiosRequestConfig = {
-      headers: headers
+      headers: headers,
     };
 
     console.log('url: ' + JSON.stringify(url));

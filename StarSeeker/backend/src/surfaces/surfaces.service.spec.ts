@@ -70,9 +70,9 @@ describe('SurfacesService', () => {
             tenant: {
               id: 1,
               name: 'tenant',
-              servicePaths: []
-            }
-          }
+              servicePaths: [],
+            },
+          },
         },
         surfaceDetails: [],
       };
@@ -195,9 +195,9 @@ describe('SurfacesService', () => {
             tenant: {
               id: 1,
               name: 'tenant',
-              servicePaths: []
-            }
-          }
+              servicePaths: [],
+            },
+          },
         },
         surfaceDetails: [],
       };

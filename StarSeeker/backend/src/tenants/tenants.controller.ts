@@ -14,12 +14,13 @@ export class TenantsController {
   @ApiHeader({ name: 'fiware-servicepath', description: 'Service path' })
   @ApiResponse({
     status: 200,
-    description: 'find a tenant and service path list from a management database',
+    description:
+      'find a tenant and service path list from a management database',
   })
   getTenants(
-      @Headers('fiware-service') tenant,
-      @Headers('fiware-servicepath') path
-    ): Promise<Tenant[]> {
-    return this.tenantsService.getTenants(tenant, path)
+    @Headers('fiware-service') tenant,
+    @Headers('fiware-servicepath') path,
+  ): Promise<Tenant[]> {
+    return this.tenantsService.getTenants(tenant, path);
   }
 }

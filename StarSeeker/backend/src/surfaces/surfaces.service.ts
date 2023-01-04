@@ -23,7 +23,7 @@ export class SurfacesService {
     datasetId: number,
     limit?: number,
     tenantName?: string,
-    servicePathName?: string
+    servicePathName?: string,
   ): Promise<Observable<any>> {
     const surfaceDataset = await this.surfaceDatasetRepository.findOne(
       datasetId,
@@ -46,7 +46,7 @@ export class SurfacesService {
 
     const headers = {
       'fiware-service': tenantName,
-      'fiware-servicepath': servicePathName
+      'fiware-servicepath': servicePathName,
     };
     if (!tenantName) {
       delete headers['fiware-service'];
@@ -74,7 +74,7 @@ export class SurfacesService {
     datasetId: number,
     entityId: string,
     tenantName?: string,
-    servicePathName?: string
+    servicePathName?: string,
   ): Promise<any> {
     const details = await this.surfaceDetailRepository
       .createQueryBuilder('surfaceDetail')
@@ -86,7 +86,7 @@ export class SurfacesService {
 
     const headers = {
       'fiware-service': tenantName,
-      'fiware-servicepath': servicePathName
+      'fiware-servicepath': servicePathName,
     };
     if (!tenantName) {
       delete headers['fiware-service'];
@@ -96,7 +96,7 @@ export class SurfacesService {
     }
 
     const config: AxiosRequestConfig = {
-      headers: headers
+      headers: headers,
     };
 
     console.log('url: ' + JSON.stringify(url));

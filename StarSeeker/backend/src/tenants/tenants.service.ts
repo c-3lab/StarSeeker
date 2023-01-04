@@ -12,28 +12,24 @@ export class TenantsService {
   ) {}
 
   getTenants(tenant: string, path: string): Promise<Tenant[]> {
+    let query = this.tenantRepository
+      .createQueryBuilder('tenant')
+      .leftJoinAndSelect('tenant.servicePaths', 'servicePath');
 
-    const query0 = this.tenantRepository
-          .createQueryBuilder('tenant')
-	  .leftJoinAndSelect('tenant.servicePaths', 'servicePath');
-
-    let query1
     if (!tenant) {
-        query1 = query0.where('tenant.name IS NULL')
+      query = query.where('tenant.name IS NULL');
     } else {
-        query1 = query0.where('tenant.name = :tenant', { tenant })
+      query = query.where('tenant.name = :tenant', { tenant });
     }
 
-    let query2
     if (!path) {
-        query2 = query1.andWhere('servicePath.name IS NULL')
+      query = query.andWhere('servicePath.name IS NULL');
     } else {
-        query2 = query1.andWhere('servicePath.name = :path', { path })
+      query = query.andWhere('servicePath.name = :path', { path });
     }
 
-    const tenants = query2.getMany();
+    const tenants = query.getMany();
 
     return tenants;
-
   }
 }

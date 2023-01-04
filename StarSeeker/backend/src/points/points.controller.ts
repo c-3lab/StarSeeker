@@ -21,7 +21,7 @@ export class PointsController {
     @Query('limit') limit?: number,
     @Query('q') q?: string,
     @Headers('fiware-service') tenant?: string,
-    @Headers('fiware-servicepath') path?: string
+    @Headers('fiware-servicepath') path?: string,
   ): Promise<Observable<any>> {
     return this.pointsService.getEntities(datasetId, limit, q, tenant, path);
   }
@@ -37,7 +37,7 @@ export class PointsController {
     @Param('datasetId') datasetId: number,
     @Param('entityId') entityId: string,
     @Headers('fiware-service') tenant?: string,
-    @Headers('fiware-servicepath') path?: string
+    @Headers('fiware-servicepath') path?: string,
   ): Promise<any> {
     return this.pointsService.getDetails(datasetId, entityId, tenant, path);
   }

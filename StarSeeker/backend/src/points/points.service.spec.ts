@@ -69,9 +69,9 @@ describe('PointsService', () => {
             tenant: {
               id: 1,
               name: 'tenant',
-              servicePaths: []
-            }
-          }
+              servicePaths: [],
+            },
+          },
         },
         pointDetails: [],
       };
@@ -173,9 +173,9 @@ describe('PointsService', () => {
             tenant: {
               id: 1,
               name: 'tenant',
-              servicePaths: []
-            }
-          }
+              servicePaths: [],
+            },
+          },
         },
         pointDetails: [],
       };

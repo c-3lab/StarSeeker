@@ -17,37 +17,44 @@ export class CategoriesService {
     private tenantRepository: Repository<Tenant>,
   ) {}
 
-  async getCategories(tenantName: string, servicePathName: string): Promise<Category[]> {
+  async getCategories(
+    tenantName: string,
+    servicePathName: string,
+  ): Promise<Category[]> {
+    let query = this.categoryRepository
+      .createQueryBuilder('category')
+      .leftJoinAndSelect('category.servicePath', 'servicePath')
+      .leftJoinAndSelect('servicePath.tenant', 'tenant')
+      .leftJoinAndSelect('category.pointDatasets', 'pointDataset')
+      .leftJoinAndSelect('category.surfaceDatasets', 'surfaceDataset');
 
-    const query0 = this.categoryRepository
-          .createQueryBuilder('category')
-          .leftJoinAndSelect('category.servicePath', 'servicePath')
-          .leftJoinAndSelect('servicePath.tenant', 'tenant')
-          .leftJoinAndSelect('category.pointDatasets', 'pointDataset')
-          .leftJoinAndSelect('category.surfaceDatasets', 'surfaceDataset')
-
-    let query1
     if (!tenantName) {
-        query1 = query0.where('tenant.name IS NULL')
+      query = query.where('tenant.name IS NULL');
     } else {
-        query1 = query0.where('tenant.name = :tenantName', { tenantName: tenantName })
+      query = query.where('tenant.name = :tenantName', {
+        tenantName: tenantName,
+      });
     }
 
-    let query2
     if (!servicePathName) {
-        query2 = query1.andWhere('servicePath.name IS NULL')
+      query = query.andWhere('servicePath.name IS NULL');
     } else {
-        query2 = query1.andWhere('servicePath.name = :servicePathName', { servicePathName: servicePathName })
+      query = query.andWhere('servicePath.name = :servicePathName', {
+        servicePathName: servicePathName,
+      });
     }
 
-    const categories = await query2
+    const categories = await query
       .andWhere('category.enabled = true')
-      .andWhere(new Brackets(queryOr => {
-        queryOr.where('pointDataset.enabled = true')
-          .orWhere('surfaceDataset.enabled = true')
-        }))
-      .getMany()
+      .andWhere(
+        new Brackets((queryOr) => {
+          queryOr
+            .where('pointDataset.enabled = true')
+            .orWhere('surfaceDataset.enabled = true');
+        }),
+      )
+      .getMany();
 
-    return categories
+    return categories;
   }
 }

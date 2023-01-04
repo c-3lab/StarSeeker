@@ -17,9 +17,9 @@ export class CategoriesController {
     description: 'find a dataset list from a management database',
   })
   getCategories(
-      @Headers('fiware-service') tenant,
-      @Headers('fiware-servicepath') path
-    ): Promise<Category[]> {
+    @Headers('fiware-service') tenant,
+    @Headers('fiware-servicepath') path,
+  ): Promise<Category[]> {
     return this.categoriesService.getCategories(tenant, path);
   }
 }

@@ -18,19 +18,23 @@ describe('CategoriesService', () => {
       providers: [
         {
           provide: getRepositoryToken(Tenant),
-          useClass: Repository
+          useClass: Repository,
         },
         {
           provide: getRepositoryToken(ServicePath),
-          useClass: Repository
-        }
-      ]
+          useClass: Repository,
+        },
+      ],
     }).compile();
 
     tenantRepository = module.get(getRepositoryToken(Tenant));
     servicePathRepository = module.get(getRepositoryToken(ServicePath));
     categoryRepository = new Repository<Category>();
-    categoriesService = new CategoriesService(categoryRepository, servicePathRepository, tenantRepository);
+    categoriesService = new CategoriesService(
+      categoryRepository,
+      servicePathRepository,
+      tenantRepository,
+    );
   });
 
   it('should be defined', () => {
@@ -51,8 +55,8 @@ describe('CategoriesService', () => {
             name: '/path',
             tenant: {
               id: 1,
-              name: 'tenant'
-            }
+              name: 'tenant',
+            },
           },
           pointDatasets: [
             {
@@ -78,8 +82,8 @@ describe('CategoriesService', () => {
             name: '/path',
             tenant: {
               id: 1,
-              name: 'tenant'
-            }
+              name: 'tenant',
+            },
           },
           pointDatasets: [
             {
@@ -116,7 +120,9 @@ describe('CategoriesService', () => {
       jest
         .spyOn(categoryRepository, 'createQueryBuilder')
         .mockImplementation(() => mockCreateQueryBuilder);
-      expect(await categoriesService.getCategories('tenant', '/path')).toBe(result);
+      expect(await categoriesService.getCategories('tenant', '/path')).toBe(
+        result,
+      );
     });
   });
 });

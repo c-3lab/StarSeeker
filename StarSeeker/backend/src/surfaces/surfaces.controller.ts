@@ -20,7 +20,7 @@ export class SurfacesController {
     @Param('datasetId') datasetId: number,
     @Query('limit') limit?: number,
     @Headers('fiware-service') tenant?: string,
-    @Headers('fiware-servicepath') path?: string
+    @Headers('fiware-servicepath') path?: string,
   ): Promise<Observable<any>> {
     return this.surfacesService.getEntities(datasetId, limit, tenant, path);
   }
@@ -36,7 +36,7 @@ export class SurfacesController {
     @Param('datasetId') datasetId: number,
     @Param('entityId') entityId: string,
     @Headers('fiware-service') tenant?: string,
-    @Headers('fiware-servicepath') path?: string
+    @Headers('fiware-servicepath') path?: string,
   ): Promise<any> {
     return this.surfacesService.getDetails(datasetId, entityId, tenant, path);
   }

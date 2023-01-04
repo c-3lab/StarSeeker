@@ -25,7 +25,7 @@ import * as utils from './utils';
       entities: [utils.getEntityFilepath(utils.isTesting())],
       synchronize: utils.toBoolean(process.env.TYPEORM_SYNCHRONIZE),
       autoLoadEntities: true,
-      logging: true
+      logging: true,
     }),
     TenantsModule,
     PointsModule,

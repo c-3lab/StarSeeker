@@ -27,12 +27,12 @@ describe('CategoriesController', () => {
         },
         {
           provide: getRepositoryToken(ServicePath),
-          useClass: Repository
-	},
+          useClass: Repository,
+        },
         {
           provide: getRepositoryToken(Tenant),
-          useClass: Repository
-	}
+          useClass: Repository,
+        },
       ],
       controllers: [CategoriesController],
     }).compile();
@@ -56,7 +56,9 @@ describe('CategoriesController', () => {
       jest
         .spyOn(categoriesService, 'getCategories')
         .mockImplementation(async () => result);
-      expect(await categoriesController.getCategories('tenant', '/path')).toBe(result);
+      expect(await categoriesController.getCategories('tenant', '/path')).toBe(
+        result,
+      );
     });
   });
 });
