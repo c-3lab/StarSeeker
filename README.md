@@ -151,6 +151,24 @@
     pprint.pprint(json.loads(sys.stdin.read()))' # 結果を見やすく整形
     ```
 
+### 画像の登録
+
+- フロンエンドサーバに画像をコピー
+
+  ```
+  ~/StarSeeker/StarSeeker$ cp operator/samples/img/* site/frontend/public/img
+  ```
+
+## データの削除
+
+### 画像の削除
+
+- フロントエンドサーバにコピーした画像を削除
+
+  ```
+  ~/StarSeeker/StarSeeker$ rm site/frontend/public/img/*
+  ```
+
 ### 投入したデータの削除
 
 - データをorionから削除

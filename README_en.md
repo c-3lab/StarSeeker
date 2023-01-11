@@ -154,6 +154,23 @@ Note: Environment variables `$DSN` and `$BROKER` are already defined by docker-c
     pprint.pprint(json.loads(sys.stdin.read()))' # pretty print by python
     ```
 
+### Register images
+
+- Copy images in frontend server
+
+  ```
+  ~/StarSeeker/StarSeeker$ cp operator/samples/img/* site/frontend/public/img
+  ```
+
+## Remove data
+
+### Remove images
+
+- Remove images in frontend server
+
+  ```
+  ~/StarSeeker/StarSeeker$ rm site/frontend/public/img/*
+  ```
 ### Remove data in orion
 
 - Remove data from orion
