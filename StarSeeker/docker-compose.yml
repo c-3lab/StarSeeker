@@ -36,6 +36,7 @@ services:
       sh -c "
       sleep 60 &&
       cd frontend &&
+      cp -R public_template/* public &&
       npm install --legacy-peer-deps &&
       npm run dev &&
       sleep 30"
@@ -46,7 +47,7 @@ services:
       - "NEXT_PUBLIC_DATASET_LIST_BY=${DATASET_LIST_BY}"
     volumes:
       - ./frontend:/app/frontend
-      - ./operator/env/img:/app/frontend/public/img
+      - ./site/frontend/public:/app/frontend/public
     networks:
       - nw
 
