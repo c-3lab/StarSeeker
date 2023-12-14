@@ -2,7 +2,7 @@ version: "3"
 
 services:
   backend:
-    image: node:16.15.1
+    image: node:20.10.0
     hostname: nodeb
     container_name: nodeb
     working_dir: /app
@@ -28,7 +28,7 @@ services:
       - nw
 
   frontend:
-    image: node:16.15.1
+    image: node:20.10.0
     hostname: nodef
     container_name: nodef
     working_dir: /app
@@ -54,7 +54,7 @@ services:
       - nw
 
   mongo:
-    image: mongo:4.4.7
+    image: mongo:6.0.12
     hostname: mongo
     container_name: mongo
     environment:
@@ -68,7 +68,7 @@ services:
       - nw
 
   postgres:
-    image: postgres:13.3
+    image: postgres:16.1
     hostname: postgres
     container_name: postgres
     ports:
@@ -88,7 +88,7 @@ services:
       - nw
 
   orion:
-    image: fiware/orion:3.6.0
+    image: fiware/orion:3.10.1
     hostname: orion
     container_name: orion
     ports:
@@ -107,7 +107,7 @@ services:
       - nw
 
   cygnus:
-    image: fiware/cygnus-ngsi:2.11.0
+    image: fiware/cygnus-ngsi:2.15.0
     hostname: cygnus
     container_name: fiware-cygnus
     depends_on:
