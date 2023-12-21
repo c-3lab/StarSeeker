@@ -36,7 +36,9 @@ export class PointsService {
       ],
     };
     if (datasetId != null) {
-      const pointDataset = await this.pointDatasetRepository.findOne(datasetId);
+      const pointDataset = await this.pointDatasetRepository.findOne({
+        where: { id: datasetId },
+      });
       data.attrs = [
         pointDataset.coordinatesAttribute,
         pointDataset.registerTimeAttribute,
