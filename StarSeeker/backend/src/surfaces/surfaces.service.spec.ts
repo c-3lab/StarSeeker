@@ -155,7 +155,7 @@ describe('SurfacesService', () => {
       );
 
       jest
-        .spyOn(surfaceDatasetRepository, 'findOne')
+        .spyOn(surfaceDatasetRepository, 'findOneBy')
         .mockImplementation(
           () => new Promise((resolve) => resolve(testSurfaceDataset)),
         );
@@ -280,7 +280,7 @@ describe('SurfacesService', () => {
       );
 
       jest
-        .spyOn(surfaceDatasetRepository, 'findOne')
+        .spyOn(surfaceDatasetRepository, 'findOneBy')
         .mockImplementation(
           () => new Promise((resolve) => resolve(testSurfaceDataset)),
         );

@@ -1,6 +1,6 @@
 import { HttpService } from '@nestjs/axios';
-import { SurfaceDataset } from 'db/entities/SurfaceDataset';
-import { SurfaceDetail } from 'db/entities/SurfaceDetail';
+import { SurfaceDataset } from '../../db/entities/SurfaceDataset';
+import { SurfaceDetail } from '../../db/entities/SurfaceDetail';
 import { Observable } from 'rxjs';
 import { Repository } from 'typeorm';
 import { SurfacesController } from './surfaces.controller';
@@ -15,8 +15,8 @@ describe('SurfacesController', () => {
 
   beforeEach(async () => {
     httpService = new HttpService();
-    surfaceDatasetRepository = new Repository<SurfaceDataset>();
-    surfaceDetailRepository = new Repository<SurfaceDetail>();
+    surfaceDatasetRepository = new Repository<SurfaceDataset>(SurfaceDataset, null);
+    surfaceDetailRepository = new Repository<SurfaceDetail>(SurfaceDetail, null);
     surfacesService = new SurfacesService(
       httpService,
       surfaceDatasetRepository,

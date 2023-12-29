@@ -29,7 +29,7 @@ describe('CategoriesService', () => {
 
     tenantRepository = module.get(getRepositoryToken(Tenant));
     servicePathRepository = module.get(getRepositoryToken(ServicePath));
-    categoryRepository = new Repository<Category>();
+    categoryRepository = new Repository<Category>(Category, null);
     categoriesService = new CategoriesService(
       categoryRepository,
       servicePathRepository,
