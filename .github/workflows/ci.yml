@@ -16,7 +16,7 @@ jobs:
         with:
           node-version: '16.15.1'
       - name: npm install for backend
-        run: npm --prefix ./StarSeeker/backend install ./StarSeeker/backend --legacy-peer-deps
+        run: npm --prefix ./StarSeeker/backend install ./StarSeeker/backend
       - name: npm install for frontend
         run: npm --prefix ./StarSeeker/frontend install ./StarSeeker/frontend --legacy-peer-deps
       - name: Run eslint for backend
