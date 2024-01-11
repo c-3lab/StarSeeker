@@ -25,8 +25,8 @@ export class SurfacesService {
     tenantName?: string,
     servicePathName?: string,
   ): Promise<Observable<any>> {
-    const surfaceDataset = await this.surfaceDatasetRepository.findOne(
-      datasetId,
+    const surfaceDataset = await this.surfaceDatasetRepository.findOneBy(
+      { id: datasetId }
     );
 
     const url = `${process.env.ORION_URI}/v2/op/query`;

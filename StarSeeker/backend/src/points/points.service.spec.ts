@@ -136,7 +136,7 @@ describe('PointsService', () => {
       );
 
       jest
-        .spyOn(pointDatasetRepository, 'findOne')
+        .spyOn(pointDatasetRepository, 'findOneBy')
         .mockImplementation(
           () => new Promise((resolve) => resolve(testPointDataset)),
         );
@@ -240,7 +240,7 @@ describe('PointsService', () => {
       );
 
       jest
-        .spyOn(pointDatasetRepository, 'findOne')
+        .spyOn(pointDatasetRepository, 'findOneBy')
         .mockImplementation(
           () => new Promise((resolve) => resolve(testPointDataset)),
         );
