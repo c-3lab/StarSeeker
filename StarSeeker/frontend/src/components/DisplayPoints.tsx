@@ -30,8 +30,14 @@ async function fetchDetails(
     { headers: headers }
   );
 
+  interface DataItem {
+    displayTitle: string;
+    value: string;
+    dataType: number;
+  }
+
   let html = '';
-  res.data.forEach((d) => {
+  res.data.forEach((d: DataItem) => {
     const escapedDisplayTitle = escapeSpecialCharacters(d.displayTitle);
     const escapedValue = escapeSpecialCharacters(d.value);
     const isImage = d.dataType === 1;
