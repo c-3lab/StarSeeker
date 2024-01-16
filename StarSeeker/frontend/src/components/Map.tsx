@@ -23,7 +23,7 @@ const ClosePopup = () => {
   return null;
 };
 
-const Map: React.VFC<Props> = ({ pointEntities, surfaceEntities, fiware }) => {
+const Map: React.FC<Props> = ({ pointEntities, surfaceEntities, fiware }) => {
   return (
     <MapContainer
       center={defaultPosition}

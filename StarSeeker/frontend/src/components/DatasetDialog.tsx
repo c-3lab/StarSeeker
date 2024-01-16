@@ -51,7 +51,7 @@ function getColor(backgroundColor) {
   return (r + g + b) / 1000 < 128 ? 'white' : 'black';
 }
 
-const DatasetDialog: React.VFC<Props> = ({
+const DatasetDialog: React.FC<Props> = ({
   isOpenDatasetDialog,
   closeDialog,
   check,
