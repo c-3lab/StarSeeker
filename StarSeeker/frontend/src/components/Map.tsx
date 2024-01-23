@@ -24,7 +24,10 @@ const defaultPosition: LatLngTuple = [
 type Props = {
   pointEntities: any[];
   surfaceEntities: any[];
-  fiware: any[];
+  fiware: {
+    tenant: string;
+    servicePath: string;
+  };
 };
 
 const ClosePopup = () => {
