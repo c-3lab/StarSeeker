@@ -66,7 +66,7 @@ type Props = {
   }
 };
 
-const DrawerWrapper: React.VFC<Props> = ({
+const DrawerWrapper: React.FC<Props> = ({
   isDrawerOpen,
   handleModalOpen,
   handleReset,

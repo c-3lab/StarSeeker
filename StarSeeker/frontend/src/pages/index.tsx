@@ -6,7 +6,7 @@ const App = dynamic(() => import('../components/App'), {
   ssr: false,
 });
 
-const Home: React.VFC<Props> = ({ fiware }) => {
+const Home: React.FC<Props> = ({ fiware }) => {
   return <App fiware={fiware} />;
 };
 

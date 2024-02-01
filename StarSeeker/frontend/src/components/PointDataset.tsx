@@ -39,7 +39,7 @@ type Props = {
   ) => void;
 };
 
-const PointDataset: React.VFC<Props> = ({
+const PointDataset: React.FC<Props> = ({
   dataset,
   checked,
   handleChangePointChecked,

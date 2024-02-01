@@ -38,7 +38,7 @@ type Props = {
   resetData: Function;
 };
 
-const Header: React.VFC<Props> = ({
+const Header: React.FC<Props> = ({
   fetchPointData,
   clearAllPointData,
   fetchSurfaceData,

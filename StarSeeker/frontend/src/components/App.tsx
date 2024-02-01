@@ -5,7 +5,7 @@ import axios from 'axios';
 import Head from 'next/head';
 import { AppProps } from 'next/app';
 
-const App: React.VFC<Props> = ({ fiware }) => {
+const App: React.FC<Props> = ({ fiware }) => {
   const [pointEntities, setPointEntities] = useState([]);
   const [surfaceEntities, setSurfaceEntities] = useState([]);
 
