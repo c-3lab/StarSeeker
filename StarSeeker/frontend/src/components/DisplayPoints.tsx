@@ -31,7 +31,7 @@ async function fetchDetails(
   );
 
   let html = '';
-  res.data.forEach((d) => {
+  res.data.forEach((d: any) => {
     const escapedDisplayTitle = escapeSpecialCharacters(d.displayTitle);
     const escapedValue = escapeSpecialCharacters(d.value);
     const isImage = d.dataType === 1;
