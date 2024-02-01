@@ -27,7 +27,7 @@ async function fetchDetails(
   );
 
   let html = '';
-  res.data.forEach((d) => {
+  res.data.forEach((d: any) => {
     html += `<tr><th>${escapeSpecialCharacters(
       d.displayTitle
     )}</th><td>${escapeSpecialCharacters(d.value)}</td></tr>`;
@@ -50,7 +50,7 @@ async function fetchDetails(
 
 const DisplaySurfaces: React.VFC<{ data: any, fiware: any }> = ({ data, fiware }) => {
   const map = useMap();
-  const positions = data.location.value.map((d) => d.split(','));
+  const positions = data.location.value.map((d: any) => d.split(','));
 
   return (
     <Polygon
