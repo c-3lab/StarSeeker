@@ -1,6 +1,7 @@
 {
   "name": "starseeker-frontend",
   "private": true,
+  "main": "src/index.ts",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -49,6 +50,7 @@
   },
   "devDependencies": {
     "@types/leaflet": "^1.7.11",
+    "@types/react-dom": "^18.1.0",
     "@types/react-leaflet": "^2.8.2",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
