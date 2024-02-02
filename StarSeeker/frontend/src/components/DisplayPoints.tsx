@@ -75,7 +75,7 @@ async function fetchDetails(
   return popupContent;
 }
 
-const DisplayPoints: React.VFC<{ data: any, fiware: any }> = ({ data, fiware }) => {
+const DisplayPoints: React.FC<{ data: any, fiware: any }> = ({ data, fiware }) => {
   const map = useMap();
   const position = data.location.value.split(',');
 

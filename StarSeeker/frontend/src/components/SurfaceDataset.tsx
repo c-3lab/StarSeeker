@@ -40,7 +40,7 @@ type Props = {
   ) => void;
 };
 
-const SurfaceDataset: React.VFC<Props> = ({
+const SurfaceDataset: React.FC<Props> = ({
   dataset,
   checked,
   handleChangeSurfaceChecked,

@@ -48,7 +48,7 @@ async function fetchDetails(
   return popupContent;
 }
 
-const DisplaySurfaces: React.VFC<{ data: any, fiware: any }> = ({ data, fiware }) => {
+const DisplaySurfaces: React.FC<{ data: any, fiware: any }> = ({ data, fiware }) => {
   const map = useMap();
   const positions = data.location.value.map((d) => d.split(','));
 
