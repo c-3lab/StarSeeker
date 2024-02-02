@@ -14,7 +14,10 @@ const defalutZoom: number = process.env.NEXT_PUBLIC_MAP_DEFAULT_ZOOM;
 type Props = {
   pointEntities: any[];
   surfaceEntities: any[];
-  fiware: any[];
+  fiware: {
+    tenant: string;
+    servicePath: string;
+  };
 };
 
 const ClosePopup = () => {
